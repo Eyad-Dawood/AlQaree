@@ -109,8 +109,16 @@
                 <input type="text" id="new-teacher-name" placeholder="مثال: الشيخ محمود">
             </div>
             <div class="form-group">
+                <label>البريد الإلكتروني للمعلم</label>
+                <input type="email" id="new-teacher-email" placeholder="مثال: teacher@alqaree.com">
+            </div>
+            <div class="form-group">
                 <label>رقم الهاتف للاتصال</label>
                 <input type="text" id="new-teacher-phone" placeholder="مثال: 20100xxxxxxx">
+            </div>
+            <div class="form-group">
+                <label>معرّف المستخدم المربوط (UserId)</label>
+                <input type="text" id="new-teacher-userid" placeholder="مثال: p3EnfVJadsex4NjN6g4zCiAnPF22">
             </div>
             <div class="modal-actions">
                 <button class="btn-cancel" onclick="closeAddTeacherModal()">إلغاء</button>
@@ -184,8 +192,10 @@
             db.collection("teachers").onSnapshot((snapshot) => {
                 definedTeachers = [];
                 snapshot.forEach(doc => {
-                    if(doc.data().name) {
-                        definedTeachers.push(doc.data().name);
+                    let data = doc.data();
+                    let name = data.Name || data.name;
+                    if(name) {
+                        definedTeachers.push(name);
                     }
                 });
                 buildTeacherFilterOptions();
@@ -286,23 +296,31 @@
 
         function addNewTeacher() {
             let nameInput = document.getElementById('new-teacher-name');
+            let emailInput = document.getElementById('new-teacher-email');
             let phoneInput = document.getElementById('new-teacher-phone');
+            let useridInput = document.getElementById('new-teacher-userid');
             
             let name = nameInput ? nameInput.value.trim() : '';
+            let email = emailInput ? emailInput.value.trim() : '';
             let phone = phoneInput ? phoneInput.value.trim() : '';
+            let userid = useridInput ? useridInput.value.trim() : '';
 
-            if(!name) { Swal.fire('تنبيه', 'يرجى إدخال اسم المعلم أولاً!', 'warning'); return; }
+            if(!name || !email) { Swal.fire('تنبيه', 'يرجى إدخال اسم المعلم والبريد الإلكتروني!', 'warning'); return; }
 
             Swal.fire({ title: 'جارِ تسجيل المعلم سحابياً...', didOpen: () => { Swal.showLoading(); } });
 
             db.collection("teachers").add({
-                name: name,
-                phone: phone,
-                createdAt: firebase.firestore.FieldValue.serverTimestamp()
+                Name: name,
+                Email: email,
+                PhoneNumber: phone,
+                UserId: userid,
+                CreatedAt: firebase.firestore.FieldValue.serverTimestamp()
             }).then(() => {
                 Swal.fire({ icon: 'success', title: 'تم تسجيل المعلم بنجاح!', timer: 1500, showConfirmButton: false });
                 if(nameInput) nameInput.value = '';
+                if(emailInput) emailInput.value = '';
                 if(phoneInput) phoneInput.value = '';
+                if(useridInput) useridInput.value = '';
                 closeAddTeacherModal();
             }).catch(error => Swal.fire('خطأ', error.message, 'error'));
         }

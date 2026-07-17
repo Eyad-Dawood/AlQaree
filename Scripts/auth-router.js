@@ -1,7 +1,3 @@
-// =========================================================================
-// 🔑 auth-router.js - محرك إدارة الصلاحيات والتوجيه الذكي لأكاديمية القارئ
-// =========================================================================
-
 // 📡 إعدادات اتصال الفايربيز الموحدة والمعتمدة للمشروع كاملاً
 const firebaseConfig = {
   apiKey: "AIzaSyDlNsxfXon1Mz97aSNWFm8pm1lXY8rla_I",
@@ -28,7 +24,8 @@ var currentSupervisor = "المدير العام";
  */
 function checkPageProtection(requiredRole = "كل المشرفين") {
   const savedSupervisor = localStorage.getItem("currentSupervisor");
-  console.log("🔐 فحص الحماية - المشرف الحالي في الذاكرة هو:", savedSupervisor);
+  const userRole = localStorage.getItem("userRole");
+  console.log("🔐 فحص الحماية - المشرف:", savedSupervisor, "الرتبة:", userRole);
 
   if (!savedSupervisor) {
     window.location.href = "index.html";
@@ -36,6 +33,25 @@ function checkPageProtection(requiredRole = "كل المشرفين") {
   }
 
   currentSupervisor = savedSupervisor;
+
+  // إذا كان دور المستخدم معلماً، وحاول دخول صفحات الإدارة (مثل سجل المعلمين أو الإعدادات)
+  if (userRole === "teacher") {
+    if (typeof Swal !== "undefined") {
+      Swal.fire({
+        icon: "error",
+        title: "غير مصرح لك 🛑",
+        text: "هذه الصفحة مخصصة لمدراء النظام فقط.",
+        confirmButtonColor: "#ef4444",
+        confirmButtonText: "الذهاب للوحة المعلم",
+      }).then(() => {
+        window.location.href = "teacherDashboard.html";
+      });
+    } else {
+      alert("غير مصرح لك بدخول هذه الصفحة.");
+      window.location.href = "teacherDashboard.html";
+    }
+    return;
+  }
 
   if (
     requiredRole === "المدير العام" &&
@@ -148,23 +164,112 @@ function login() {
 
   console.log("🚀 محاولة تسجيل الدخول");
   console.log("Email:", email);
-  console.log("Password:", password);
 
   auth
     .signInWithEmailAndPassword(email, password)
     .then((userCredential) => {
-      console.log("✅ تم تسجيل الدخول");
-      console.log(userCredential.user);
+      const user = userCredential.user;
+      console.log("✅ تم تسجيل الدخول بنجاح، جلب البيانات للـ UID:", user.uid);
 
-      Swal.fire({
-        icon: "success",
-        title: "تم تسجيل الدخول بنجاح 🎉",
-        text: "مرحباً بك.",
-        timer: 1500,
-        showConfirmButton: false,
-      }).then(() => {
-        window.location.href = "dashboard.html";
-      });
+      // جلب الصلاحية والدور والاسم من مجموعة مستخدمي النظام Firestore
+      return db.collection("users").doc(user.uid).get();
+    })
+    .then((doc) => {
+      if (doc.exists) {
+        const userData = doc.data();
+        const role = userData.Role || userData.role || "";
+        const name = userData.Name || userData.name || "مستخدم";
+
+        localStorage.setItem("currentSupervisor", name);
+        localStorage.setItem("userRole", role);
+
+        Swal.fire({
+          icon: "success",
+          title: "تم تسجيل الدخول بنجاح 🎉",
+          text: `مرحباً بك مجدداً في المنظومة: ${name}`,
+          timer: 1500,
+          showConfirmButton: false,
+        }).then(() => {
+          if (role === "admin") {
+            window.location.href = "dashboard.html";
+          } else if (role === "teacher") {
+            window.location.href = "teacherDashboard.html";
+          } else {
+            Swal.fire(
+              "صلاحيات غير كافية",
+              "عذراً، هذا الحساب لا يملك دوراً معتمداً بالنظام.",
+              "error",
+            );
+            auth.signOut();
+            if (loginBtn) {
+              loginBtn.disabled = false;
+              loginBtn.innerText = "تسجيل الدخول";
+            }
+          }
+        });
+      } else {
+        // إذا لم يكن اسم الوثيقة هو UID، نبحث بواسطة حقل البريد الإلكتروني
+        const userEmail = auth.currentUser.email;
+        return db
+          .collection("users")
+          .where("Email", "==", userEmail)
+          .get()
+          .then((snapshot) => {
+            if (!snapshot.empty) {
+              const userData = snapshot.docs[0].data();
+              const role = userData.Role || userData.role || "";
+              const name = userData.Name || userData.name || "مستخدم";
+
+              localStorage.setItem("currentSupervisor", name);
+              localStorage.setItem("userRole", role);
+
+              Swal.fire({
+                icon: "success",
+                title: "تم تسجيل الدخول بنجاح 🎉",
+                text: `مرحباً بك مجدداً في المنظومة: ${name}`,
+                timer: 1500,
+                showConfirmButton: false,
+              }).then(() => {
+                if (role === "admin") {
+                  window.location.href = "dashboard.html";
+                } else if (role === "teacher") {
+                  window.location.href = "teacherDashboard.html";
+                } else {
+                  Swal.fire(
+                    "صلاحيات غير كافية",
+                    "عذراً، هذا الحساب لا يملك دوراً معتمداً بالنظام.",
+                    "error",
+                  );
+                  auth.signOut();
+                  if (loginBtn) {
+                    loginBtn.disabled = false;
+                    loginBtn.innerText = "تسجيل الدخول";
+                  }
+                }
+              });
+            } else {
+              // احتياطي للطوارئ: الدخول الافتراضي كـ admin
+              console.warn(
+                "⚠️ لم يتم العثور على وثيقة المستخدم في Firestore. الدخول الافتراضي كمدير.",
+              );
+              localStorage.setItem(
+                "currentSupervisor",
+                userEmail.split("@")[0],
+              );
+              localStorage.setItem("userRole", "admin");
+
+              Swal.fire({
+                icon: "success",
+                title: "تم تسجيل الدخول بنجاح 🎉",
+                text: "مرحباً بك (حساب افتراضي).",
+                timer: 1500,
+                showConfirmButton: false,
+              }).then(() => {
+                window.location.href = "dashboard.html";
+              });
+            }
+          });
+      }
     })
     .catch((error) => {
       console.error("❌ فشل تسجيل الدخول:", error);
@@ -201,6 +306,7 @@ function logout() {
         .signOut()
         .then(() => {
           localStorage.removeItem("currentSupervisor");
+          localStorage.removeItem("userRole");
           Swal.fire({
             icon: "success",
             title: "تم الخروج بأمان 👋",
@@ -213,6 +319,7 @@ function logout() {
         })
         .catch((err) => {
           localStorage.removeItem("currentSupervisor");
+          localStorage.removeItem("userRole");
           window.location.href = "index.html";
         });
     }

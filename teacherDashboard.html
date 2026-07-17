@@ -1,0 +1,66 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>لوحة المعلم | أكاديمية القارئ</title>
+    
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Cairo:wght@300;400;600;700;800&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+    <script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-app-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-auth-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore-compat.js"></script>
+    
+    <script src="Scripts/auth-router.js"></script>
+    <link rel="stylesheet" href="css/style.css">
+</head>
+<body>
+
+    <nav class="sidebar">
+        <div class="sidebar-brand">
+            <i class="fa-solid fa-book-quran"></i>
+            <span>أكاديمية القارئ</span>
+        </div>
+        <ul class="sidebar-menu">
+            <li class="active"><a href="teacherDashboard.html"><i class="fa-solid fa-chart-pie"></i>لوحة المعلم</a></li>
+            <li><a href="#" onclick="logout(event)" class="logout-btn"><i class="fa-solid fa-right-from-bracket"></i>تسجيل الخروج</a></li>
+        </ul>
+    </nav>
+
+    <main class="main-content">
+        <header class="header-panel">
+            <div class="welcome-section">
+                <h1 id="supervisor-welcome-text">مرحباً بك في لوحة تحكم المعلم</h1>
+                <p>تصفح جدول الحصص اليومي والتقارير الخاصة بك بشكل مباشر.</p>
+            </div>
+            <div>
+                <span id="current-user-badge" class="badge">المعلم: جاري التحميل...</span>
+            </div>
+        </header>
+
+        <section class="card" style="text-align: center; padding: 60px 40px;">
+            <i class="fa-solid fa-hourglass-half" style="font-size: 64px; color: var(--gold-primary); margin-bottom: 24px; animation: pulse 2s infinite;"></i>
+            <h2 style="justify-content: center; border: none; margin-bottom: 8px;">لوحة المعلم تحت الإنشاء والتطوير 🛠️</h2>
+            <p style="margin-bottom: 0;">يتم حالياً ربط جداول الحصص الخاصة بك وتجهيز لوحتك الخاصة بناءً على قاعدة البيانات الموحدة.</p>
+        </section>
+    </main>
+
+    <script>
+        window.onload = function() {
+            // التحقق من الجلسة
+            const savedSupervisor = localStorage.getItem("currentSupervisor");
+            if (!savedSupervisor) {
+                window.location.href = "index.html";
+                return;
+            }
+            
+            document.getElementById("current-user-badge").innerHTML = `<i class="fa-solid fa-chalkboard-user"></i> المعلم: ${savedSupervisor}`;
+            document.getElementById("supervisor-welcome-text").innerText = `مرحباً بك أستاذ: ${savedSupervisor}`;
+        };
+    </script>
+</body>
+</html>
