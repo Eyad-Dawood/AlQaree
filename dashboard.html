@@ -1,0 +1,778 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>لوحة القيادة المركزية | أكاديمية القارئ</title>
+    
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Cairo:wght@300;400;600;700;800&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.10.1/html2pdf.bundle.min.js"></script>
+
+    <script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-app-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-auth-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore-compat.js"></script>
+
+    <script src="auth-router.js"></script>
+
+    <style>
+        /* =========================================================================
+           🎨 الستايل الداكن الفخم والألوان الإمبراطورية (Imperial Dark Theme)
+           ========================================================================= */
+        :root {
+            --bg-main: #0f141c;          
+            --bg-card: #161f30;          
+            --bg-nav: #121926;           
+            --text-primary: #f8fafc;     
+            --text-secondary: #94a3b8;   
+            --gold-primary: #d4af37;     
+            --gold-hover: #aa8416;       
+            --success: #10b981;          
+            --danger: #ef4444;           
+            --warning: #f59e0b;          
+            --info: #3b82f6;             
+            --border-color: #24324d;     
+        }
+
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+            font-family: 'Cairo', sans-serif;
+        }
+
+        body {
+            background-color: var(--bg-main);
+            color: var(--text-primary);
+            display: flex;
+            min-height: 100vh;
+            overflow-x: hidden;
+        }
+
+        .sidebar {
+            width: 280px;
+            background-color: var(--bg-nav);
+            border-left: 1px solid var(--border-color);
+            display: flex;
+            flex-direction: column;
+            padding: 24px;
+            position: fixed;
+            height: 100vh;
+            right: 0;
+            top: 0;
+            z-index: 100;
+        }
+
+        .sidebar-brand {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            font-size: 20px;
+            font-weight: 800;
+            color: var(--gold-primary);
+            margin-bottom: 40px;
+            border-bottom: 1px solid var(--border-color);
+            padding-bottom: 20px;
+        }
+
+        .sidebar-menu {
+            list-style: none;
+            display: flex;
+            flex-direction: column;
+            gap: 8px;
+        }
+
+        .sidebar-menu li a {
+            display: flex;
+            align-items: center;
+            gap: 14px;
+            color: var(--text-secondary);
+            text-decoration: none;
+            padding: 14px 16px;
+            border-radius: 12px;
+            font-weight: 600;
+            transition: all 0.3s ease;
+            cursor: pointer;
+        }
+
+        .sidebar-menu li a:hover, .sidebar-menu li.active a {
+            background-color: var(--bg-card);
+            color: var(--text-primary);
+            border-right: 4px solid var(--gold-primary);
+        }
+
+        .sidebar-menu li a i {
+            font-size: 18px;
+            color: var(--gold-primary);
+        }
+
+        .logout-btn {
+            margin-top: auto;
+            background-color: rgba(239, 68, 68, 0.1);
+            color: var(--danger) !important;
+            border: 1px solid rgba(239, 68, 68, 0.2);
+        }
+
+        .logout-btn:hover {
+            background-color: var(--danger) !important;
+            color: white !important;
+        }
+
+        .main-content {
+            margin-right: 280px;
+            width: calc(100% - 280px);
+            padding: 40px;
+        }
+
+        .header-panel {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 32px;
+            background-color: var(--bg-card);
+            padding: 24px;
+            border-radius: 16px;
+            border: 1px solid var(--border-color);
+        }
+
+        .welcome-section h1 {
+            font-size: 24px;
+            font-weight: 800;
+            margin-bottom: 6px;
+        }
+
+        .welcome-section p {
+            color: var(--text-secondary);
+            font-size: 14px;
+        }
+
+        .badge {
+            padding: 8px 16px;
+            border-radius: 30px;
+            font-size: 13px;
+            font-weight: 700;
+            display: inline-flex;
+            align-items: center;
+            gap: 6px;
+            background-color: rgba(212, 175, 55, 0.1);
+            color: var(--gold-primary);
+            border: 1px solid rgba(212, 175, 55, 0.2);
+        }
+
+        .btn-pdf {
+            background-color: var(--gold-primary);
+            color: #000;
+            padding: 10px 18px;
+            border: none;
+            border-radius: 8px;
+            font-weight: bold;
+            cursor: pointer;
+            transition: background 0.3s ease;
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .btn-pdf:hover {
+            background-color: var(--gold-hover);
+        }
+
+        .stats-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+            gap: 24px;
+            margin-bottom: 40px;
+        }
+
+        .stat-card {
+            background-color: var(--bg-card);
+            border: 1px solid var(--border-color);
+            padding: 24px;
+            border-radius: 16px;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            transition: transform 0.3s ease;
+        }
+
+        .stat-card:hover {
+            transform: translateY(-5px);
+        }
+
+        .stat-info h3 {
+            font-size: 14px;
+            color: var(--text-secondary);
+            margin-bottom: 8px;
+            font-weight: 600;
+        }
+
+        .stat-info .number {
+            font-size: 32px;
+            font-weight: 800;
+        }
+
+        .stat-icon {
+            width: 56px;
+            height: 56px;
+            border-radius: 14px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 24px;
+        }
+
+        .dashboard-layout {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 32px;
+        }
+
+        .card {
+            background-color: var(--bg-card);
+            border: 1px solid var(--border-color);
+            border-radius: 16px;
+            padding: 28px;
+            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.2);
+        }
+
+        .card h2 {
+            font-size: 18px;
+            font-weight: 700;
+            margin-bottom: 24px;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            border-bottom: 1px solid var(--border-color);
+            padding-bottom: 14px;
+            color: var(--gold-primary);
+        }
+
+        .card h2 span {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .teachers-container {
+            display: flex;
+            flex-direction: column;
+            gap: 16px;
+            max-height: 380px;
+            overflow-y: auto;
+            padding-left: 8px;
+        }
+
+        .teacher-stat-card {
+            background: rgba(36, 50, 77, 0.3);
+            border: 1px solid var(--border-color);
+            padding: 16px 20px;
+            border-radius: 12px;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            transition: all 0.2s ease;
+        }
+
+        .teacher-stat-card:hover {
+            background: rgba(36, 50, 77, 0.6);
+            border-color: var(--gold-primary);
+        }
+
+        .teacher-meta {
+            display: flex;
+            align-items: center;
+            gap: 14px;
+        }
+
+        .teacher-avatar {
+            width: 44px;
+            height: 44px;
+            background: rgba(212, 175, 55, 0.1);
+            color: var(--gold-primary);
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 18px;
+        }
+
+        .teacher-name {
+            font-weight: 700;
+            font-size: 15px;
+        }
+
+        .student-count-badge {
+            background-color: var(--info);
+            color: white;
+            padding: 6px 14px;
+            border-radius: 8px;
+            font-weight: 700;
+            font-size: 13px;
+        }
+
+        ::-webkit-scrollbar {
+            width: 6px;
+        }
+        ::-webkit-scrollbar-thumb {
+            background: var(--border-color);
+            border-radius: 10px;
+        }
+    </style>
+</head>
+<body>
+
+    <nav class="sidebar">
+        <div class="sidebar-brand">
+            <i class="fa-solid fa-book-quran"></i>
+            <span>أكاديمية القارئ</span>
+        </div>
+        <ul class="sidebar-menu">
+            <li class="active"><a href="dashboard.html"><i class="fa-solid fa-chart-pie"></i>لوحة البيانات</a></li>
+            <li><a href="students.html"><i class="fa-solid fa-graduation-cap"></i>سجل الطلاب</a></li>
+            <li><a href="financial.html"><i class="fa-solid fa-wallet"></i>كشف الحسابات</a></li>
+            <li><a href="archive.html"><i class="fa-solid fa-archive"></i>الأرشيف السحابي</a></li>
+            <li><a href="settings.html"><i class="fa-solid fa-sliders"></i>أدوات السيرفر</a></li>
+            <li><a onclick="handleLogout(event)" class="logout-btn"><i class="fa-solid fa-right-from-bracket"></i>تسجيل الخروج</a></li>
+        </ul>
+    </nav>
+
+    <main class="main-content" id="pdf-report-content">
+        
+        <header class="header-panel">
+            <div class="welcome-section">
+                <h1 id="supervisor-welcome-text">مرحباً بك في لوحة تحكم: الإدارة العامة للسيرفر السحابي</h1>
+                <p>يتم فرز وجلب التقارير حياً من السيرفر بناءً على صلاحيات الحساب الحالي.</p>
+            </div>
+            <div class="action-buttons" style="display: flex; gap: 10px; align-items: center;">
+                <button onclick="downloadDashboardPDF()" class="btn-pdf" data-html2pdf-ignore="true">
+                    <i class="fa-solid fa-file-pdf"></i> تحميل التقرير PDF
+                </button>
+                <span id="current-user-badge" class="badge">المشرف: جاري الفحص...</span>
+            </div>
+        </header>
+
+        <section class="stats-grid">
+            <div class="stat-card">
+                <div class="stat-info">
+                    <h3>إجمالي الطلاب</h3>
+                    <div class="number" id="stat-total-students">0</div>
+                </div>
+                <div class="stat-icon" style="background-color: rgba(59, 130, 246, 0.1); color: var(--info);">
+                    <i class="fa-solid fa-users"></i>
+                </div>
+            </div>
+            <div class="stat-card">
+                <div class="stat-info">
+                    <h3>تم السداد</h3>
+                    <div class="number" id="stat-paid-students">0</div>
+                </div>
+                <div class="stat-icon" style="background-color: rgba(16, 185, 129, 0.1); color: var(--success);">
+                    <i class="fa-solid fa-circle-check"></i>
+                </div>
+            </div>
+            <div class="stat-card">
+                <div class="stat-info">
+                    <h3>لم يتم السداد</h3>
+                    <div class="number" id="stat-unpaid-students">0</div>
+                </div>
+                <div class="stat-icon" style="background-color: rgba(239, 68, 68, 0.1); color: var(--danger);">
+                    <i class="fa-solid fa-circle-xmark"></i>
+                </div>
+            </div>
+            <div class="stat-card">
+                <div class="stat-info">
+                    <h3>الاشتراكات المؤجلة</h3>
+                    <div class="number" id="stat-deferred-students">0</div>
+                </div>
+                <div class="stat-icon" style="background-color: rgba(245, 158, 11, 0.1); color: var(--warning);">
+                    <i class="fa-solid fa-clock"></i>
+                </div>
+            </div>
+        </section>
+
+        <section class="dashboard-layout">
+            <div class="card">
+                <h2><span><i class="fa-solid fa-chart-pie"></i> تحليل الحالات المالية للاشتراكات</span></h2>
+                <div style="position: relative; height:320px; display: flex; justify-content: center;">
+                    <canvas id="paymentStatusChart"></canvas>
+                </div>
+            </div>
+
+            <div class="card">
+                <h2><span><i class="fa-solid fa-chalkboard-user"></i> توزيع ونسب كثافة الطلاب على المعلمين</span></h2>
+                <div class="teachers-container" id="teachers-cards-list"></div>
+            </div>
+
+            <div class="card" style="grid-column: span 2; margin-top: 10px;">
+                <h2>
+                    <span><i class="fa-solid fa-calendar-days"></i> منظومة إدارة الحصص والمواعيد الجدولية</span>
+                    <div style="display: flex; gap: 10px;" data-html2pdf-ignore="true">
+                        <select id="filter-teacher-select" onchange="loadTeacherWeeklySchedule()" style="background: #121926; color: #fff; border: 1px solid var(--border-color); padding: 6px 12px; border-radius: 8px; font-family: 'Cairo';">
+                            <option value="">اختر معلماً لعرض جدول الأسبوع...</option>
+                        </select>
+                        <button onclick="sendTodayScheduleToTeacher()" class="btn-pdf" style="background-color: var(--success); color: white; padding: 6px 14px; font-size: 13px;">
+                            <i class="fa-brands fa-whatsapp"></i> إرسال حصص اليوم للمعلم
+                        </button>
+                    </div>
+                </h2>
+
+                <div style="overflow-x: auto; margin-top: 15px;">
+                    <table style="width: 100%; border-collapse: collapse; text-align: right; font-size: 14px;">
+                        <thead>
+                            <tr style="background-color: #121926; color: var(--gold-primary); border-bottom: 2px solid var(--border-color);">
+                                <th style="padding: 12px;">اليوم</th>
+                                <th style="padding: 12px;">اسم الطالب</th>
+                                <th style="padding: 12px;">المعلم المسؤول</th>
+                                <th style="padding: 12px;">توقيت الحصة</th>
+                                <th style="padding: 12px;" data-html2pdf-ignore="true">إجراءات</th>
+                            </tr>
+                        </thead>
+                        <tbody id="schedule-table-body">
+                            <tr>
+                                <td colspan="5" style="text-align: center; padding: 20px; color: var(--text-secondary);">جاري تحميل المواعيد والسحب من السيرفر السحابي...</td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </section>
+    </main>
+
+    <script>
+        var allStudentsData = [];
+        var paymentChartInstance = null;
+        var currentSupervisor = "المدير العام";
+
+        window.onload = function() {
+            // 🛡️ الاستدعاء من محرك الأمان الموحد المركزي
+            if (typeof checkPageProtection === "function") {
+                checkPageProtection("كل المشرفين");
+            }
+            
+            // قراءة اسم المستخدم النشط الحقيقي من الذاكرة
+            const savedSupervisor = localStorage.getItem("currentSupervisor");
+            if (savedSupervisor) {
+                currentSupervisor = savedSupervisor;
+            }
+            
+            updateDynamicUIElements();
+            startRealtimeDashboardSync();
+        };
+
+        function updateDynamicUIElements() {
+            const welcomeText = document.getElementById("supervisor-welcome-text");
+            const checkingBadge = document.getElementById('current-user-badge');
+
+            if (currentSupervisor === "المدير العام") {
+                if (welcomeText) welcomeText.innerText = "مرحباً بك في لوحة تحكم: الإدارة العامة للسيرفر السحابي";
+                if (checkingBadge) {
+                    checkingBadge.innerHTML = `<i class="fa-solid fa-crown"></i> المشرف: المدير العام`;
+                }
+            } else {
+                if (welcomeText) welcomeText.innerText = `مرحباً بك في لوحة تحكم المشرف والمسؤول: ${currentSupervisor}`;
+                if (checkingBadge) {
+                    checkingBadge.innerHTML = `<i class="fa-solid fa-user-shield"></i> المشرف الحالي: ${currentSupervisor}`;
+                    checkingBadge.style.color = "var(--info)";
+                    checkingBadge.style.borderColor = "var(--info)";
+                    checkingBadge.style.backgroundColor = "rgba(59, 130, 246, 0.1)";
+                }
+            }
+        }
+
+        function startRealtimeDashboardSync() {
+            if (typeof db !== "undefined") {
+                console.log("📡 جاري بدء الاستماع المتزامن مع قاعدة بيانات الطلاب...");
+                
+                db.collection("students").onSnapshot((snapshot) => {
+                    allStudentsData = [];
+                    
+                    snapshot.forEach((doc) => {
+                        let student = doc.data();
+                        student.id = doc.id;
+                        allStudentsData.push(student);
+                    });
+
+                    // تصفية الطلاب المؤرشفين من الإحصائيات (اختياري)
+                    allStudentsData = allStudentsData.filter(s => s.status !== "مؤرشف");
+
+                    allStudentsData.sort((a, b) => {
+                        const dateA = a.createdAt ? (a.createdAt.seconds || new Date(a.createdAt).getTime()) : 0;
+                        const dateB = b.createdAt ? (b.createdAt.seconds || new Date(b.createdAt).getTime()) : 0;
+                        return dateB - dateA;
+                    });
+
+                    updateDashboardStats();
+                    buildTeacherCards();
+                    buildPaymentChart();
+                    populateTeachersDropdown();
+                    loadTeacherWeeklySchedule();
+
+                }, (error) => {
+                    console.error("❌ فشل الاستماع المتزامن من الفايربيز:", error);
+                    Swal.fire('خطأ في الاتصال', 'تعذر جلب البيانات من السيرفر السحابي.', 'error');
+                });
+            } else {
+                console.error("❌ متغير db غير معرف! تأكد من ربط ملف إعدادات فايربيز بشكل صحيح.");
+            }
+        }
+
+        function updateDashboardStats() {
+            let filtered = (currentSupervisor === "المدير العام") ? allStudentsData : allStudentsData.filter(s => s.createdBy === currentSupervisor);
+            
+            let total = filtered.length;
+            let paid = filtered.filter(s => s.paymentStatus === "تم الدفع" || s.paymentStatus === "paid").length;
+            let unpaid = filtered.filter(s => s.paymentStatus === "لم يدفع" || s.paymentStatus === "unpaid").length;
+            let deferred = filtered.filter(s => s.paymentStatus === "مؤجل الدفع" || s.paymentStatus === "مؤجل").length;
+
+            document.getElementById("stat-total-students").innerText = total;
+            document.getElementById("stat-paid-students").innerText = paid;
+            document.getElementById("stat-unpaid-students").innerText = unpaid;
+            document.getElementById("stat-deferred-students").innerText = deferred;
+        }
+
+        function buildPaymentChart() {
+            let filtered = (currentSupervisor === "المدير العام") ? allStudentsData : allStudentsData.filter(s => s.createdBy === currentSupervisor);
+            
+            let paid = filtered.filter(s => s.paymentStatus === "تم الدفع" || s.paymentStatus === "paid").length;
+            let unpaid = filtered.filter(s => s.paymentStatus === "لم يدفع" || s.paymentStatus === "unpaid").length;
+            let deferred = filtered.filter(s => s.paymentStatus === "مؤجل الدفع" || s.paymentStatus === "مؤجل").length;
+
+            let canvasElement = document.getElementById('paymentStatusChart');
+            if(!canvasElement) return;
+
+            let ctxPayment = canvasElement.getContext('2d');
+            if (paymentChartInstance) { paymentChartInstance.destroy(); }
+            
+            paymentChartInstance = new Chart(ctxPayment, {
+                type: 'doughnut',
+                data: {
+                    labels: ['تم الدفع', 'لم يدفع', 'مؤجل الدفع'],
+                    datasets: [{
+                        data: [paid, unpaid, deferred],
+                        backgroundColor: ['#10b981', '#ef4444', '#f59e0b'],
+                        borderColor: '#161f30',
+                        borderWidth: 2
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    plugins: {
+                        legend: {
+                            position: 'bottom',
+                            labels: { color: '#f8fafc', font: { family: 'Cairo', size: 12 } }
+                        }
+                    }
+                }
+            });
+        }
+
+        function buildTeacherCards() {
+            let filtered = (currentSupervisor === "المدير العام") ? allStudentsData : allStudentsData.filter(s => s.createdBy === currentSupervisor);
+            
+            let teacherCounts = {};
+            filtered.forEach(s => {
+                if (s.teacherName) {
+                    teacherCounts[s.teacherName] = (teacherCounts[s.teacherName] || 0) + 1;
+                }
+            });
+
+            const container = document.getElementById('teachers-cards-list');
+            if(!container) return;
+            container.innerHTML = "";
+
+            const teachers = Object.keys(teacherCounts);
+            if (teachers.length === 0) {
+                container.innerHTML = `<div style="color: var(--text-secondary); text-align:center; padding:20px;">لا توجد بيانات معلمين مسجلة حالياً.</div>`;
+                return;
+            }
+
+            teachers.forEach(teacherName => {
+                const card = document.createElement('div');
+                card.className = 'teacher-stat-card';
+                card.innerHTML = `
+                    <div class="teacher-meta">
+                        <div class="teacher-avatar">
+                            <i class="fa-solid fa-chalkboard-user"></i>
+                        </div>
+                        <div class="teacher-name">${teacherName}</div>
+                    </div>
+                    <div class="student-count-badge">
+                        ${teacherCounts[teacherName]} طالباً نشطاً
+                    </div>
+                `;
+                container.appendChild(card);
+            });
+        }
+
+        /* =========================================================================
+           🧠 الدوال والسكربتات الخاصة بمنظومة المواعيد 
+           ========================================================================= */
+        function populateTeachersDropdown() {
+            let filtered = (currentSupervisor === "المدير العام") ? allStudentsData : allStudentsData.filter(s => s.createdBy === currentSupervisor);
+            let teachers = [...new Set(filtered.map(s => s.teacherName).filter(Boolean))];
+            
+            const select = document.getElementById('filter-teacher-select');
+            if(!select) return;
+            
+            // الحفاظ على الخيار المحدد مسبقاً إن وجد
+            let currentValue = select.value;
+            
+            select.innerHTML = `<option value="">اختر معلماً لعرض جدول الأسبوع...</option>`;
+            teachers.forEach(t => {
+                let isSelected = (t === currentValue) ? "selected" : "";
+                select.innerHTML += `<option value="${t}" ${isSelected}>${t}</option>`;
+            });
+        }
+
+        function loadTeacherWeeklySchedule() {
+            const selectedTeacher = document.getElementById('filter-teacher-select').value;
+            const tbody = document.getElementById('schedule-table-body');
+            if(!tbody) return;
+            
+            let filteredData = (currentSupervisor === "المدير العام") ? allStudentsData : allStudentsData.filter(s => s.createdBy === currentSupervisor);
+            tbody.innerHTML = "";
+
+            if (!selectedTeacher) {
+                const days = ['الأحد', 'الإثنين', 'الثلاثاء', 'الأربعاء', 'الخميس', 'الجمعة', 'السبت'];
+                const todayName = days[new Date().getDay()];
+                
+                let todayLessons = filteredData.filter(s => s.lessonDays && s.lessonDays.includes(todayName));
+
+                if(todayLessons.length === 0) {
+                    tbody.innerHTML = `<tr><td colspan="5" style="text-align: center; padding: 20px; color: var(--warning);">لا توجد حصص مجدولة لليوم (${todayName}) في نطاق صلاحياتك.</td></tr>`;
+                    return;
+                }
+
+                todayLessons.forEach(student => {
+                    renderScheduleRow(tbody, todayName, student);
+                });
+            } else {
+                let teacherStudents = filteredData.filter(s => s.teacherName === selectedTeacher);
+                
+                if(teacherStudents.length === 0) {
+                    tbody.innerHTML = `<tr><td colspan="5" style="text-align: center; padding: 20px; color: var(--text-secondary);">لا توجد حصص مسجلة لهذا المعلم.</td></tr>`;
+                    return;
+                }
+
+                teacherStudents.forEach(student => {
+                    const studentDays = student.lessonDays ? student.lessonDays.join(' و ') : 'غير محدد';
+                    renderScheduleRow(tbody, studentDays, student);
+                });
+            }
+        }
+
+        function renderScheduleRow(tbody, dayText, student) {
+            // المعالجة لضمان ظهور اسم الطالب سواء كان محفوظاً تحت name أو studentName
+            let studentDisplayName = student.name || student.studentName || 'غير متوفر';
+            
+            tbody.innerHTML += `
+                <tr style="border-bottom: 1px solid var(--border-color); font-weight: 600;">
+                    <td style="padding: 12px; color: var(--gold-primary);">${dayText}</td>
+                    <td style="padding: 12px;">${studentDisplayName}</td>
+                    <td style="padding: 12px; color: var(--text-secondary);">${student.teacherName || 'غير معين'}</td>
+                    <td style="padding: 12px; color: var(--info);">${student.lessonTime || 'غير محدد'}</td>
+                    <td style="padding: 12px;" data-html2pdf-ignore="true">
+                        <button onclick="editLessonTime('${student.id}', '${studentDisplayName}', '${student.lessonTime || ''}')" style="background: rgba(59, 130, 246, 0.1); color: var(--info); border: 1px solid rgba(59, 130, 246, 0.2); padding: 4px 10px; border-radius: 6px; cursor: pointer;">
+                            <i class="fa-solid fa-pen-to-square"></i> تعديل التوقيت
+                        </button>
+                    </td>
+                </tr>
+            `;
+        }
+
+        function editLessonTime(studentId, studentName, currentTime) {
+            Swal.fire({
+                title: `تعديل موعد حصة الطالب: ${studentName}`,
+                html: `
+                    <label style="color: #fff; font-family:'Cairo'; display:block; margin-bottom:8px;">الموعد الجديد (مثال: 5:00 م):</label>
+                    <input id="swal-input-time" class="swal2-input" style="font-family:'Cairo';" value="${currentTime !== 'undefined' ? currentTime : ''}">
+                `,
+                focusConfirm: false,
+                showCancelButton: true,
+                confirmButtonText: 'حفظ التعديل السحابي',
+                cancelButtonText: 'إلغاء',
+                confirmButtonColor: '#10b981',
+                preConfirm: () => { return document.getElementById('swal-input-time').value; }
+            }).then((result) => {
+                if (result.isConfirmed && result.value) {
+                    db.collection("students").doc(studentId).update({
+                        lessonTime: result.value
+                    }).then(() => {
+                        Swal.fire({
+                            icon: 'success',
+                            title: 'تم التحديث!',
+                            text: 'تم تعديل الموعد بنجاح.',
+                            timer: 1500,
+                            showConfirmButton: false
+                        });
+                    }).catch(error => {
+                        Swal.fire('فشل التعديل', error.message, 'error');
+                    });
+                }
+            });
+        }
+
+        function sendTodayScheduleToTeacher() {
+            const teacherName = document.getElementById('filter-teacher-select').value;
+            if (!teacherName) {
+                Swal.fire('تنبيه', 'يرجى اختيار معلم أولاً لتجميع حصص اليوم الخاصة به وإرسالها عبر الواتساب.', 'warning');
+                return;
+            }
+
+            const days = ['الأحد', 'الإثنين', 'الثلاثاء', 'الأربعاء', 'الخميس', 'الجمعة', 'السبت'];
+            const todayName = days[new Date().getDay()];
+            
+            let filteredData = (currentSupervisor === "المدير العام") ? allStudentsData : allStudentsData.filter(s => s.createdBy === currentSupervisor);
+            let todayLessons = filteredData.filter(s => s.teacherName === teacherName && s.lessonDays && s.lessonDays.includes(todayName));
+            
+            if (todayLessons.length === 0) {
+                Swal.fire('لا توجد حصص', `المعلم/ة ${teacherName} ليس لديه حصص لليوم (${todayName}).`, 'info');
+                return;
+            }
+
+            let messageText = `السلام عليكم ورحمة الله وبركاته، أ/ *${teacherName}* 🌹\n`;
+            messageText += `إليك جدول حصص اليوم (*${todayName}*) الخاص بك في أكاديمية القارئ:\n\n`;
+            
+            todayLessons.forEach((lesson, index) => {
+                let studentDisplayName = lesson.name || lesson.studentName || 'غير متوفر';
+                messageText += `${index + 1}. الطالب: *${studentDisplayName}* 📖 - الموعد: *${lesson.lessonTime || 'غير محدد'}*\n`;
+            });
+            
+            messageText += `\nتمنياتنا لكم بالتوفيق والسداد ✨`;
+            
+            // تشفير النص ليدعمه رابط الواتساب بشكل صحيح
+            const encodedMessage = encodeURIComponent(messageText);
+            const whatsappUrl = `https://wa.me/?text=${encodedMessage}`;
+            window.open(whatsappUrl, '_blank');
+        }
+
+        function downloadDashboardPDF() {
+            const element = document.getElementById('pdf-report-content');
+            const opt = {
+                margin:       12,
+                filename:     `تقرير_ملخص_أكاديمية_القارئ_${new Date().toLocaleDateString('ar-EG')}.pdf`,
+                image:        { type: 'jpeg', quality: 0.98 },
+                html2canvas:  { scale: 2, useCORS: true, backgroundColor: '#0f141c' },
+                jsPDF:        { unit: 'mm', format: 'a4', orientation: 'landscape' }
+            };
+            html2pdf().set(opt).from(element).save();
+        }
+
+        // ربط تسجيل الخروج بالدالة الموجودة في ملف الحماية auth-router.js
+        function handleLogout(event) {
+            if(event) event.preventDefault();
+            if (typeof logout === "function") {
+                logout();
+            } else {
+                console.error("دالة تسجيل الخروج غير موجودة. تأكد من ربط ملف auth-router.js");
+            }
+        }
+    </script>
+</body>
+</html>

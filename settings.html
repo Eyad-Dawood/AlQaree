@@ -1,0 +1,591 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>أدوات السيرفر والتحكم | أكاديمية القارئ</title>
+    
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Cairo:wght@300;400;600;700;800&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+
+    <script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-app-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-auth-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore-compat.js"></script>
+    
+    <script src="auth-router.js"></script>
+
+    <style>
+        /* =========================================================================
+           🎨 الستايل الداكن الفخم والألوان الإمبراطورية
+           ========================================================================= */
+        :root {
+            --bg-main: #0f141c;
+            --bg-card: #161f30;
+            --bg-nav: #121926;
+            --text-primary: #f8fafc;
+            --text-secondary: #94a3b8;
+            --gold-primary: #d4af37;
+            --gold-hover: #aa8416;
+            --success: #10b981;
+            --danger: #ef4444;
+            --warning: #f59e0b;
+            --info: #3b82f6;
+            --border-color: #24324d;
+            --input-bg: #1e293b;
+        }
+
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+            font-family: 'Cairo', sans-serif;
+        }
+
+        body {
+            background-color: var(--bg-main);
+            color: var(--text-primary);
+            display: flex;
+            min-height: 100vh;
+            overflow-x: hidden;
+        }
+
+        /* 📋 القائمة الجانبية الموحدة */
+        .sidebar {
+            width: 280px;
+            background-color: var(--bg-nav);
+            border-left: 1px solid var(--border-color);
+            display: flex;
+            flex-direction: column;
+            padding: 24px;
+            position: fixed;
+            height: 100vh;
+            right: 0;
+            top: 0;
+            z-index: 100;
+        }
+
+        .sidebar-brand {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            font-size: 20px;
+            font-weight: 800;
+            color: var(--gold-primary);
+            margin-bottom: 40px;
+            border-bottom: 1px solid var(--border-color);
+            padding-bottom: 20px;
+        }
+
+        .sidebar-brand img {
+            width: 45px;
+            height: auto;
+            border-radius: 8px;
+            object-fit: contain;
+        }
+
+        .sidebar-menu {
+            list-style: none;
+            display: flex;
+            flex-direction: column;
+            gap: 8px;
+        }
+
+        .sidebar-menu li a {
+            display: flex;
+            align-items: center;
+            gap: 14px;
+            color: var(--text-secondary);
+            text-decoration: none;
+            padding: 14px 16px;
+            border-radius: 12px;
+            font-weight: 600;
+            transition: all 0.3s ease;
+        }
+
+        .sidebar-menu li a:hover, .sidebar-menu li.active a {
+            background-color: var(--bg-card);
+            color: var(--text-primary);
+            border-right: 4px solid var(--gold-primary);
+        }
+
+        .sidebar-menu li a i {
+            font-size: 18px;
+            color: var(--gold-primary);
+        }
+
+        .logout-btn {
+            margin-top: auto;
+            background-color: rgba(239, 68, 68, 0.1);
+            color: var(--danger) !important;
+            border: 1px solid rgba(239, 68, 68, 0.2);
+            cursor: pointer;
+        }
+
+        .logout-btn:hover {
+            background-color: var(--danger) !important;
+            color: white !important;
+        }
+
+        /* 🏛️ منطقة المحتوى الرئيسي */
+        .main-content {
+            margin-right: 280px;
+            width: calc(100% - 280px);
+            padding: 40px;
+        }
+
+        /* 👑 الهيدر العلوي */
+        .header-panel {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 32px;
+            background-color: var(--bg-card);
+            padding: 24px;
+            border-radius: 16px;
+            border: 1px solid var(--border-color);
+        }
+
+        .welcome-section h1 {
+            font-size: 24px;
+            font-weight: 800;
+            margin-bottom: 6px;
+        }
+
+        .welcome-section p {
+            color: var(--text-secondary);
+            font-size: 14px;
+        }
+
+        .badge {
+            padding: 8px 16px;
+            border-radius: 30px;
+            font-size: 13px;
+            font-weight: 700;
+            background-color: var(--input-bg);
+        }
+
+        /* ⚙️ شبكة الأدوات واللوحات */
+        .settings-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 32px;
+        }
+
+        .card {
+            background-color: var(--bg-card);
+            border: 1px solid var(--border-color);
+            border-radius: 16px;
+            padding: 28px;
+            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.2);
+        }
+
+        .card h2 {
+            font-size: 18px;
+            font-weight: 700;
+            margin-bottom: 16px;
+            color: var(--gold-primary);
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            border-bottom: 1px solid var(--border-color);
+            padding-bottom: 12px;
+        }
+
+        .card p {
+            color: var(--text-secondary);
+            font-size: 14px;
+            line-height: 1.6;
+            margin-bottom: 24px;
+        }
+
+        /* الأزرار المهنية للتحكم */
+        .btn-control {
+            width: 100%;
+            padding: 14px;
+            border-radius: 10px;
+            font-size: 14px;
+            font-weight: 700;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 10px;
+            transition: all 0.3s ease;
+            border: none;
+        }
+
+        .btn-export-csv {
+            background-color: rgba(59, 130, 246, 0.1);
+            color: var(--info);
+            border: 1px solid rgba(59, 130, 246, 0.2);
+        }
+
+        .btn-export-csv:hover {
+            background-color: var(--info);
+            color: white;
+        }
+
+        .btn-upload-data {
+            background-color: rgba(212, 175, 55, 0.1);
+            color: var(--gold-primary);
+            border: 1px solid rgba(212, 175, 55, 0.2);
+        }
+
+        .btn-upload-data:hover {
+            background-color: var(--gold-primary);
+            color: #000;
+        }
+
+        .btn-export-json {
+            background-color: rgba(16, 185, 129, 0.1);
+            color: var(--success);
+            border: 1px solid rgba(16, 185, 129, 0.2);
+        }
+
+        .btn-export-json:hover {
+            background-color: var(--success);
+            color: white;
+        }
+
+        .btn-danger-zone {
+            background-color: rgba(239, 68, 68, 0.1);
+            color: var(--danger);
+            border: 1px solid rgba(239, 68, 68, 0.2);
+        }
+
+        .btn-danger-zone:hover {
+            background-color: var(--danger);
+            color: white;
+        }
+    </style>
+</head>
+<body>
+
+    <nav class="sidebar">
+        <div class="sidebar-brand">
+            <img src="logo.jpg" alt="شعار أكاديمية القارئ">
+            <span>أكاديمية القارئ</span>
+        </div>
+        <ul class="sidebar-menu">
+            <li><a href="dashboard.html"><i class="fa-solid fa-chart-pie"></i>لوحة البيانات</a></li>
+            <li><a href="students.html"><i class="fa-solid fa-graduation-cap"></i>سجل الطلاب</a></li>
+            <li><a href="financial.html"><i class="fa-solid fa-wallet"></i>كشف الحسابات</a></li>
+            <li><a href="archive.html"><i class="fa-solid fa-archive"></i>الأرشيف السحابي</a></li>
+            <li class="active"><a href="settings.html"><i class="fa-solid fa-sliders"></i>أدوات السيرفر</a></li>
+            <li><a onclick="logout()" class="logout-btn"><i class="fa-solid fa-right-from-bracket"></i>تسجيل الخروج</a></li>
+        </ul>
+    </nav>
+
+    <main class="main-content">
+        
+        <header class="header-panel">
+            <div class="welcome-section">
+                <h1>⚙️ أدوات السيرفر والتحكم السحابي المتقدم</h1>
+                <p>عمليات النسخ الاحتياطي، تصدير التقارير، وإدارة سلامة البيانات الحية الفورية.</p>
+            </div>
+            <div>
+                <span id="current-user-badge" class="badge">المشرف: المدير العام</span>
+            </div>
+        </header>
+
+        <section class="settings-grid">
+            
+            <div class="card">
+                <h2><i class="fa-solid fa-file-csv"></i> تصدير البيانات إلى ملف Excel (CSV)</h2>
+                <p>تتيح لك هذه الأداة استخراج سجل الطلاب بالكامل مع حالات الدفع والمعلمين في ملف جداول منظم متوافق مع برامج Excel أو Google Sheets.</p>
+                <button class="btn-control btn-export-csv" onclick="exportDataToCSV()">
+                    <i class="fa-solid fa-download"></i> تصدير واستخراج ملف Excel
+                </button>
+            </div>
+
+            <div class="card">
+                <h2><i class="fa-solid fa-file-arrow-up"></i> استيراد ورفع البيانات</h2>
+                <p>تتيح لك هذه الأداة رفع ملفات البيانات بصيغة (CSV) لإضافتها إلى قاعدة البيانات السحابية وتحديث سجل الطلاب الموحد.</p>
+                <input type="file" id="data-upload-input" style="display: none;" accept=".csv">
+                <button class="btn-control btn-upload-data" onclick="document.getElementById('data-upload-input').click()">
+                    <i class="fa-solid fa-cloud-arrow-up"></i> رفع ملف البيانات
+                </button>
+            </div>
+
+            <div class="card">
+                <h2><i class="fa-solid fa-file-code"></i> نسخة احتياطية سحابية (JSON)</h2>
+                <p>استخراج الهيكلية الكاملة والمستندات الخام المخزنة في الـ Cloud Firestore وحفظها محلياً كنسخة احتياطية مشفرة لضمان عدم فقدان البيانات.</p>
+                <button class="btn-control btn-export-json" onclick="exportDataToJSON()">
+                    <i class="fa-solid fa-file-shield"></i> تحميل نسخة JSON الاحتياطية
+                </button>
+            </div>
+
+            <div class="card" id="danger-zone-card" style="border: 1px solid rgba(239, 68, 68, 0.3);">
+                <h2 style="color: var(--danger);"><i class="fa-solid fa-triangle-exclamation"></i> منطقة التحكم الخطرة</h2>
+                <p>تصفير قاعدة البيانات ومسح كافة قيود الطلاب المسجلين. هذا الإجراء يتطلب التحقق من كلمة مرور الإدارة العليا وكتابة كود الأمان.</p>
+                <button class="btn-control btn-danger-zone" onclick="executeServerWipeout()">
+                    <i class="fa-solid fa-dumpster-fire"></i> تصفير السيرفر وحذف البيانات
+                </button>
+            </div>
+
+        </section>
+    </main>
+
+    <script>
+        // ⚠️ إعدادات Firebase الخاصة بك
+        
+        
+        if (!firebase.apps.length) {
+            firebase.initializeApp(firebaseConfig);
+        }
+        const db = firebase.firestore();
+
+        let allStudentsData = [];
+
+        window.onload = function() {
+            const currentUser = localStorage.getItem("currentSupervisor");
+            if(!currentUser) {
+                window.location.href = "index.html";
+                return;
+            }
+            
+            document.getElementById('current-user-badge').innerText = `المشرف: ${currentUser}`;
+
+            if(currentUser !== "المدير العام") {
+                document.getElementById('danger-zone-card').style.display = 'none';
+            }
+
+            fetchAllDataForBackup();
+            document.getElementById('data-upload-input').addEventListener('change', handleFileUpload);
+        };
+
+        function logout() {
+            Swal.fire({
+                title: 'تسجيل الخروج',
+                text: 'هل أنت متأكد أنك تريد مغادرة المنظومة؟',
+                icon: 'question',
+                showCancelButton: true,
+                confirmButtonColor: '#ef4444',
+                cancelButtonColor: '#24324d',
+                confirmButtonText: 'نعم، خروج',
+                cancelButtonText: 'إلغاء'
+            }).then((result) => {
+                if (result.isConfirmed) {
+                    firebase.auth().signOut().then(() => {
+                        localStorage.removeItem("currentSupervisor");
+                        window.location.href = "index.html";
+                    });
+                }
+            });
+        }
+
+        function fetchAllDataForBackup() {
+            db.collection("students").onSnapshot((snapshot) => {
+                allStudentsData = [];
+                snapshot.forEach((doc) => {
+                    let student = doc.data();
+                    student.id = doc.id;
+                    allStudentsData.push(student);
+                });
+            }, (error) => {
+                console.error("خطأ المستمع الحي: ", error);
+            });
+        }
+
+        // =========================================================================
+        // 🔄 وظائف معالجة واستيراد ملفات الـ CSV المتقدمة والآمنة لـ Firestore
+        // =========================================================================
+        function handleFileUpload(event) {
+            const file = event.target.files[0];
+            if (!file) return;
+
+            if (!file.name.endsWith('.csv')) {
+                Swal.fire('خطأ', 'يرجى اختيار ملف بصيغة CSV فقط', 'error');
+                event.target.value = ''; 
+                return;
+            }
+
+            const reader = new FileReader();
+            reader.onload = async function(e) {
+                const text = e.target.result;
+                const parsedData = parseCSV(text);
+
+                if (parsedData.length === 0) {
+                    Swal.fire('خطأ', 'الملف فارغ أو لا يحتوي على رؤوس حقول مطابقة للسيرفر', 'error');
+                    event.target.value = '';
+                    return;
+                }
+
+                await uploadToFirebaseInChunks(parsedData);
+                event.target.value = ''; // تصفير حقل الرفع لتفعيل الرفع المتكرر
+            };
+            reader.readAsText(file, 'UTF-8'); 
+        }
+
+        // دالة بارسر احترافية تتعامل مع النصوص العربية وعلامات الاقتباس المركبة
+        function parseCSV(text) {
+            const lines = text.split(/\r?\n/).filter(line => line.trim() !== '');
+            if (lines.length === 0) return [];
+
+            // الحقول الثابتة والمتوافقة برمجياً مع سجل الطلاب
+            const headers = lines[0].split(',').map(header => header.trim().replace(/"/g, ''));
+            const result = [];
+
+            // خريطة تحويل الرؤوس العربية المتوقعة إلى الحقول البرمجية لتأكيد الدعم الثنائي
+            const headerMapping = {
+                "membershipId": "membershipId", "رقم المرجع": "membershipId",
+                "studentName": "studentName", "اسم الطالب": "studentName",
+                "phone": "phone", "رقم الهاتف": "phone",
+                "teacherName": "teacherName", "المعلم": "teacherName",
+                "paymentStatus": "paymentStatus", "حالة الدفع": "paymentStatus",
+                "status": "status", "حالة الحصص": "status",
+                "createdBy": "createdBy", "المشرف المنشئ": "createdBy"
+            };
+
+            const mappedHeaders = headers.map(h => headerMapping[h] || h);
+
+            for (let i = 1; i < lines.length; i++) {
+                // تعبير منتظم لتقسيم السطر مع مراعاة الفواصل داخل علامات الاقتباس
+                const matches = lines[i].match(/(".*?"|[^",\s]+)(?=\s*,|\s*$)/g) || lines[i].split(',');
+                const obj = {};
+                
+                for (let j = 0; j < mappedHeaders.length; j++) {
+                    let value = matches[j] ? matches[j].trim() : '';
+                    if (value.startsWith('"') && value.endsWith('"')) {
+                        value = value.slice(1, -1).replace(/""/g, '"');
+                    }
+                    obj[mappedHeaders[j]] = value;
+                }
+                result.push(obj);
+            }
+            return result;
+        }
+
+        // رفع آمن على شكل مجموعات لا تتعدى الـ 500 مستند للدفعة الواحدة
+        async function uploadToFirebaseInChunks(dataArray) {
+            Swal.fire({
+                title: 'جاري تحديث السيرفر السحابي...',
+                text: 'الرجاء الانتظار، يتم معالجة البيانات على دفعات آمنة.',
+                allowOutsideClick: false,
+                didOpen: () => { Swal.showLoading(); }
+            });
+
+            try {
+                const collectionName = "students";
+                const chunkSize = 400; // حجم آمن أقل من ليميت الفايربيس (500)
+                let uploadedCount = 0;
+
+                for (let i = 0; i < dataArray.length; i += chunkSize) {
+                    const chunk = dataArray.slice(i, i + chunkSize);
+                    let batch = db.batch();
+
+                    chunk.forEach(item => {
+                        // إزالة حقل الـ ID التلقائي إذا وجد لإنشاء وثيقة برقم فريد جديد تماماً
+                        if(item.id) delete item.id;
+                        
+                        let docRef = db.collection(collectionName).doc();
+                        batch.set(docRef, item);
+                        uploadedCount++;
+                    });
+
+                    await batch.commit();
+                }
+
+                Swal.fire('تمت المزامنة بنجاح!', `تم استيراد وحفظ ${uploadedCount} طالب بنجاح داخل قاعدة البيانات الحية.`, 'success');
+            } catch (error) {
+                console.error("خطأ الرفع الجماعي: ", error);
+                Swal.fire('فشلت العملية', 'حدث خطأ أثناء الاتصال بالخادم: ' + error.message, 'error');
+            }
+        }
+
+        // =========================================================================
+        // 📤 وظائف استخراج وتحميل ملفات الـ CSV والـ JSON
+        // =========================================================================
+        function exportDataToCSV() {
+            if (allStudentsData.length === 0) {
+                Swal.fire('تنبيه', 'لا توجد مستندات متاحة حالياً للتصدير في هذه الدورة!', 'warning');
+                return;
+            }
+
+            // إضافة الـ BOM لضمان فتح الملف ببرنامج Excel باللغة العربية دون تشفير رموز غامضة
+            let csvContent = "\uFEFF"; 
+            csvContent += "رقم المرجع,اسم الطالب,رقم الهاتف,المعلم,حالة الدفع,حالة الحصص,المشرف المنشئ\n";
+
+            allStudentsData.forEach(student => {
+                let row = [
+                    student.membershipId || '',
+                    student.studentName || '',
+                    student.phone || '',
+                    student.teacherName || '',
+                    student.paymentStatus || '',
+                    student.status || '',
+                    student.createdBy || ''
+                ].map(val => `"${val.toString().replace(/"/g, '""')}"`).join(",");
+                
+                csvContent += row + "\n";
+            });
+
+            downloadFile(csvContent, "سجل_طلاب_أكاديمية_القارئ.csv", "text/csv;charset=utf-8;");
+        }
+
+        function exportDataToJSON() {
+            if (allStudentsData.length === 0) {
+                Swal.fire('تنبيه', 'لا توجد بيانات متاحة حالياً للتصدير!', 'warning');
+                return;
+            }
+            let jsonString = JSON.stringify(allStudentsData, null, 4);
+            downloadFile(jsonString, "نسخة_احتياطية_الأكاديمية_كاملة.json", "application/json;charset=utf-8;");
+        }
+
+        function downloadFile(content, fileName, mimeType) {
+            let blob = new Blob([content], { type: mimeType });
+            let url = URL.createObjectURL(blob);
+            let link = document.createElement("a");
+            link.setAttribute("href", url);
+            link.setAttribute("download", fileName);
+            link.style.visibility = 'hidden';
+            document.body.appendChild(link);
+            link.click();
+            document.body.removeChild(link);
+        }
+
+        function executeServerWipeout() {
+            Swal.fire({
+                title: 'تأكيد تصفير السيرفر بالكامل؟',
+                text: "إنتبه! هذا الإجراء سيقوم بحذف كافة الطلاب المتاحين وبدء دورة جديدة بلا رجعة. للتأكيد اكتب كلمة (حذف) في الحقل أدناه:",
+                icon: 'warning',
+                input: 'text',
+                inputPlaceholder: 'اكتب كلمة: حذف',
+                showCancelButton: true,
+                confirmButtonColor: '#ef4444',
+                cancelButtonColor: '#24324d',
+                confirmButtonText: 'تدمير وتصفير قاعدة البيانات 💥',
+                cancelButtonText: 'إلغاء الأمر'
+            }).then((result) => {
+                if (result.isConfirmed) {
+                    if (result.value === 'حذف') {
+                        Swal.fire({ title: 'جاري تدمير المستندات سحابياً...', didOpen: () => { Swal.showLoading(); } });
+                        
+                        db.collection("students").get().then((snapshot) => {
+                            if(snapshot.empty) {
+                                Swal.fire('تنبيه', 'قاعدة البيانات فارغة بالفعل.', 'info');
+                                return;
+                            }
+                            let batch = db.batch();
+                            snapshot.forEach((doc) => {
+                                batch.delete(doc.ref);
+                            });
+                            return batch.commit();
+                        }).then(() => {
+                            Swal.fire('تم بنجاح!', 'تم تصفير السيرفر السحابي بالكامل وتأمين قاعدة البيانات لدورة جديدة.', 'success');
+                        }).catch(err => {
+                            Swal.fire('فشل التصفير', err.message, 'error');
+                        });
+                    } else {
+                        Swal.fire('كلمة الأمان خاطئة', 'لم يتم كتابة كلمة (حذف) بشكل صحيح، تم إلغاء العملية لحماية البيانات.', 'error');
+                    }
+                }
+            });
+        }
+    </script>
+</body>
+</html>

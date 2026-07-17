@@ -1,0 +1,447 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>الأرشيف السحابي العام | أكاديمية القارئ</title>
+    
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Cairo:wght@300;400;600;700;800&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+    
+    <script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-app-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-auth-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore-compat.js"></script>
+    
+    <script src="auth-router.js"></script>
+
+    <style>
+        /* =========================================================================
+           🎨 الستايل الداكن الفخم والألوان الإمبراطورية (Imperial Dark Theme)
+           ========================================================================= */
+        :root {
+            --bg-main: #0f141c;
+            --bg-card: #161f30;
+            --bg-nav: #121926;
+            --text-primary: #f8fafc;
+            --text-secondary: #94a3b8;
+            --gold-primary: #d4af37;
+            --gold-hover: #aa8416;
+            --success: #10b981;
+            --danger: #ef4444;
+            --warning: #f59e0b;
+            --info: #3b82f6;
+            --border-color: #24324d;
+            --input-bg: #1e293b;
+        }
+
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+            font-family: 'Cairo', sans-serif;
+        }
+
+        body {
+            background-color: var(--bg-main);
+            color: var(--text-primary);
+            display: flex;
+            min-height: 100vh;
+            overflow-x: hidden;
+        }
+
+        /* 📋 القائمة الجانبية الموحدة */
+        .sidebar {
+            width: 280px;
+            background-color: var(--bg-nav);
+            border-left: 1px solid var(--border-color);
+            display: flex;
+            flex-direction: column;
+            padding: 24px;
+            position: fixed;
+            height: 100vh;
+            right: 0;
+            top: 0;
+            z-index: 100;
+        }
+
+        .sidebar-brand {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            font-size: 20px;
+            font-weight: 800;
+            color: var(--gold-primary);
+            margin-bottom: 40px;
+            border-bottom: 1px solid var(--border-color);
+            padding-bottom: 20px;
+        }
+
+        .sidebar-brand img {
+            width: 45px;
+            height: auto;
+            border-radius: 8px;
+            object-fit: contain;
+        }
+
+        .sidebar-menu {
+            list-style: none;
+            display: flex;
+            flex-direction: column;
+            gap: 8px;
+        }
+
+        .sidebar-menu li a {
+            display: flex;
+            align-items: center;
+            gap: 14px;
+            color: var(--text-secondary);
+            text-decoration: none;
+            padding: 14px 16px;
+            border-radius: 12px;
+            font-weight: 600;
+            transition: all 0.3s ease;
+        }
+
+        .sidebar-menu li a:hover, .sidebar-menu li.active a {
+            background-color: var(--bg-card);
+            color: var(--text-primary);
+            border-right: 4px solid var(--gold-primary);
+        }
+
+        .sidebar-menu li a i {
+            font-size: 18px;
+            color: var(--gold-primary);
+        }
+
+        .logout-btn {
+            margin-top: auto;
+            background-color: rgba(239, 68, 68, 0.1);
+            color: var(--danger) !important;
+            border: 1px solid rgba(239, 68, 68, 0.2);
+            cursor: pointer;
+        }
+
+        .logout-btn:hover {
+            background-color: var(--danger) !important;
+            color: white !important;
+        }
+
+        /* 🏛️ منطقة المحتوى الرئيسي */
+        .main-content {
+            margin-right: 280px;
+            width: calc(100% - 280px);
+            padding: 40px;
+        }
+
+        /* 👑 الهيدر العلوي */
+        .header-panel {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 32px;
+            background-color: var(--bg-card);
+            padding: 24px;
+            border-radius: 16px;
+            border: 1px solid var(--border-color);
+        }
+
+        .welcome-section h1 {
+            font-size: 24px;
+            font-weight: 800;
+            margin-bottom: 6px;
+        }
+
+        .welcome-section p {
+            color: var(--text-secondary);
+            font-size: 14px;
+        }
+
+        .badge {
+            padding: 8px 16px;
+            border-radius: 30px;
+            font-size: 13px;
+            font-weight: 700;
+            background-color: rgba(212, 175, 55, 0.1);
+            color: var(--gold-primary);
+            border: 1px solid rgba(212, 175, 55, 0.2);
+        }
+
+        /* 📊 بطاقة الجدول */
+        .card {
+            background-color: var(--bg-card);
+            border: 1px solid var(--border-color);
+            border-radius: 16px;
+            padding: 28px;
+        }
+
+        .card h2 {
+            font-size: 18px;
+            font-weight: 700;
+            margin-bottom: 24px;
+            color: var(--gold-primary);
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .table-responsive {
+            width: 100%;
+            overflow-x: auto;
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            text-align: right;
+        }
+
+        th {
+            background-color: rgba(36, 50, 77, 0.4);
+            color: var(--gold-primary);
+            padding: 16px;
+            font-weight: 700;
+            font-size: 14px;
+            border-bottom: 2px solid var(--border-color);
+        }
+
+        td {
+            padding: 16px;
+            border-bottom: 1px solid var(--border-color);
+            font-size: 14px;
+            vertical-align: middle;
+        }
+
+        tr:hover td {
+            background-color: rgba(36, 50, 77, 0.2);
+        }
+
+        /* أزرار التحكم والعمليات بالأرشيف */
+        .btn-success {
+            background-color: rgba(16, 185, 129, 0.1);
+            color: var(--success);
+            border: 1px solid rgba(16, 185, 129, 0.2);
+            padding: 8px 14px;
+            border-radius: 8px;
+            cursor: pointer;
+            font-weight: 700;
+            font-size: 13px;
+            display: inline-flex;
+            align-items: center;
+            gap: 6px;
+            transition: all 0.2s ease;
+            border: none;
+        }
+
+        .btn-success:hover {
+            background-color: var(--success);
+            color: white;
+        }
+
+        .btn-danger {
+            background-color: rgba(239, 68, 68, 0.1);
+            color: var(--danger);
+            border: 1px solid rgba(239, 68, 68, 0.2);
+            padding: 8px 14px;
+            border-radius: 8px;
+            cursor: pointer;
+            font-weight: 700;
+            font-size: 13px;
+            display: inline-flex;
+            align-items: center;
+            gap: 6px;
+            transition: all 0.2s ease;
+            border: none;
+        }
+
+        .btn-danger:hover {
+            background-color: var(--danger);
+            color: white;
+        }
+    </style>
+</head>
+<body>
+
+    <nav class="sidebar">
+        <div class="sidebar-brand">
+            <img src="logo.jpg" alt="شعار أكاديمية القارئ">
+            <span>أكاديمية القارئ</span>
+        </div>
+        <ul class="sidebar-menu">
+            <li><a href="dashboard.html"><i class="fa-solid fa-chart-pie"></i>لوحة البيانات</a></li>
+            <li><a href="students.html"><i class="fa-solid fa-graduation-cap"></i>سجل الطلاب</a></li>
+            <li><a href="financial.html"><i class="fa-solid fa-wallet"></i>كشف الحسابات</a></li>
+            <li class="active"><a href="archive.html"><i class="fa-solid fa-archive"></i>الأرشيف السحابي</a></li>
+            <li><a href="settings.html"><i class="fa-solid fa-sliders"></i>أدوات السيرفر</a></li>
+            <li><a href="#" onclick="handleLogout(event)" class="logout-btn"><i class="fa-solid fa-right-from-bracket"></i>تسجيل الخروج</a></li>
+        </ul>
+    </nav>
+
+    <main class="main-content">
+        
+        <header class="header-panel">
+            <div class="welcome-section">
+                <h1>🗄️ الأرشيف السحابي العام للطلاب والمغادرين</h1>
+                <p>مراجعة كشوف المستندات المؤرشفة مع إمكانية استعادة القيود أو تدميرها نهائياً من قاعدة البيانات.</p>
+            </div>
+            <div>
+                <span id="current-user-badge" class="badge">المشرف: جاري التحميل...</span>
+            </div>
+        </header>
+
+        <section class="card">
+            <h2><i class="fa-solid fa-box-archive"></i> لائحة الطلاب المنسحبين أو المؤرشفين سابقاً</h2>
+            <div class="table-responsive">
+                <table>
+                    <thead>
+                        <tr>
+                            <th>رقم المرجع</th>
+                            <th>اسم الطالب المؤرشف</th>
+                            <th>رقم الهاتف</th>
+                            <th>المعلم السابق</th>
+                            <th>المشرف المسؤول</th>
+                            <th>إعادة إحياء (إلغاء الأرشفة)</th>
+                            <th>التدمير النهائي للسجل</th>
+                        </tr>
+                    </thead>
+                    <tbody id="archive-students-tbody"></tbody>
+                </table>
+            </div>
+        </section>
+    </main>
+
+    <script>
+        var allStudentsData = [];
+        var currentSupervisor = "المدير العام";
+
+        window.onload = function() {
+            // 🛡️ فحص الحماية الموحد من الـ Router لمنع مشاكل الطرد والارتداد
+            if (typeof checkPageProtection === "function") {
+                checkPageProtection("كل المشرفين");
+            }
+            if (typeof updateDynamicUIElements === "function") {
+                updateDynamicUIElements();
+            }
+
+            const savedSupervisor = localStorage.getItem("currentSupervisor");
+            if (savedSupervisor) {
+                currentSupervisor = savedSupervisor;
+            }
+            document.getElementById("current-user-badge").innerText = `المشرف: ${currentSupervisor}`;
+
+            startRealtimeArchiveSync();
+        };
+
+        // دالة الفرز والاستماع المتزامن مع السيرفر للبيانات المؤرشفة
+        function startRealtimeArchiveSync() {
+            if (typeof db === 'undefined') {
+                console.error("❌ متغير db غير معرف!");
+                return;
+            }
+
+            db.collection("students").orderBy("createdAt", "desc").onSnapshot((snapshot) => {
+                allStudentsData = [];
+                snapshot.forEach((doc) => {
+                    let student = doc.data();
+                    student.id = doc.id;
+                    allStudentsData.push(student);
+                });
+                
+                renderArchiveTable();
+            }, (error) => {
+                console.error("❌ خطأ الأرشيف السحابي: ", error);
+            });
+        }
+
+        // بناء وضخ جدول المستندات المؤرشفة حياً
+        function renderArchiveTable() {
+            let tbody = document.getElementById('archive-students-tbody');
+            tbody.innerHTML = "";
+
+            // الفلترة وفق الصلاحية الجارية: المدير يرى الكل، والمشرف طلابه فقط
+            let supervisorFiltered = (currentSupervisor === "المدير العام") ? allStudentsData : allStudentsData.filter(s => s.createdBy === currentSupervisor);
+            let archivedStudents = supervisorFiltered.filter(s => s.status === "مؤرشف");
+
+            if (archivedStudents.length === 0) {
+                tbody.innerHTML = `<tr><td colspan="7" style="padding:30px; color:var(--text-secondary); text-align:center; font-weight:600;">لا توجد مستندات أو سجلات مؤرشفة حالياً في نطاق صلاحياتك.</td></tr>`;
+                return;
+            }
+
+            archivedStudents.forEach(student => {
+                let row = document.createElement('tr');
+                row.innerHTML = `
+                    <td><span style="font-weight:700; color:var(--gold-primary);">#${student.membershipId || '---'}</span></td>
+                    <td style="font-weight:bold;">${student.studentName || 'غير متوفر'}</td>
+                    <td dir="ltr">${student.phone || 'لا يوجد'}</td>
+                    <td>👨‍🏫 ${student.teacherName || 'غير محدد'}</td>
+                    <td>🔑 ${student.createdBy || 'غير معروف'}</td>
+                    <td>
+                        <button class="btn-success" onclick="restoreStudentFromArchive('${student.id}')">
+                            <i class="fa-solid fa-trash-arrow-up"></i> استعادة القيد للوحة
+                        </button>
+                    </td>
+                    <td>
+                        <button class="btn-danger" onclick="permanentlyDestroyStudent('${student.id}')">
+                            <i class="fa-solid fa-radiation"></i> تدمير السجل نهائياً
+                        </button>
+                    </td>
+                `;
+                tbody.appendChild(row);
+            });
+        }
+
+        // 🔄 دالة إعادة إحياء المستند (إلغاء الأرشفة وتحويل الحالة لـ شغال حالياً)
+        function restoreStudentFromArchive(studentId) {
+            Swal.fire({
+                title: 'تأكيد استعادة الطالب؟',
+                text: "سيتم إلغاء أرشفة الطالب وإعادته فوراً للوحة البيانات الملتزمة الحالية.",
+                icon: 'question',
+                showCancelButton: true,
+                confirmButtonColor: '#10b981',
+                cancelButtonColor: '#475569',
+                confirmButtonText: 'نعم، قم بالاستعادة',
+                cancelButtonText: 'إلغاء الامر'
+            }).then((result) => {
+                if (result.isConfirmed) {
+                    db.collection("students").doc(studentId).update({ status: "نشط" })
+                    .then(() => {
+                        Swal.fire({ icon: 'success', title: 'تمت استعادة السجل الحصين بنجاح!', timer: 1500, showConfirmButton: false });
+                    })
+                    .catch(err => Swal.fire('خطأ سحابي', err.message, 'error'));
+                }
+            });
+        }
+
+        // 💥 دالة التدمير النهائي الصارم للمستند من الـ Firestore
+        function permanentlyDestroyStudent(studentId) {
+            Swal.fire({
+                title: 'تدمير قيد الطالب نهائياً؟',
+                text: "تحذير: هذا الإجراء سيقوم بحذف مستند الطالب تماماً من السيرفر ولا يمكن التراجع عنه مطلقاً!",
+                icon: 'warning',
+                showCancelButton: true,
+                confirmButtonColor: '#ef4444',
+                cancelButtonColor: '#475569',
+                confirmButtonText: 'نعم، حذف وتدمير نهائي 💥',
+                cancelButtonText: 'إلغاء وتأمين السجل'
+            }).then((result) => {
+                if (result.isConfirmed) {
+                    db.collection("students").doc(studentId).delete()
+                    .then(() => {
+                        Swal.fire('تم الحذف الحصين!', 'تم مسح المستند بشكل كامل ونهائي من الخادم.', 'success');
+                    })
+                    .catch(err => Swal.fire('فشل التدمير', err.message, 'error'));
+                }
+            });
+        }
+
+        // ربط دالة الخروج بالأمان الموحد المركزي في الـ Router
+        function handleLogout(event) {
+            if(event) event.preventDefault();
+            logout();
+        }
+    </script>
+</body>
+</html>

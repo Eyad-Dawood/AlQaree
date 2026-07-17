@@ -1,0 +1,200 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>بوابة الدخول | أكاديمية القارئ</title>
+    
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Cairo:wght@400;700;800&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+
+    <!-- مكتبات الفايربيز الأساسية -->
+    <script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-app-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-auth-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore-compat.js"></script>
+
+    <style>
+        /* 🎨 الستايل الداكن الفخم الموحد للمنظومة */
+        :root {
+            --bg-main: #0f141c;
+            --bg-card: #161f30;
+            --text-primary: #f8fafc;
+            --text-secondary: #94a3b8;
+            --gold-primary: #d4af37;
+            --gold-hover: #aa8416;
+            --border-color: #24324d;
+            --input-bg: #1e293b;
+        }
+
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+            font-family: 'Cairo', sans-serif;
+        }
+
+        body {
+            background-color: var(--bg-main);
+            color: var(--text-primary);
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 100vh;
+        }
+
+        .login-container {
+            background-color: var(--bg-card);
+            border: 1px solid var(--border-color);
+            border-radius: 16px;
+            padding: 40px;
+            width: 100%;
+            max-width: 420px;
+            box-shadow: 0 4px 25px rgba(0, 0, 0, 0.3);
+            text-align: center;
+        }
+
+        .logo-section img {
+            width: 140px;
+            height: auto;
+            object-fit: contain;
+            border-radius: 8px;
+            margin-bottom: 15px;
+            display: inline-block;
+        }
+
+        .login-container h1 {
+            font-size: 24px;
+            font-weight: 800;
+            margin-bottom: 8px;
+        }
+
+        .login-container p {
+            color: var(--text-secondary);
+            font-size: 14px;
+            margin-bottom: 30px;
+        }
+
+        .form-group {
+            margin-bottom: 20px;
+            text-align: right;
+        }
+
+        .form-group label {
+            display: block;
+            font-size: 14px;
+            font-weight: 700;
+            margin-bottom: 8px;
+            color: var(--text-secondary);
+        }
+
+        .input-wrapper {
+            position: relative;
+        }
+
+        .input-wrapper i {
+            position: absolute;
+            right: 15px;
+            top: 50%;
+            transform: translateY(-50%);
+            color: var(--gold-primary);
+            z-index: 2;
+        }
+
+        .form-control {
+            width: 100%;
+            padding: 12px 45px 12px 15px;
+            background-color: var(--input-bg);
+            border: 1px solid var(--border-color);
+            border-radius: 10px;
+            color: var(--text-primary);
+            font-size: 14px;
+            outline: none;
+            transition: all 0.3s ease;
+        }
+
+        .form-control:focus {
+            border-color: var(--gold-primary);
+            box-shadow: 0 0 8px rgba(212, 175, 55, 0.2);
+        }
+
+        .btn-login {
+            width: 100%;
+            padding: 14px;
+            background-color: var(--gold-primary);
+            color: #000;
+            border: none;
+            border-radius: 10px;
+            font-size: 16px;
+            font-weight: 800;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            margin-top: 10px;
+        }
+
+        .btn-login:hover {
+            background-color: var(--gold-hover);
+            color: var(--text-primary);
+        }
+        
+        .btn-login:disabled {
+            background-color: var(--border-color);
+            color: var(--text-secondary);
+            cursor: not-allowed;
+        }
+    </style>
+</head>
+<body>
+
+    <div class="login-container">
+        <div class="logo-section">
+            <img src="logo.jpg" alt="لوجو الأكاديمية">
+        </div>
+        <h1>بوابة تسجيل الدخول</h1>
+        <p>نظام إدارة أكاديمية القارئ الشامل</p>
+
+        <!-- ربط نموذج الدخول بدالة login الموجودة في ملف الجافاسكريبت -->
+        <form id="login-form" onsubmit="event.preventDefault(); login();">
+            <div class="form-group">
+                <label>اسم مستخدم المشرف</label>
+                <div class="input-wrapper">
+                    <i class="fa-solid fa-user"></i>
+                    <input type="text" id="login-username" class="form-control" placeholder="مثال: admin أو abdo" required>
+                </div>
+            </div>
+
+            <div class="form-group">
+                <label>كلمة المرور الآمنة</label>
+                <div class="input-wrapper">
+                    <i class="fa-solid fa-lock"></i>
+                    <input type="password" id="login-password" class="form-control" placeholder="أدخل كلمة المرور" required>
+                </div>
+            </div>
+
+            <button type="submit" id="submit-btn" class="btn-login">تسجيل الدخول للمنظومة</button>
+        </form>
+    </div>
+
+    <!-- 1️⃣ استدعاء ملف الجافاسكريبت الخاص بنا هنا في الأسفل بعد تحميل تصميم الصفحة -->
+    <script src="auth-router.js"></script>
+
+    <!-- 2️⃣ كود التحقق التلقائي إذا كان المستخدم قد سجل دخوله مسبقاً -->
+    <script>
+        window.onload = function() {
+            if (typeof auth !== "undefined") {
+                auth.onAuthStateChanged((user) => {
+                    // إذا كان هناك مستخدم مسجل الدخول، نقوم بتوجيهه للوحة التحكم
+                    if (user && localStorage.getItem('currentSupervisor')) {
+                        // تم التعديل هنا لاستخدام href بدلاً من replace لتجنب مشاكل المسار
+                        window.location.href = "dashboard.html";
+                    }
+                });
+            }
+        };
+    </script>
+    
+</body>
+</html>

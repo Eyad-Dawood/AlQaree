@@ -1,0 +1,432 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>تقرير وإدارة المعلمين | أكاديمية القارئ</title>
+    
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Cairo:wght@300;400;600;700;800&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+    
+    <script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-app-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore-compat.js"></script>
+
+    <style>
+        /* =========================================================================
+           🎨 الستايل الداكن الفخم والألوان الإمبراطورية الموحدة للمشروع
+           ========================================================================= */
+        :root {
+            --bg-main: #0f141c;
+            --bg-card: #161f30;
+            --bg-nav: #121926;
+            --text-primary: #f8fafc;
+            --text-secondary: #94a3b8;
+            --gold-primary: #d4af37;
+            --gold-hover: #aa8416;
+            --success: #10b981;
+            --danger: #ef4444;
+            --warning: #f59e0b;
+            --info: #3b82f6;
+            --border-color: #24324d;
+            --input-bg: #1e293b;
+        }
+
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+            font-family: 'Cairo', sans-serif;
+        }
+
+        body {
+            background-color: var(--bg-main);
+            color: var(--text-primary);
+            display: flex;
+            min-height: 100vh;
+            overflow-x: hidden;
+        }
+
+        /* القائمة الجانبية الموحدة */
+        .sidebar {
+            width: 280px;
+            background-color: var(--bg-nav);
+            border-left: 1px solid var(--border-color);
+            display: flex;
+            flex-direction: column;
+            padding: 24px;
+            position: fixed;
+            height: 100vh;
+            right: 0;
+            top: 0;
+            z-index: 100;
+        }
+
+        .sidebar-brand {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            font-size: 20px;
+            font-weight: 800;
+            color: var(--gold-primary);
+            margin-bottom: 40px;
+            border-bottom: 1px solid var(--border-color);
+            padding-bottom: 20px;
+        }
+
+        .sidebar-menu { list-style: none; display: flex; flex-direction: column; gap: 8px; }
+        .sidebar-menu li a { display: flex; align-items: center; gap: 14px; color: var(--text-secondary); text-decoration: none; padding: 14px 16px; border-radius: 12px; font-weight: 600; transition: all 0.3s ease; }
+        .sidebar-menu li a:hover, .sidebar-menu li.active a { background-color: var(--bg-card); color: var(--text-primary); border-right: 4px solid var(--gold-primary); }
+        .sidebar-menu li a i { font-size: 18px; color: var(--gold-primary); }
+        .logout-btn { margin-top: auto; background-color: rgba(239, 68, 68, 0.1); color: var(--danger) !important; border: 1px solid rgba(239, 68, 68, 0.2); }
+        .logout-btn:hover { background-color: var(--danger) !important; color: white !important; }
+
+        .main-content { margin-right: 280px; width: calc(100% - 280px); padding: 40px; }
+
+        /* اللوحات والبطاقات */
+        .header-panel { display: flex; justify-content: space-between; align-items: center; margin-bottom: 32px; background-color: var(--bg-card); padding: 24px; border-radius: 16px; border: 1px solid var(--border-color); }
+        .welcome-section h1 { font-size: 24px; font-weight: 800; margin-bottom: 6px; }
+        .welcome-section p { color: var(--text-secondary); font-size: 14px; }
+        
+        /* شريط التصفية والفلاتر */
+        .filter-panel { background-color: var(--bg-card); border: 1px solid var(--border-color); border-radius: 16px; padding: 24px; margin-bottom: 32px; display: flex; gap: 16px; flex-wrap: wrap; align-items: center; }
+        .filter-group { flex: 1; min-width: 200px; display: flex; flex-direction: column; gap: 6px; }
+        .filter-group label { font-size: 12px; color: var(--text-secondary); font-weight: 600; padding-right: 4px; }
+        .filter-select { width: 100%; padding: 12px 16px; background-color: var(--input-bg); border: 1px solid var(--border-color); border-radius: 10px; color: var(--text-primary); font-size: 14px; outline: none; cursor: pointer; }
+        
+        .btn-gold { background-color: var(--gold-primary); color: var(--bg-main); border: none; padding: 12px 24px; border-radius: 10px; font-weight: 700; cursor: pointer; display: flex; align-items: center; gap: 8px; font-size: 14px; transition: all 0.3s ease; }
+        .btn-gold:hover { background-color: var(--gold-hover); }
+
+        .card { background-color: var(--bg-card); border: 1px solid var(--border-color); border-radius: 16px; padding: 28px; }
+        .card h2 { font-size: 18px; font-weight: 700; margin-bottom: 24px; color: var(--gold-primary); display: flex; align-items: center; gap: 10px; }
+        
+        /* الجدول */
+        .table-responsive { width: 100%; overflow-x: auto; }
+        table { width: 100%; border-collapse: collapse; text-align: right; }
+        th { background-color: rgba(36, 50, 77, 0.4); color: var(--gold-primary); padding: 16px; font-weight: 700; font-size: 14px; border-bottom: 2px solid var(--border-color); }
+        td { padding: 16px; border-bottom: 1px solid var(--border-color); font-size: 14px; color: var(--text-primary); vertical-align: middle; }
+        tr:hover td { background-color: rgba(36, 50, 77, 0.2); }
+
+        /* شارات الحالة */
+        .status-badge { padding: 4px 10px; border-radius: 6px; font-size: 12px; font-weight: 700; display: inline-block; }
+        .status-active { background-color: rgba(16, 185, 129, 0.15); color: var(--success); }
+        .status-paused { background-color: rgba(245, 158, 11, 0.15); color: var(--warning); }
+        .status-paid { background-color: rgba(16, 185, 129, 0.15); color: var(--success); }
+        .status-unpaid { background-color: rgba(239, 68, 68, 0.15); color: var(--danger); }
+
+        /* النوافذ المنبثقة (Modal) */
+        .modal-overlay { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background-color: rgba(0, 0, 0, 0.6); display: flex; align-items: center; justify-content: center; z-index: 1000; opacity: 0; pointer-events: none; transition: all 0.3s ease; }
+        .modal-overlay.active { opacity: 1; pointer-events: auto; }
+        .modal-box { background-color: var(--bg-card); border: 1px solid var(--border-color); width: 100%; max-width: 500px; border-radius: 16px; padding: 32px; box-shadow: 0 10px 30px rgba(0, 0, 0, 0.5); transform: scale(0.8); transition: all 0.3s ease; }
+        .modal-overlay.active .modal-box { transform: scale(1); }
+        .modal-header { display: flex; justify-content: space-between; align-items: center; border-bottom: 1px solid var(--border-color); padding-bottom: 16px; margin-bottom: 24px; }
+        .modal-header h3 { font-size: 18px; color: var(--gold-primary); }
+        .close-modal { background: none; border: none; color: var(--text-secondary); font-size: 20px; cursor: pointer; }
+        .form-group { margin-bottom: 18px; }
+        .form-group label { display: block; font-size: 13px; color: var(--text-secondary); margin-bottom: 8px; font-weight: 600; }
+        .form-group input { width: 100%; padding: 12px; background-color: var(--input-bg); border: 1px solid var(--border-color); border-radius: 8px; color: var(--text-primary); outline: none; }
+        .modal-actions { display: flex; justify-content: flex-end; gap: 12px; margin-top: 24px; border-top: 1px solid var(--border-color); padding-top: 16px; }
+        .btn-cancel { background: none; border: 1px solid var(--border-color); color: var(--text-secondary); padding: 8px 16px; border-radius: 8px; cursor: pointer; }
+    </style>
+</head>
+<body>
+
+    <nav class="sidebar">
+        <div class="sidebar-brand">
+            <i class="fa-solid fa-book-quran"></i>
+            <span>أكاديمية القارئ</span>
+        </div>
+        <ul class="sidebar-menu">
+            <li><a href="dashboard.html"><i class="fa-solid fa-chart-pie"></i>لوحة البيانات</a></li>
+            <li><a href="students.html"><i class="fa-solid fa-graduation-cap"></i>سجل الطلاب</a></li>
+            <li class="active"><a href="teachers.html"><i class="fa-solid fa-chalkboard-user"></i>متابعة المعلمين</a></li>
+            <li><a href="financial.html"><i class="fa-solid fa-wallet"></i>كشف الحسابات</a></li>
+            <li><a href="archive.html"><i class="fa-solid fa-archive"></i>الأرشيف السحابي</a></li>
+            <li><a href="settings.html"><i class="fa-solid fa-sliders"></i>أدوات السيرفر</a></li>
+            <li><a href="#" onclick="logout(event)" class="logout-btn"><i class="fa-solid fa-right-from-bracket"></i>تسجيل الخروج</a></li>
+        </ul>
+    </nav>
+
+    <main class="main-content">
+        <header class="header-panel">
+            <div class="welcome-section">
+                <h1>👨‍🏫 نظام فرز ومتابعة طلاب المعلمين</h1>
+                <p>تابع مستويات التزام الطلاب المالي والدراسي، وقم بإضافة معلمين جدد للنظام.</p>
+            </div>
+            <div>
+                <button class="btn-gold" onclick="openAddTeacherModal()">
+                    <i class="fa-solid fa-user-plus"></i> إضافة معلم جديد
+                </button>
+            </div>
+        </header>
+
+        <section class="filter-panel">
+            <div class="filter-group">
+                <label><i class="fa-solid fa-user-tie"></i> اختر المعلم</label>
+                <select class="filter-select" id="filter-teacher" onchange="filterTeacherStudents()">
+                    <option value="الكل">كل المعلمين</option>
+                </select>
+            </div>
+            
+            <div class="filter-group">
+                <label><i class="fa-solid fa-money-check-dollar"></i> فلتر حالة الدفع</label>
+                <select class="filter-select" id="filter-payment" onchange="filterTeacherStudents()">
+                    <option value="الكل">كل الطلاب (دفع / لم يدفع)</option>
+                    <option value="تم الدفع">الطلاب الذين دفعوا ✅</option>
+                    <option value="لم يدفع">الطلاب الذين لم يدفعوا ❌</option>
+                    <option value="مؤجل الدفع">الطلاب مؤجلي الدفع ⏳</option>
+                </select>
+            </div>
+
+            <div class="filter-group">
+                <label><i class="fa-solid fa-toggle-on"></i> فلتر حالة الحصص</label>
+                <select class="filter-select" id="filter-status" onchange="filterTeacherStudents()">
+                    <option value="الكل">كل الحالات (نشط / متوقف)</option>
+                    <option value="نشط">الطلاب النشطين 📝</option>
+                    <option value="موقف">الطلاب المتوقفين 🛑</option>
+                </select>
+            </div>
+        </section>
+
+        <section class="card">
+            <h2><i class="fa-solid fa-list-check"></i> نتائج جرد وفحص الطلاب التابعين للمعلم</h2>
+            <div class="table-responsive">
+                <table>
+                    <thead>
+                        <tr>
+                            <th>رقم الاشتراك</th>
+                            <th>اسم الطالب</th>
+                            <th>المعلم</th>
+                            <th>حالة الدفع</th>
+                            <th>حالة الحصص</th>
+                            <th>رقم الهاتف</th>
+                        </tr>
+                    </thead>
+                    <tbody id="teacher-students-tbody">
+                        <tr><td colspan="6" style="text-align:center; color:gray;">جاري جلب البيانات من السيرفر السحابي...</td></tr>
+                    </tbody>
+                </table>
+            </div>
+        </section>
+    </main>
+
+    <div class="modal-overlay" id="add-teacher-modal">
+        <div class="modal-box">
+            <div class="modal-header">
+                <h3><i class="fa-solid fa-user-plus"></i> تسجيل معلم جديد</h3>
+                <button class="close-modal" onclick="closeAddTeacherModal()">&times;</button>
+            </div>
+            <div class="form-group">
+                <label>اسم المعلم الثنائي أو الثلاثي</label>
+                <input type="text" id="new-teacher-name" placeholder="مثال: الشيخ محمود">
+            </div>
+            <div class="form-group">
+                <label>رقم الهاتف للاتصال</label>
+                <input type="text" id="new-teacher-phone" placeholder="مثال: 20100xxxxxxx">
+            </div>
+            <div class="modal-actions">
+                <button class="btn-cancel" onclick="closeAddTeacherModal()">إلغاء</button>
+                <button class="btn-gold" onclick="addNewTeacher()">حفظ المعلم 💾</button>
+            </div>
+        </div>
+    </div>
+
+    <script>
+   
+        if (!firebase.apps.length) firebase.initializeApp(firebaseConfig);
+        var db = firebase.firestore();
+
+        var allStudentsData = [];
+        var definedTeachers = []; 
+
+        document.addEventListener("DOMContentLoaded", function() {
+            if (!localStorage.getItem("currentSupervisor")) {
+                Swal.fire({
+                    icon: 'warning',
+                    title: 'تنبيه أمان',
+                    text: 'يجب تسجيل الدخول أولاً للوصول إلى لوحة المتابعة.',
+                    confirmButtonText: 'توجه لصفحة الدخول',
+                    confirmButtonColor: '#d4af37'
+                }).then(() => {
+                    window.location.href = "index.html";
+                });
+                return;
+            }
+
+            startRealtimeSync();
+            listenToTeachers();
+        });
+
+        // 🔄 المزامنة الحية مع توحيد الحقول لتفادي "مجهول"
+        function startRealtimeSync() {
+            db.collection("students").onSnapshot((snapshot) => {
+                allStudentsData = [];
+                snapshot.forEach((doc) => {
+                    let rawData = doc.data();
+                    
+                    // توحيد الحقول لتتطابق مع صفحة سجل الطلاب الأساسية
+                    let student = {
+                        ...rawData,
+                        id: doc.id,
+                        studentName: rawData.studentName || rawData.name || 'مجهول',
+                        membershipId: rawData.membershipId || rawData.subscriptionNumber || 'غير محدد',
+                        status: rawData.status || rawData.studentStatus || 'نشط'
+                    };
+
+                    allStudentsData.push(student);
+                });
+
+                // ترتيب زمني
+                allStudentsData.sort((a, b) => {
+                    let dateA = a.createdAt ? (a.createdAt.seconds || new Date(a.createdAt).getTime() / 1000) : 0;
+                    let dateB = b.createdAt ? (b.createdAt.seconds || new Date(b.createdAt).getTime() / 1000) : 0;
+                    return dateB - dateA;
+                });
+
+                buildTeacherFilterOptions();
+                filterTeacherStudents();
+            }, (error) => {
+                console.error("حدث خطأ في جلب الطلاب: ", error);
+                document.getElementById('teacher-students-tbody').innerHTML = 
+                    `<tr><td colspan="6" style="text-align:center; color:var(--danger); padding:25px;">⚠️ خطأ في الاتصال بالسيرفر السحابي.</td></tr>`;
+            });
+        }
+
+        function listenToTeachers() {
+            db.collection("teachers").onSnapshot((snapshot) => {
+                definedTeachers = [];
+                snapshot.forEach(doc => {
+                    if(doc.data().name) {
+                        definedTeachers.push(doc.data().name);
+                    }
+                });
+                buildTeacherFilterOptions();
+                filterTeacherStudents();
+            }, (error) => {
+                console.error("حدث خطأ في جلب المعلمين: ", error);
+            });
+        }
+
+        function buildTeacherFilterOptions() {
+            let teacherSelect = document.getElementById('filter-teacher');
+            if (!teacherSelect) return;
+            
+            let lastSelected = teacherSelect.value || "الكل";
+            let uniqueTeachers = [...definedTeachers];
+            
+            allStudentsData.forEach(student => {
+                if(student.teacherName && !uniqueTeachers.includes(student.teacherName)) {
+                    uniqueTeachers.push(student.teacherName);
+                }
+            });
+
+            let optionsHTML = '<option value="الكل">كل المعلمين</option>';
+            uniqueTeachers.forEach(teacher => {
+                optionsHTML += `<option value="${teacher}">${teacher}</option>`;
+            });
+            
+            teacherSelect.innerHTML = optionsHTML;
+            if(uniqueTeachers.includes(lastSelected) || lastSelected === "الكل") {
+                teacherSelect.value = lastSelected;
+            } else {
+                teacherSelect.value = "الكل";
+            }
+        }
+
+        // 🔍 التصفية بناءً على الحقول الموحدة
+        function filterTeacherStudents() {
+            let filterTeacher = document.getElementById('filter-teacher');
+            let filterPayment = document.getElementById('filter-payment');
+            let filterStatus = document.getElementById('filter-status');
+            
+            if(!filterTeacher || !filterPayment || !filterStatus) return;
+
+            let selectedTeacher = filterTeacher.value;
+            let selectedPayment = filterPayment.value;
+            let selectedStatus = filterStatus.value;
+
+            let filteredList = allStudentsData.filter(student => {
+                if(student.status === "مؤرشف") return false;
+
+                let matchTeacher = (selectedTeacher === "الكل") || (student.teacherName === selectedTeacher);
+                let matchPayment = (selectedPayment === "الكل") || (student.paymentStatus === selectedPayment);
+                let matchStatus  = (selectedStatus === "الكل")  || (student.status === selectedStatus);
+
+                return matchTeacher && matchPayment && matchStatus;
+            });
+
+            renderTableHTML(filteredList);
+        }
+
+        // 📊 الطباعة بأسماء الحقول المحدثة
+        function renderTableHTML(students) {
+            let tbody = document.getElementById('teacher-students-tbody');
+            if(!tbody) return;
+            
+            tbody.innerHTML = "";
+
+            if(students.length === 0) {
+                tbody.innerHTML = `<tr><td colspan="6" style="text-align:center; color:#94a3b8; padding:30px;">لا توجد نتائج مطابقة للفلاتر الحالية.</td></tr>`;
+                return;
+            }
+
+            students.forEach(student => {
+                let paymentClass = student.paymentStatus === "تم الدفع" ? "status-paid" : "status-unpaid";
+                if(student.paymentStatus === "مؤجل الدفع") paymentClass = "status-paused"; // لون تحذيري للمؤجل
+                
+                let statusClass = student.status === "نشط" ? "status-active" : "status-paused";
+
+                let row = document.createElement('tr');
+                row.innerHTML = `
+                    <td><span style="font-weight:700; color:var(--gold-primary);">#${student.membershipId}</span></td>
+                    <td style="font-weight:bold;">${student.studentName}</td>
+                    <td>👨‍🏫 ${student.teacherName || 'غير معين'}</td>
+                    <td><span class="status-badge ${paymentClass}">${student.paymentStatus || 'لم يدفع'}</span></td>
+                    <td><span class="status-badge ${statusClass}">${student.status || 'غير محدد'}</span></td>
+                    <td dir="ltr">
+                        <a href="tel:${student.phone || ''}" style="color:var(--info); font-weight:600; text-decoration:none;">
+                            <i class="fa-solid fa-phone"></i> ${student.phone || 'بلا هاتف'}
+                        </a>
+                    </td>
+                `;
+                tbody.appendChild(row);
+            });
+        }
+
+        function openAddTeacherModal() { document.getElementById('add-teacher-modal').classList.add('active'); }
+        function closeAddTeacherModal() { document.getElementById('add-teacher-modal').classList.remove('active'); }
+
+        function addNewTeacher() {
+            let nameInput = document.getElementById('new-teacher-name');
+            let phoneInput = document.getElementById('new-teacher-phone');
+            
+            let name = nameInput ? nameInput.value.trim() : '';
+            let phone = phoneInput ? phoneInput.value.trim() : '';
+
+            if(!name) { Swal.fire('تنبيه', 'يرجى إدخال اسم المعلم أولاً!', 'warning'); return; }
+
+            Swal.fire({ title: 'جارِ تسجيل المعلم سحابياً...', didOpen: () => { Swal.showLoading(); } });
+
+            db.collection("teachers").add({
+                name: name,
+                phone: phone,
+                createdAt: firebase.firestore.FieldValue.serverTimestamp()
+            }).then(() => {
+                Swal.fire({ icon: 'success', title: 'تم تسجيل المعلم بنجاح!', timer: 1500, showConfirmButton: false });
+                if(nameInput) nameInput.value = '';
+                if(phoneInput) phoneInput.value = '';
+                closeAddTeacherModal();
+            }).catch(error => Swal.fire('خطأ', error.message, 'error'));
+        }
+
+        function logout(event) {
+            if(event) event.preventDefault();
+            localStorage.removeItem("currentSupervisor");
+            window.location.href = "index.html";
+        }
+    </script>
+</body>
+</html>

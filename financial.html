@@ -1,0 +1,523 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>كشف الحسابات والمتابعة المالية | أكاديمية القارئ</title>
+    
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Cairo:wght@300;400;600;700;800&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+    <script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-app-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-auth-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore-compat.js"></script>
+    
+    
+    
+    <script src="auth-router.js"></script>
+
+    <style>
+        /* =========================================================================
+           🎨 الستايل الداكن الفخم والألوان الإمبراطورية (Imperial Dark Theme)
+           ========================================================================= */
+        :root {
+            --bg-main: #0f141c;
+            --bg-card: #161f30;
+            --bg-nav: #121926;
+            --text-primary: #f8fafc;
+            --text-secondary: #94a3b8;
+            --gold-primary: #d4af37;
+            --gold-hover: #aa8416;
+            --success: #10b981;
+            --danger: #ef4444;
+            --warning: #f59e0b;
+            --info: #3b82f6;
+            --border-color: #24324d;
+            --input-bg: #1e293b;
+        }
+
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+            font-family: 'Cairo', sans-serif;
+        }
+
+        body {
+            background-color: var(--bg-main);
+            color: var(--text-primary);
+            display: flex;
+            min-height: 100vh;
+            overflow-x: hidden;
+        }
+
+        /* 📋 القائمة الجانبية الموحدة */
+        .sidebar {
+            width: 280px;
+            background-color: var(--bg-nav);
+            border-left: 1px solid var(--border-color);
+            display: flex;
+            flex-direction: column;
+            padding: 24px;
+            position: fixed;
+            height: 100vh;
+            right: 0;
+            top: 0;
+            z-index: 100;
+        }
+
+        .sidebar-brand {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            font-size: 20px;
+            font-weight: 800;
+            color: var(--gold-primary);
+            margin-bottom: 40px;
+            border-bottom: 1px solid var(--border-color);
+            padding-bottom: 20px;
+        }
+
+        .sidebar-menu {
+            list-style: none;
+            display: flex;
+            flex-direction: column;
+            gap: 8px;
+        }
+
+        .sidebar-menu li a {
+            display: flex;
+            align-items: center;
+            gap: 14px;
+            color: var(--text-secondary);
+            text-decoration: none;
+            padding: 14px 16px;
+            border-radius: 12px;
+            font-weight: 600;
+            transition: all 0.3s ease;
+        }
+
+        .sidebar-menu li a:hover, .sidebar-menu li.active a {
+            background-color: var(--bg-card);
+            color: var(--text-primary);
+            border-right: 4px solid var(--gold-primary);
+        }
+
+        .sidebar-menu li a i {
+            font-size: 18px;
+            color: var(--gold-primary);
+        }
+
+        .logout-btn {
+            margin-top: auto;
+            background-color: rgba(239, 68, 68, 0.1);
+            color: var(--danger) !important;
+            border: 1px solid rgba(239, 68, 68, 0.2);
+        }
+
+        .logout-btn:hover {
+            background-color: var(--danger) !important;
+            color: white !important;
+        }
+
+        /* 🏛️ منطقة المحتوى الرئيسي */
+        .main-content {
+            margin-right: 280px;
+            width: calc(100% - 280px);
+            padding: 40px;
+        }
+
+        /* 👑 الهيدر العلوي */
+        .header-panel {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 32px;
+            background-color: var(--bg-card);
+            padding: 24px;
+            border-radius: 16px;
+            border: 1px solid var(--border-color);
+        }
+
+        .welcome-section h1 {
+            font-size: 24px;
+            font-weight: 800;
+            margin-bottom: 6px;
+        }
+
+        .welcome-section p {
+            color: var(--text-secondary);
+            font-size: 14px;
+        }
+
+        .badge {
+            padding: 8px 16px;
+            border-radius: 30px;
+            font-size: 13px;
+            font-weight: 700;
+            background-color: rgba(212, 175, 55, 0.1);
+            color: var(--gold-primary);
+            border: 1px solid rgba(212, 175, 55, 0.2);
+        }
+
+        /* 💰 لوحة الإحصائيات المالية السريعة */
+        .financial-summary-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 24px;
+            margin-bottom: 32px;
+        }
+
+        .fin-card {
+            background-color: var(--bg-card);
+            border: 1px solid var(--border-color);
+            padding: 24px;
+            border-radius: 16px;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+        }
+
+        .fin-info h3 {
+            font-size: 14px;
+            color: var(--text-secondary);
+            margin-bottom: 6px;
+        }
+
+        .fin-info .count {
+            font-size: 28px;
+            font-weight: 800;
+        }
+
+        /* 📊 بطاقة الجدول */
+        .card {
+            background-color: var(--bg-card);
+            border: 1px solid var(--border-color);
+            border-radius: 16px;
+            padding: 28px;
+        }
+
+        .card h2 {
+            font-size: 18px;
+            font-weight: 700;
+            margin-bottom: 24px;
+            color: var(--gold-primary);
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .table-responsive {
+            width: 100%;
+            overflow-x: auto;
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            text-align: right;
+        }
+
+        th {
+            background-color: rgba(36, 50, 77, 0.4);
+            color: var(--gold-primary);
+            padding: 16px;
+            font-weight: 700;
+            font-size: 14px;
+            border-bottom: 2px solid var(--border-color);
+        }
+
+        td {
+            padding: 16px;
+            border-bottom: 1px solid var(--border-color);
+            font-size: 14px;
+        }
+
+        tr:hover td {
+            background-color: rgba(36, 50, 77, 0.2);
+        }
+
+        /* الأزرار وشارات الحالات */
+        .status-badge {
+            padding: 6px 12px;
+            border-radius: 6px;
+            font-size: 12px;
+            font-weight: 700;
+            display: inline-block;
+        }
+
+        .badge-unpaid {
+            background-color: rgba(239, 68, 68, 0.1);
+            color: var(--danger);
+            border: 1px solid rgba(239, 68, 68, 0.2);
+        }
+
+        .badge-deferred {
+            background-color: rgba(245, 158, 11, 0.1);
+            color: var(--warning);
+            border: 1px solid rgba(245, 158, 11, 0.2);
+        }
+
+        .btn-whatsapp {
+            background-color: rgba(16, 185, 129, 0.1);
+            color: var(--success);
+            border: 1px solid rgba(16, 185, 129, 0.2);
+            padding: 8px 16px;
+            border-radius: 8px;
+            cursor: pointer;
+            font-weight: 700;
+            font-size: 13px;
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            transition: all 0.2s ease;
+        }
+
+        .btn-whatsapp:hover {
+            background-color: var(--success);
+            color: white;
+        }
+
+        .inline-select {
+            background-color: var(--input-bg);
+            border: 1px solid var(--border-color);
+            color: var(--text-primary);
+            padding: 6px 12px;
+            border-radius: 8px;
+            font-weight: 600;
+            font-size: 13px;
+            cursor: pointer;
+            outline: none;
+        }
+    </style>
+</head>
+<body>
+
+    <nav class="sidebar">
+        <div class="sidebar-brand">
+            <i class="fa-solid fa-book-quran"></i>
+            <span>أكاديمية القارئ</span>
+        </div>
+        <ul class="sidebar-menu">
+            <li><a href="dashboard.html"><i class="fa-solid fa-chart-pie"></i>لوحة البيانات</a></li>
+            <li><a href="students.html"><i class="fa-solid fa-graduation-cap"></i>سجل الطلاب</a></li>
+            <li class="active"><a href="financial.html"><i class="fa-solid fa-wallet"></i>كشف الحسابات</a></li>
+            <li><a href="archive.html"><i class="fa-solid fa-archive"></i>الأرشيف السحابي</a></li>
+            <li><a href="settings.html"><i class="fa-solid fa-sliders"></i>أدوات السيرفر</a></li>
+            <li><a href="#" onclick="handleLogout(event)" class="logout-btn"><i class="fa-solid fa-right-from-bracket"></i>تسجيل الخروج</a></li>
+        </ul>
+    </nav>
+
+    <main class="main-content">
+        
+        <header class="header-panel">
+            <div class="welcome-section">
+                <h1>💰 محرك تذكير الرسوم الحسابية والمالية</h1>
+                <p>حصر تلقائي وفوري لكافة الطلاب المتعثرين مالياً مع نظام الإشعار البنكي الموحد.</p>
+            </div>
+            <div>
+                <span id="current-user-badge" class="badge">المشرف: جاري التحميل...</span>
+            </div>
+        </header>
+
+        <section class="financial-summary-grid">
+            <div class="fin-card" style="border-right: 4px solid var(--danger);">
+                <div class="fin-info">
+                    <h3>عدد الاشتراكات المطلوبة (لم يدفع)</h3>
+                    <div class="count" id="count-unpaid" style="color: var(--danger);">0</div>
+                </div>
+                <i class="fa-solid fa-circle-exclamation" style="font-size: 32px; color: var(--danger); opacity:0.3;"></i>
+            </div>
+            <div class="fin-card" style="border-right: 4px solid var(--warning);">
+                <div class="fin-info">
+                    <h3>عدد الاشتراكات المؤجلة</h3>
+                    <div class="count" id="count-deferred" style="color: var(--warning);">0</div>
+                </div>
+                <i class="fa-solid fa-clock-rotate-left" style="font-size: 32px; color: var(--warning); opacity:0.3;"></i>
+            </div>
+        </section>
+
+        <section class="card">
+            <h2><i class="fa-solid fa-receipt"></i> كشف بأسماء الطلاب غير المسددين لاشتراك الشهر الحالي</h2>
+            <div class="table-responsive">
+                <table>
+                    <thead>
+                        <tr>
+                            <th>رقم المرجع</th>
+                            <th>اسم الطالب</th>
+                            <th>رقم الهاتف المسجل</th>
+                            <th>المعلم المسؤول</th>
+                            <th>الحالة المالية الحالية</th>
+                            <th>إجراء تسوية سريعة</th>
+                            <th>محرك تذكير الرسوم (WhatsApp)</th>
+                        </tr>
+                    </thead>
+                    <tbody id="financial-students-tbody"></tbody>
+                </table>
+            </div>
+        </section>
+    </main>
+
+    <script>
+        var allStudentsData = [];
+        var currentSupervisor = "المدير العام"; 
+
+        window.onload = function() {
+            // 🛡️ الاستدعاء من محرك الأمان الموحد المركزي لمنع مشاكل الطرد والارتداد
+            if (typeof checkPageProtection === "function") {
+                checkPageProtection("كل المشرفين");
+            }
+            if (typeof updateDynamicUIElements === "function") {
+                updateDynamicUIElements();
+            }
+            
+            // قراءة اسم المستخدم النشط الحقيقي من الذاكرة
+            const savedSupervisor = localStorage.getItem("currentSupervisor");
+            if (savedSupervisor) {
+                currentSupervisor = savedSupervisor;
+            }
+            document.getElementById("current-user-badge").innerText = `المشرف: ${currentSupervisor}`;
+            
+            startRealtimeFinancialSync();
+        };
+
+        function startRealtimeFinancialSync() {
+            if (typeof db === 'undefined') {
+                console.error("❌ متغير db غير معرف! تأكد من ربط ملف إعدادات فايربيز بشكل صحيح.");
+                document.getElementById('financial-students-tbody').innerHTML = `<tr><td colspan="7" style="text-align:center; color:var(--danger);">خطأ في الاتصال بقاعدة البيانات. تأكد من إعدادات الفايربيز.</td></tr>`;
+                return;
+            }
+
+            db.collection("students").orderBy("createdAt", "desc").onSnapshot((snapshot) => {
+                allStudentsData = [];
+                snapshot.forEach((doc) => {
+                    let student = doc.data();
+                    student.id = doc.id;
+                    allStudentsData.push(student);
+                });
+                
+                renderFinancialTable();
+            }, (error) => {
+                console.error("❌ خطأ مالي في الفايربيز: ", error);
+                Swal.fire('خطأ في الاتصال', 'لم نتمكن من جلب البيانات المالية. يرجى التحقق من الاتصال.', 'error');
+            });
+        }
+
+        function renderFinancialTable() {
+            let tbody = document.getElementById('financial-students-tbody');
+            tbody.innerHTML = "";
+
+            // تصفية الصلاحيات: يعرض للعام كله، وللمشرف طلابه فقط بناءً على حقل createdBy
+            let supervisorFiltered = (currentSupervisor === "المدير العام") ? allStudentsData : allStudentsData.filter(s => s.createdBy === currentSupervisor);
+            let activeStudents = supervisorFiltered.filter(s => s.status !== "مؤرشف");
+            let financialDefaulters = activeStudents.filter(s => s.paymentStatus === "لم يدفع" || s.paymentStatus === "مؤجل الدفع" || s.paymentStatus === "مؤجل");
+
+            let unpaidCount = financialDefaulters.filter(s => s.paymentStatus === "لم يدفع").length;
+            let deferredCount = financialDefaulters.filter(s => s.paymentStatus === "مؤجل الدفع" || s.paymentStatus === "مؤجل").length;
+            
+            document.getElementById('count-unpaid').innerText = unpaidCount;
+            document.getElementById('count-deferred').innerText = deferredCount;
+
+            if (financialDefaulters.length === 0) {
+                tbody.innerHTML = `<tr><td colspan="7" style="padding:30px; color:var(--success); text-align:center; font-weight:600;">الحمد لله! لا توجد متأخرات مالية أو اشتراكات معلقة حالياً في نطاق حسابك.</td></tr>`;
+                return;
+            }
+
+            financialDefaulters.forEach(student => {
+                let row = document.createElement('tr');
+                let statusBadgeClass = (student.paymentStatus === "لم يدفع") ? "badge-unpaid" : "badge-deferred";
+                let displayStatusText = (student.paymentStatus === "لم يدفع") ? "لم يدفع" : "مؤجل الدفع";
+
+                row.innerHTML = `
+                    <td><span style="font-weight:700; color:var(--gold-primary);">#${student.membershipId || '---'}</span></td>
+                    <td style="font-weight:bold;">${student.studentName || 'غير متوفر'}</td>
+                    <td dir="ltr">${student.phone || 'لا يوجد'}</td>
+                    <td>👨‍🏫 ${student.teacherName || 'غير محدد'}</td>
+                    <td><span class="status-badge ${statusBadgeClass}">${displayStatusText}</span></td>
+                    <td>
+                        <select class="inline-select" onchange="settlePaymentDirectly('${student.id}', this.value)">
+                            <option value="" disabled selected>تغيير الحالة إلى...</option>
+                            <option value="تم الدفع">تم الدفع والتحصيل 🎉</option>
+                            <option value="مؤجل الدفع">تأجيل لقرابة موعد آخر</option>
+                        </select>
+                    </td>
+                    <td>
+                        <button class="btn-whatsapp" onclick="sendPaymentReminder('${student.id}')">
+                            <i class="fa-brands fa-whatsapp"></i> إرسال وثيقة الحسابات
+                        </button>
+                    </td>
+                `;
+                tbody.appendChild(row);
+            });
+        }
+
+        function settlePaymentDirectly(studentId, newStatus) {
+            if(!newStatus) return; 
+
+            Swal.fire({
+                title: 'هل أنت متأكد؟',
+                text: `سيتم تغيير حالة الطالب إلى "${newStatus}"`,
+                icon: 'warning',
+                showCancelButton: true,
+                confirmButtonColor: '#10b981',
+                cancelButtonColor: '#ef4444',
+                confirmButtonText: 'نعم، قم بالتأكيد!',
+                cancelButtonText: 'إلغاء'
+            }).then((result) => {
+                if (result.isConfirmed) {
+                    db.collection("students").doc(studentId).update({ paymentStatus: newStatus })
+                    .then(() => {
+                        Swal.fire({
+                            icon: 'success',
+                            title: 'تمت التسوية المالية وتحصيل القيد السحابي!',
+                            timer: 1500,
+                            showConfirmButton: false
+                        });
+                    })
+                    .catch(err => Swal.fire('خطأ في معالجة القيد', err.message, 'error'));
+                } else {
+                    renderFinancialTable(); 
+                }
+            });
+        }
+
+        function sendPaymentReminder(studentId) {
+            let student = allStudentsData.find(s => s.id === studentId);
+            if (!student) return;
+
+            let phone = student.phone;
+            if (!phone || phone.trim() === "") {
+                Swal.fire('تنبيه الحسابات', 'لم نجد رقم هاتف مسجل للطالب لتجهيز شات التذكير الشخصي له!', 'warning');
+                return;
+            }
+
+            let cleanPhone = phone.replace(/\D/g, '');
+            if(cleanPhone.startsWith('0')) {
+                cleanPhone = '962' + cleanPhone.substring(1);
+            }
+            
+            let message = `مرحباً بك من أكاديمية القارئ 🌿\nنود تذكيركم بتحويل اشتراك *الشهر مقدم* على هذا الحساب *بنك الصفوة*\n0791949035\n ESLAM ABDULLAH AlTAHRAWI          \n\nويمكنكم التحويل من خلال المحافظ الإلكترونية التالية:-\n* أورانج موني (Orange Money)\n* زين كاش (Zain Cash)\n* دينارك (Dinarak)\n* كليك (CliQ) \n\nمع ضرورة إرسال صورة إشعار التحويل فور إتمامه لتوثيقه بالنظام الإداري. شكراً لتعاونكم!`;
+            let encodedMessage = encodeURIComponent(message);
+
+            Swal.fire({
+                icon: 'info',
+                title: 'تجهيز الشات المالي المباشر',
+                text: `جاري تحويلك الآن لإرسال المطالبة المالية للطالب (${student.studentName}).`,
+                timer: 1800,
+                showConfirmButton: false
+            }).then(() => {
+                window.open(`https://wa.me/${cleanPhone}?text=${encodedMessage}`, '_blank');
+            });
+        }
+
+        // ربط تسجيل الخروج بالدالة المأمنة داخل ملف الـ Router المشترك
+        function handleLogout(event) {
+            if(event) event.preventDefault();
+            logout(); 
+        }
+    </script>
+</body>
+</html>
