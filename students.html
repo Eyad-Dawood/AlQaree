@@ -16,6 +16,7 @@
     <script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-auth-compat.js"></script>
     <script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore-compat.js"></script>
     <script src="Scripts/auth-router.js"></script>
+    <script src="Scripts/whatsapp-config.js"></script>
 
     <link rel="stylesheet" href="css/style.css">
 </head>
@@ -530,7 +531,10 @@
                 <td><span style="font-weight:700; color:var(--gold-primary);">#${student.membershipId}</span></td>
                 <td><span style="color:var(--text-secondary); font-size:12px; font-weight:bold;">${student.Gender === true ? 'أنثى' : 'ذكر'}</span></td>
                 <td style="font-weight:bold;">${student.studentName}</td>
-                <td dir="ltr"><a href="tel:${student.PhoneNumber || student.phone}" style="color:var(--info); font-weight:600; text-decoration:none;"><i class="fa-solid fa-phone"></i> ${student.PhoneNumber || student.phone}</a></td>
+                <td dir="ltr" style="white-space: nowrap;">
+                    <a href="tel:${student.PhoneNumber || student.phone}" style="color:var(--info); font-weight:600; text-decoration:none; margin-left: 5px;"><i class="fa-solid fa-phone"></i> ${student.PhoneNumber || student.phone}</a>
+                    <button class="btn-whatsapp" onclick="sendPaymentReminder('${student.id}')" style="background: none; border: none; color: #25d366; cursor: pointer; font-size: 15px; display: inline-flex; align-items: center; vertical-align: middle;" title="إرسال تذكير الدفع بالواتساب"><i class="fa-brands fa-whatsapp"></i></button>
+                </td>
                 <td>
                     👨‍🏫 ${student.teacherName || 'غير معين'}<br>
                     <small style="color:var(--text-secondary);"><i class="fa-regular fa-clock"></i> ${student.scheduleTime || 'الموعد غير محدد'}</small>
@@ -802,6 +806,36 @@
         navigator.clipboard.writeText(message).then(() => {
             Swal.fire({ icon: 'success', title: 'تم النسخ!', text: 'سيتم فتح الجروب الآن لصق الرسالة.', timer: 2000, showConfirmButton: false })
             .then(() => { window.open(groupLink, '_blank'); });
+        });
+    }
+
+    function sendPaymentReminder(studentId) {
+        let student = allStudentsData.find(s => s.id === studentId);
+        if (!student) return;
+
+        let phone = student.PhoneNumber || student.phone;
+        if (!phone || phone.trim() === "") {
+            Swal.fire('تنبيه الحسابات', 'لم نجد رقم هاتف مسجل للطالب لتجهيز شات التذكير الشخصي له!', 'warning');
+            return;
+        }
+
+        let cleanPhone = phone.replace(/\D/g, '');
+        
+        let subNumber = student.membershipId || student.SubscriptionNumber || '';
+        let message = WHATSAPP_PAYMENT_REMINDER_TEMPLATE
+            .replace(/{SubscriptionNumber}/gi, subNumber)
+            .replace(/{subscription\s*number}/gi, subNumber)
+            .replace(/{subsciption\s*number}/gi, subNumber);
+        let encodedMessage = encodeURIComponent(message);
+
+        Swal.fire({
+            icon: 'info',
+            title: 'تجهيز الشات المالي المباشر',
+            text: `جاري تحويلك الآن لإرسال المطالبة المالية للطالب (${student.studentName}).`,
+            timer: 1800,
+            showConfirmButton: false
+        }).then(() => {
+            window.open(`https://wa.me/${cleanPhone}?text=${encodedMessage}`, '_blank');
         });
     }
 

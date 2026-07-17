@@ -18,6 +18,7 @@
     
     
     <script src="Scripts/auth-router.js"></script>
+    <script src="Scripts/whatsapp-config.js"></script>
 
     <link rel="stylesheet" href="css/style.css">
 </head>
@@ -245,11 +246,12 @@
             }
 
             let cleanPhone = phone.replace(/\D/g, '');
-            if(cleanPhone.startsWith('0')) {
-                cleanPhone = '962' + cleanPhone.substring(1);
-            }
             
-            let message = `مرحباً بك من أكاديمية القارئ 🌿\nنود تذكيركم بتحويل اشتراك *الشهر مقدم* على هذا الحساب *بنك الصفوة*\n0791949035\n ESLAM ABDULLAH AlTAHRAWI          \n\nويمكنكم التحويل من خلال المحافظ الإلكترونية التالية:-\n* أورانج موني (Orange Money)\n* زين كاش (Zain Cash)\n* دينارك (Dinarak)\n* كليك (CliQ) \n\nمع ضرورة إرسال صورة إشعار التحويل فور إتمامه لتوثيقه بالنظام الإداري. شكراً لتعاونكم!`;
+            let subNumber = student.membershipId || student.SubscriptionNumber || '';
+            let message = WHATSAPP_PAYMENT_REMINDER_TEMPLATE
+                .replace(/{SubscriptionNumber}/gi, subNumber)
+                .replace(/{subscription\s*number}/gi, subNumber)
+                .replace(/{subsciption\s*number}/gi, subNumber);
             let encodedMessage = encodeURIComponent(message);
 
             Swal.fire({
