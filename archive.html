@@ -71,6 +71,9 @@
     </main>
 
     <script>
+        if (!firebase.apps.length) firebase.initializeApp(firebaseConfig);
+        var db = firebase.firestore();
+
         var allStudentsData = [];
         var currentSupervisor = "المدير العام";
 
@@ -79,10 +82,7 @@
             if (typeof checkPageProtection === "function") {
                 checkPageProtection("كل المشرفين");
             }
-            if (typeof updateDynamicUIElements === "function") {
-                updateDynamicUIElements();
-            }
-
+            
             const savedSupervisor = localStorage.getItem("currentSupervisor");
             if (savedSupervisor) {
                 currentSupervisor = savedSupervisor;
@@ -95,11 +95,11 @@
         // دالة الفرز والاستماع المتزامن مع السيرفر للبيانات المؤرشفة
         function startRealtimeArchiveSync() {
             if (typeof db === 'undefined') {
-                console.error("❌ متغير db غير معرف!");
+                console.error("❌ متغير db غير معروف!");
                 return;
             }
 
-            db.collection("students").orderBy("createdAt", "desc").onSnapshot((snapshot) => {
+            db.collection("students").onSnapshot((snapshot) => {
                 allStudentsData = [];
                 snapshot.forEach((doc) => {
                     let student = doc.data();
@@ -107,6 +107,13 @@
                     allStudentsData.push(student);
                 });
                 
+                // ترتيب تنازلي حسب تاريخ الإنشاء
+                allStudentsData.sort((a, b) => {
+                    const dateA = a.CreatedAt ? (a.CreatedAt.seconds || new Date(a.CreatedAt).getTime()) : (a.createdAt ? (a.createdAt.seconds || new Date(a.createdAt).getTime()) : 0);
+                    const dateB = b.CreatedAt ? (b.CreatedAt.seconds || new Date(b.CreatedAt).getTime()) : (b.createdAt ? (b.createdAt.seconds || new Date(b.createdAt).getTime()) : 0);
+                    return dateB - dateA;
+                });
+
                 renderArchiveTable();
             }, (error) => {
                 console.error("❌ خطأ الأرشيف السحابي: ", error);
@@ -116,11 +123,12 @@
         // بناء وضخ جدول المستندات المؤرشفة حياً
         function renderArchiveTable() {
             let tbody = document.getElementById('archive-students-tbody');
+            if(!tbody) return;
             tbody.innerHTML = "";
 
             // الفلترة وفق الصلاحية الجارية: المدير يرى الكل، والمشرف طلابه فقط
-            let supervisorFiltered = (currentSupervisor === "المدير العام") ? allStudentsData : allStudentsData.filter(s => s.createdBy === currentSupervisor);
-            let archivedStudents = supervisorFiltered.filter(s => s.status === "مؤرشف");
+            let supervisorFiltered = (currentSupervisor === "المدير العام") ? allStudentsData : allStudentsData.filter(s => s.createdBy === currentSupervisor || s.CreatedBy === currentSupervisor);
+            let archivedStudents = supervisorFiltered.filter(s => s.status === "مؤرشف" || s.Status === "مؤرشف");
 
             if (archivedStudents.length === 0) {
                 tbody.innerHTML = `<tr><td colspan="7" style="padding:30px; color:var(--text-secondary); text-align:center; font-weight:600;">لا توجد مستندات أو سجلات مؤرشفة حالياً في نطاق صلاحياتك.</td></tr>`;
@@ -129,12 +137,17 @@
 
             archivedStudents.forEach(student => {
                 let row = document.createElement('tr');
+                let studentName = student.Name || student.studentName || 'غير متوفر';
+                let phone = student.PhoneNumber || student.phone || 'لا يوجد';
+                let membershipId = student.SubscriptionNumber || student.membershipId || '---';
+                let supervisor = student.createdBy || student.CreatedBy || 'غير معروف';
+
                 row.innerHTML = `
-                    <td><span style="font-weight:700; color:var(--gold-primary);">#${student.membershipId || '---'}</span></td>
-                    <td style="font-weight:bold;">${student.studentName || 'غير متوفر'}</td>
-                    <td dir="ltr">${student.phone || 'لا يوجد'}</td>
+                    <td><span style="font-weight:700; color:var(--gold-primary);">#${membershipId}</span></td>
+                    <td style="font-weight:bold;">${studentName}</td>
+                    <td dir="ltr">${phone}</td>
                     <td>👨‍🏫 ${student.teacherName || 'غير محدد'}</td>
-                    <td>🔑 ${student.createdBy || 'غير معروف'}</td>
+                    <td>🔑 ${supervisor}</td>
                     <td>
                         <button class="btn-success" onclick="restoreStudentFromArchive('${student.id}')">
                             <i class="fa-solid fa-trash-arrow-up"></i> استعادة القيد للوحة
@@ -163,7 +176,10 @@
                 cancelButtonText: 'إلغاء الامر'
             }).then((result) => {
                 if (result.isConfirmed) {
-                    db.collection("students").doc(studentId).update({ status: "نشط" })
+                    db.collection("students").doc(studentId).update({ 
+                        status: "نشط",
+                        Status: "نشط"
+                    })
                     .then(() => {
                         Swal.fire({ icon: 'success', title: 'تمت استعادة السجل الحصين بنجاح!', timer: 1500, showConfirmButton: false });
                     })

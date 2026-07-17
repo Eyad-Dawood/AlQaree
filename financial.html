@@ -118,7 +118,7 @@
                 return;
             }
 
-            db.collection("students").orderBy("createdAt", "desc").onSnapshot((snapshot) => {
+            db.collection("students").onSnapshot((snapshot) => {
                 allStudentsData = [];
                 snapshot.forEach((doc) => {
                     let student = doc.data();
@@ -126,6 +126,13 @@
                     allStudentsData.push(student);
                 });
                 
+                // ترتيب تنازلي حسب تاريخ الإنشاء
+                allStudentsData.sort((a, b) => {
+                    const dateA = a.CreatedAt ? (a.CreatedAt.seconds || new Date(a.CreatedAt).getTime()) : (a.createdAt ? (a.createdAt.seconds || new Date(a.createdAt).getTime()) : 0);
+                    const dateB = b.CreatedAt ? (b.CreatedAt.seconds || new Date(b.CreatedAt).getTime()) : (b.createdAt ? (b.createdAt.seconds || new Date(b.createdAt).getTime()) : 0);
+                    return dateB - dateA;
+                });
+
                 renderFinancialTable();
             }, (error) => {
                 console.error("❌ خطأ مالي في الفايربيز: ", error);
@@ -135,11 +142,24 @@
 
         function renderFinancialTable() {
             let tbody = document.getElementById('financial-students-tbody');
+            if(!tbody) return;
             tbody.innerHTML = "";
 
             // تصفية الصلاحيات: يعرض للعام كله، وللمشرف طلابه فقط بناءً على حقل createdBy
-            let supervisorFiltered = (currentSupervisor === "المدير العام") ? allStudentsData : allStudentsData.filter(s => s.createdBy === currentSupervisor);
-            let activeStudents = supervisorFiltered.filter(s => s.status !== "مؤرشف");
+            let supervisorFiltered = (currentSupervisor === "المدير العام") ? allStudentsData : allStudentsData.filter(s => s.createdBy === currentSupervisor || s.CreatedBy === currentSupervisor);
+            
+            // تهيئة بيانات الحقول لتتطابق مع الـ Schema الجديد
+            let activeStudents = supervisorFiltered.map(s => {
+                return {
+                    ...s,
+                    studentName: s.Name || s.studentName || 'غير متوفر',
+                    membershipId: s.SubscriptionNumber || s.membershipId || '---',
+                    status: s.Status || s.status || 'نشط',
+                    paymentStatus: s.PaymentStatus || s.paymentStatus || 'لم يدفع',
+                    phone: s.PhoneNumber || s.phone || 'لا يوجد'
+                };
+            }).filter(s => s.status !== "مؤرشف");
+
             let financialDefaulters = activeStudents.filter(s => s.paymentStatus === "لم يدفع" || s.paymentStatus === "مؤجل الدفع" || s.paymentStatus === "مؤجل");
 
             let unpaidCount = financialDefaulters.filter(s => s.paymentStatus === "لم يدفع").length;
@@ -159,9 +179,9 @@
                 let displayStatusText = (student.paymentStatus === "لم يدفع") ? "لم يدفع" : "مؤجل الدفع";
 
                 row.innerHTML = `
-                    <td><span style="font-weight:700; color:var(--gold-primary);">#${student.membershipId || '---'}</span></td>
-                    <td style="font-weight:bold;">${student.studentName || 'غير متوفر'}</td>
-                    <td dir="ltr">${student.phone || 'لا يوجد'}</td>
+                    <td><span style="font-weight:700; color:var(--gold-primary);">#${student.membershipId}</span></td>
+                    <td style="font-weight:bold;">${student.studentName}</td>
+                    <td dir="ltr">${student.phone}</td>
                     <td>👨‍🏫 ${student.teacherName || 'غير محدد'}</td>
                     <td><span class="status-badge ${statusBadgeClass}">${displayStatusText}</span></td>
                     <td>
@@ -195,7 +215,10 @@
                 cancelButtonText: 'إلغاء'
             }).then((result) => {
                 if (result.isConfirmed) {
-                    db.collection("students").doc(studentId).update({ paymentStatus: newStatus })
+                    db.collection("students").doc(studentId).update({ 
+                        PaymentStatus: newStatus,
+                        paymentStatus: newStatus
+                    })
                     .then(() => {
                         Swal.fire({
                             icon: 'success',
