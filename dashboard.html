@@ -145,6 +145,7 @@
         var allStudentsData = [];
         var paymentChartInstance = null;
         var currentSupervisor = "المدير العام";
+        var teachersMap = {};
 
         window.onload = function() {
             // 🛡️ الاستدعاء من محرك الأمان الموحد المركزي
@@ -184,35 +185,58 @@
 
         function startRealtimeDashboardSync() {
             if (typeof db !== "undefined") {
-                console.log("📡 جاري بدء الاستماع المتزامن مع قاعدة بيانات الطلاب...");
+                console.log("📡 جاري الاستماع لقائمة المعلمين...");
                 
-                db.collection("students").onSnapshot((snapshot) => {
-                    allStudentsData = [];
+                db.collection("teachers").onSnapshot((teachersSnapshot) => {
+                    teachersMap = {};
+                    teachersSnapshot.forEach((doc) => {
+                        const tData = doc.data();
+                        const tName = tData.Name || tData.name || "معلم مجهول";
+                        teachersMap[doc.id] = tName;
+                        if (tData.UserId) {
+                            teachersMap[tData.UserId] = tName;
+                        }
+                    });
                     
-                    snapshot.forEach((doc) => {
-                        let student = doc.data();
-                        student.id = doc.id;
-                        allStudentsData.push(student);
+                    console.log("📡 جاري بدء الاستماع المتزامن مع قاعدة بيانات الطلاب...");
+                    db.collection("students").onSnapshot((snapshot) => {
+                        allStudentsData = [];
+                        
+                        snapshot.forEach((doc) => {
+                            let student = doc.data();
+                            student.id = doc.id;
+                            
+                            // توحيد الحقول لتتطابق مع صفحة سجل الطلاب والـ Schema
+                            student.studentName = student.Name || student.studentName || 'مجهول';
+                            student.membershipId = student.SubscriptionNumber || student.membershipId || 'معلق';
+                            student.teacherName = teachersMap[student.TeacherId] || student.teacherName || student.TeacherId || 'غير معين';
+                            student.paymentStatus = student.PaymentStatus || student.paymentStatus || 'لم يدفع';
+                            student.status = student.StudentStatus || student.Status || student.status || 'نشط';
+                            
+                            allStudentsData.push(student);
+                        });
+
+                        // تصفية الطلاب المؤرشفين من الإحصائيات
+                        allStudentsData = allStudentsData.filter(s => s.status !== "مؤرشف");
+
+                        allStudentsData.sort((a, b) => {
+                            const dateA = a.CreatedAt ? (a.CreatedAt.seconds || new Date(a.CreatedAt).getTime()) : (a.createdAt ? (a.createdAt.seconds || new Date(a.createdAt).getTime()) : 0);
+                            const dateB = b.CreatedAt ? (b.CreatedAt.seconds || new Date(b.CreatedAt).getTime()) : (b.createdAt ? (b.createdAt.seconds || new Date(b.createdAt).getTime()) : 0);
+                            return dateB - dateA;
+                        });
+
+                        updateDashboardStats();
+                        buildTeacherCards();
+                        buildPaymentChart();
+                        populateTeachersDropdown();
+                        loadTeacherWeeklySchedule();
+
+                    }, (error) => {
+                        console.error("❌ فشل الاستماع للطلاب:", error);
+                        Swal.fire('خطأ في الاتصال', 'تعذر جلب بيانات الطلاب من السيرفر السحابي.', 'error');
                     });
-
-                    // تصفية الطلاب المؤرشفين من الإحصائيات (اختياري)
-                    allStudentsData = allStudentsData.filter(s => s.status !== "مؤرشف");
-
-                    allStudentsData.sort((a, b) => {
-                        const dateA = a.createdAt ? (a.createdAt.seconds || new Date(a.createdAt).getTime()) : 0;
-                        const dateB = b.createdAt ? (b.createdAt.seconds || new Date(b.createdAt).getTime()) : 0;
-                        return dateB - dateA;
-                    });
-
-                    updateDashboardStats();
-                    buildTeacherCards();
-                    buildPaymentChart();
-                    populateTeachersDropdown();
-                    loadTeacherWeeklySchedule();
-
                 }, (error) => {
-                    console.error("❌ فشل الاستماع المتزامن من الفايربيز:", error);
-                    Swal.fire('خطأ في الاتصال', 'تعذر جلب البيانات من السيرفر السحابي.', 'error');
+                    console.error("❌ فشل الاستماع للمعلمين:", error);
                 });
             } else {
                 console.error("❌ متغير db غير معرف! تأكد من ربط ملف إعدادات فايربيز بشكل صحيح.");
@@ -220,7 +244,7 @@
         }
 
         function updateDashboardStats() {
-            let filtered = (currentSupervisor === "المدير العام") ? allStudentsData : allStudentsData.filter(s => s.createdBy === currentSupervisor);
+            let filtered = (currentSupervisor === "المدير العام") ? allStudentsData : allStudentsData.filter(s => s.createdBy === currentSupervisor || s.CreatedBy === currentSupervisor);
             
             let total = filtered.length;
             let paid = filtered.filter(s => s.paymentStatus === "تم الدفع" || s.paymentStatus === "paid").length;
@@ -234,7 +258,7 @@
         }
 
         function buildPaymentChart() {
-            let filtered = (currentSupervisor === "المدير العام") ? allStudentsData : allStudentsData.filter(s => s.createdBy === currentSupervisor);
+            let filtered = (currentSupervisor === "المدير العام") ? allStudentsData : allStudentsData.filter(s => s.createdBy === currentSupervisor || s.CreatedBy === currentSupervisor);
             
             let paid = filtered.filter(s => s.paymentStatus === "تم الدفع" || s.paymentStatus === "paid").length;
             let unpaid = filtered.filter(s => s.paymentStatus === "لم يدفع" || s.paymentStatus === "unpaid").length;
@@ -271,7 +295,7 @@
         }
 
         function buildTeacherCards() {
-            let filtered = (currentSupervisor === "المدير العام") ? allStudentsData : allStudentsData.filter(s => s.createdBy === currentSupervisor);
+            let filtered = (currentSupervisor === "المدير العام") ? allStudentsData : allStudentsData.filter(s => s.createdBy === currentSupervisor || s.CreatedBy === currentSupervisor);
             
             let teacherCounts = {};
             filtered.forEach(s => {
@@ -312,7 +336,7 @@
            🧠 الدوال والسكربتات الخاصة بمنظومة المواعيد 
            ========================================================================= */
         function populateTeachersDropdown() {
-            let filtered = (currentSupervisor === "المدير العام") ? allStudentsData : allStudentsData.filter(s => s.createdBy === currentSupervisor);
+            let filtered = (currentSupervisor === "المدير العام") ? allStudentsData : allStudentsData.filter(s => s.createdBy === currentSupervisor || s.CreatedBy === currentSupervisor);
             let teachers = [...new Set(filtered.map(s => s.teacherName).filter(Boolean))];
             
             const select = document.getElementById('filter-teacher-select');
@@ -333,22 +357,31 @@
             const tbody = document.getElementById('schedule-table-body');
             if(!tbody) return;
             
-            let filteredData = (currentSupervisor === "المدير العام") ? allStudentsData : allStudentsData.filter(s => s.createdBy === currentSupervisor);
+            let filteredData = (currentSupervisor === "المدير العام") ? allStudentsData : allStudentsData.filter(s => s.createdBy === currentSupervisor || s.CreatedBy === currentSupervisor);
             tbody.innerHTML = "";
 
+            const daysAr = ['الأحد', 'الإثنين', 'الثلاثاء', 'الأربعاء', 'الخميس', 'الجمعة', 'السبت'];
+            const daysEng = ['Sunday', 'Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday'];
+
             if (!selectedTeacher) {
-                const days = ['الأحد', 'الإثنين', 'الثلاثاء', 'الأربعاء', 'الخميس', 'الجمعة', 'السبت'];
-                const todayName = days[new Date().getDay()];
+                const todayIdx = new Date().getDay();
+                const todayNameAr = daysAr[todayIdx];
+                const todayNameEng = daysEng[todayIdx];
                 
-                let todayLessons = filteredData.filter(s => s.lessonDays && s.lessonDays.includes(todayName));
+                let todayLessons = filteredData.filter(s => s.Schedule && s.Schedule[todayNameEng] && s.Schedule[todayNameEng].trim() !== "");
 
                 if(todayLessons.length === 0) {
-                    tbody.innerHTML = `<tr><td colspan="5" style="text-align: center; padding: 20px; color: var(--warning);">لا توجد حصص مجدولة لليوم (${todayName}) في نطاق صلاحياتك.</td></tr>`;
+                    tbody.innerHTML = `<tr><td colspan="5" style="text-align: center; padding: 20px; color: var(--warning);">لا توجد حصص مجدولة لليوم (${todayNameAr}) في نطاق صلاحياتك.</td></tr>`;
                     return;
                 }
 
                 todayLessons.forEach(student => {
-                    renderScheduleRow(tbody, todayName, student);
+                    const time = student.Schedule[todayNameEng];
+                    const renderStudent = {
+                        ...student,
+                        lessonTime: time
+                    };
+                    renderScheduleRow(tbody, todayNameAr, renderStudent);
                 });
             } else {
                 let teacherStudents = filteredData.filter(s => s.teacherName === selectedTeacher);
@@ -359,15 +392,41 @@
                 }
 
                 teacherStudents.forEach(student => {
-                    const studentDays = student.lessonDays ? student.lessonDays.join(' و ') : 'غير محدد';
-                    renderScheduleRow(tbody, studentDays, student);
+                    let studentDays = [];
+                    let lessonTimes = [];
+                    if (student.Schedule) {
+                        const dayMappingAr = {
+                            Sunday: 'الأحد',
+                            Monday: 'الإثنين',
+                            Tuesday: 'الثلاثاء',
+                            Wednesday: 'الأربعاء',
+                            Thursday: 'الخميس',
+                            Friday: 'الجمعة',
+                            Saturday: 'السبت'
+                        };
+                        for (const [dayEng, time] of Object.entries(student.Schedule)) {
+                            if (time && time.trim() !== "") {
+                                studentDays.push(dayMappingAr[dayEng] || dayEng);
+                                if (!lessonTimes.includes(time)) {
+                                    lessonTimes.push(time);
+                                }
+                            }
+                        }
+                    }
+                    const daysText = studentDays.length > 0 ? studentDays.join(' و ') : 'غير محدد';
+                    const timeText = lessonTimes.length > 0 ? lessonTimes.join(', ') : 'غير محدد';
+                    
+                    const renderStudent = {
+                        ...student,
+                        lessonTime: timeText
+                    };
+                    renderScheduleRow(tbody, daysText, renderStudent);
                 });
             }
         }
 
         function renderScheduleRow(tbody, dayText, student) {
-            // المعالجة لضمان ظهور اسم الطالب سواء كان محفوظاً تحت name أو studentName
-            let studentDisplayName = student.name || student.studentName || 'غير متوفر';
+            let studentDisplayName = student.Name || student.studentName || 'غير متوفر';
             
             tbody.innerHTML += `
                 <tr style="border-bottom: 1px solid var(--border-color); font-weight: 600;">
@@ -399,8 +458,30 @@
                 preConfirm: () => { return document.getElementById('swal-input-time').value; }
             }).then((result) => {
                 if (result.isConfirmed && result.value) {
-                    db.collection("students").doc(studentId).update({
-                        lessonTime: result.value
+                    db.collection("students").doc(studentId).get().then(doc => {
+                        if (doc.exists) {
+                            const studentData = doc.data();
+                            const currentSchedule = studentData.Schedule || {};
+                            const updatedSchedule = { ...currentSchedule };
+                            
+                            let updatedCount = 0;
+                            for (const day of Object.keys(updatedSchedule)) {
+                                if (updatedSchedule[day] && updatedSchedule[day].trim() !== "") {
+                                    updatedSchedule[day] = result.value;
+                                    updatedCount++;
+                                }
+                            }
+                            
+                            if (updatedCount === 0) {
+                                const daysEng = ['Sunday', 'Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday'];
+                                const todayNameEng = daysEng[new Date().getDay()];
+                                updatedSchedule[todayNameEng] = result.value;
+                            }
+
+                            return db.collection("students").doc(studentId).update({
+                                Schedule: updatedSchedule
+                            });
+                        }
                     }).then(() => {
                         Swal.fire({
                             icon: 'success',
@@ -423,23 +504,26 @@
                 return;
             }
 
-            const days = ['الأحد', 'الإثنين', 'الثلاثاء', 'الأربعاء', 'الخميس', 'الجمعة', 'السبت'];
-            const todayName = days[new Date().getDay()];
+            const daysAr = ['الأحد', 'الإثنين', 'الثلاثاء', 'الأربعاء', 'الخميس', 'الجمعة', 'السبت'];
+            const daysEng = ['Sunday', 'Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday'];
+            const todayIdx = new Date().getDay();
+            const todayNameAr = daysAr[todayIdx];
+            const todayNameEng = daysEng[todayIdx];
             
-            let filteredData = (currentSupervisor === "المدير العام") ? allStudentsData : allStudentsData.filter(s => s.createdBy === currentSupervisor);
-            let todayLessons = filteredData.filter(s => s.teacherName === teacherName && s.lessonDays && s.lessonDays.includes(todayName));
+            let filteredData = (currentSupervisor === "المدير العام") ? allStudentsData : allStudentsData.filter(s => s.createdBy === currentSupervisor || s.CreatedBy === currentSupervisor);
+            let todayLessons = filteredData.filter(s => s.teacherName === teacherName && s.Schedule && s.Schedule[todayNameEng] && s.Schedule[todayNameEng].trim() !== "");
             
             if (todayLessons.length === 0) {
-                Swal.fire('لا توجد حصص', `المعلم/ة ${teacherName} ليس لديه حصص لليوم (${todayName}).`, 'info');
+                Swal.fire('لا توجد حصص', `المعلم/ة ${teacherName} ليس لديه حصص لليوم (${todayNameAr}).`, 'info');
                 return;
             }
 
             let messageText = `السلام عليكم ورحمة الله وبركاته، أ/ *${teacherName}* 🌹\n`;
-            messageText += `إليك جدول حصص اليوم (*${todayName}*) الخاص بك في أكاديمية القارئ:\n\n`;
+            messageText += `إليك جدول حصص اليوم (*${todayNameAr}*) الخاص بك في أكاديمية القارئ:\n\n`;
             
             todayLessons.forEach((lesson, index) => {
-                let studentDisplayName = lesson.name || lesson.studentName || 'غير متوفر';
-                messageText += `${index + 1}. الطالب: *${studentDisplayName}* 📖 - الموعد: *${lesson.lessonTime || 'غير محدد'}*\n`;
+                let studentDisplayName = lesson.Name || lesson.studentName || 'غير متوفر';
+                messageText += `${index + 1}. الطالب: *${studentDisplayName}* 📖 - الموعد: *${lesson.Schedule[todayNameEng]}*\n`;
             });
             
             messageText += `\nتمنياتنا لكم بالتوفيق والسداد ✨`;
