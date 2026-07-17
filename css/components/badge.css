@@ -1,0 +1,67 @@
+/* =========================================================================
+   🏷️ badge.css - الشارات والملصقات وحالات الطلاب المالية والدراسية
+   ========================================================================= */
+
+.badge {
+    padding: 8px 16px;
+    border-radius: 30px;
+    font-size: 13px;
+    font-weight: 700;
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    background-color: rgba(212, 175, 55, 0.1);
+    color: var(--gold-primary);
+    border: 1px solid rgba(212, 175, 55, 0.2);
+}
+
+/* شارات الحالة الملونة في الجداول */
+.status-badge {
+    padding: 4px 10px;
+    border-radius: 6px;
+    font-size: 12px;
+    font-weight: 700;
+    display: inline-block;
+}
+
+.status-active {
+    background-color: rgba(16, 185, 129, 0.15);
+    color: var(--success);
+}
+
+.status-paused {
+    background-color: rgba(245, 158, 11, 0.15);
+    color: var(--warning);
+}
+
+.status-paid {
+    background-color: rgba(16, 185, 129, 0.15);
+    color: var(--success);
+}
+
+.status-unpaid {
+    background-color: rgba(239, 68, 68, 0.15);
+    color: var(--danger);
+}
+
+.student-count-badge {
+    background-color: var(--info);
+    color: white;
+    padding: 6px 14px;
+    border-radius: 8px;
+    font-weight: 700;
+    font-size: 13px;
+}
+
+/* شارات الحالة المالية المخصصة لكشف الحسابات */
+.badge-unpaid {
+    background-color: rgba(239, 68, 68, 0.1);
+    color: var(--danger);
+    border: 1px solid rgba(239, 68, 68, 0.2);
+}
+
+.badge-deferred {
+    background-color: rgba(245, 158, 11, 0.1);
+    color: var(--warning);
+    border: 1px solid rgba(245, 158, 11, 0.2);
+}

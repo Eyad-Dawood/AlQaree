@@ -1,0 +1,86 @@
+/* =========================================================================
+   🏛️ layout.css - الهيكل وتصميم المحتوى والشبكات
+   ========================================================================= */
+
+/* صفحات لوحة التحكم العادية */
+body:not(.login-page) {
+    display: flex;
+    overflow-x: hidden;
+}
+
+/* صفحة تسجيل الدخول */
+body.login-page {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+
+/* منطقة المحتوى الرئيسي */
+.main-content {
+    margin-right: 280px;
+    width: calc(100% - 280px);
+    padding: 40px;
+}
+
+/* الهيدر العلوي */
+.header-panel {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 32px;
+    background-color: var(--bg-card);
+    padding: 24px;
+    border-radius: 16px;
+    border: 1px solid var(--border-color);
+}
+
+.welcome-section h1 {
+    font-size: 24px;
+    font-weight: 800;
+    margin-bottom: 6px;
+}
+
+.welcome-section p {
+    color: var(--text-secondary);
+    font-size: 14px;
+}
+
+/* 📊 شبكات وتصميم لوحة البيانات */
+.stats-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+    gap: 24px;
+    margin-bottom: 40px;
+}
+
+.dashboard-layout {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 32px;
+}
+
+.financial-summary-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 24px;
+    margin-bottom: 32px;
+}
+
+.settings-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+    gap: 32px;
+}
+
+/* شبكة النماذج والاستمارات */
+.form-row {
+    display: flex;
+    gap: 16px;
+    margin-bottom: 18px;
+}
+
+.form-row.three-cols {
+    display: grid;
+    grid-template-columns: 1fr 1fr 1fr;
+    gap: 16px;
+}

@@ -1,0 +1,145 @@
+/* =========================================================================
+   🎴 card.css - البطاقات واللوحات الإحصائية
+   ========================================================================= */
+
+.card {
+    background-color: var(--bg-card);
+    border: 1px solid var(--border-color);
+    border-radius: 16px;
+    padding: 28px;
+    box-shadow: 0 4px 20px rgba(0, 0, 0, 0.2);
+}
+
+.card h2 {
+    font-size: 18px;
+    font-weight: 700;
+    margin-bottom: 24px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    border-bottom: 1px solid var(--border-color);
+    padding-bottom: 14px;
+    color: var(--gold-primary);
+}
+
+.card h2 span {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+}
+
+.card p {
+    color: var(--text-secondary);
+    font-size: 14px;
+    line-height: 1.6;
+    margin-bottom: 24px;
+}
+
+/* 📊 بطاقات الإحصاء الدائرية الفخمة */
+.stat-card {
+    background-color: var(--bg-card);
+    border: 1px solid var(--border-color);
+    padding: 24px;
+    border-radius: 16px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    transition: transform 0.3s ease;
+}
+
+.stat-card:hover {
+    transform: translateY(-5px);
+}
+
+.stat-info h3 {
+    font-size: 14px;
+    color: var(--text-secondary);
+    margin-bottom: 8px;
+    font-weight: 600;
+}
+
+.stat-info .number {
+    font-size: 32px;
+    font-weight: 800;
+}
+
+.stat-icon {
+    width: 56px;
+    height: 56px;
+    border-radius: 14px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 24px;
+}
+
+/* 👨‍🏫 قائمة بطاقات المعلمين الحيوية */
+.teachers-container {
+    display: flex;
+    flex-direction: column;
+    gap: 16px;
+    max-height: 380px;
+    overflow-y: auto;
+    padding-left: 8px;
+}
+
+.teacher-stat-card {
+    background: rgba(36, 50, 77, 0.3);
+    border: 1px solid var(--border-color);
+    padding: 16px 20px;
+    border-radius: 12px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    transition: all 0.2s ease;
+}
+
+.teacher-stat-card:hover {
+    background: rgba(36, 50, 77, 0.6);
+    border-color: var(--gold-primary);
+}
+
+.teacher-meta {
+    display: flex;
+    align-items: center;
+    gap: 14px;
+}
+
+.teacher-avatar {
+    width: 44px;
+    height: 44px;
+    background: rgba(212, 175, 55, 0.1);
+    color: var(--gold-primary);
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 18px;
+}
+
+.teacher-name {
+    font-weight: 700;
+    font-size: 15px;
+}
+
+/* 💰 بطاقات إحصائيات الرسوم والمالية */
+.fin-card {
+    background-color: var(--bg-card);
+    border: 1px solid var(--border-color);
+    padding: 24px;
+    border-radius: 16px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+}
+
+.fin-info h3 {
+    font-size: 14px;
+    color: var(--text-secondary);
+    margin-bottom: 6px;
+}
+
+.fin-info .count {
+    font-size: 28px;
+    font-weight: 800;
+}

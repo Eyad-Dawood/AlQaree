@@ -1,0 +1,248 @@
+/* =========================================================================
+   🔘 button.css - الأزرار والعمليات وتأثيراتها الحركية
+   ========================================================================= */
+
+/* زر تسجيل الدخول الرئيسي */
+.btn-login {
+    width: 100%;
+    padding: 14px;
+    background-color: var(--gold-primary);
+    color: #000;
+    border: none;
+    border-radius: 10px;
+    font-size: 16px;
+    font-weight: 800;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    margin-top: 10px;
+}
+
+.btn-login:hover {
+    background-color: var(--gold-hover);
+    color: var(--text-primary);
+}
+
+.btn-login:disabled {
+    background-color: var(--border-color);
+    color: var(--text-secondary);
+    cursor: not-allowed;
+}
+
+/* زر تحميل التقارير PDF */
+.btn-pdf {
+    background-color: var(--gold-primary);
+    color: #000;
+    padding: 10px 18px;
+    border: none;
+    border-radius: 8px;
+    font-weight: bold;
+    cursor: pointer;
+    transition: background 0.3s ease;
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+}
+
+.btn-pdf:hover {
+    background-color: var(--gold-hover);
+}
+
+/* زر الذهب الفخم الأساسي لإضافة سجلات جديدة */
+.btn-gold {
+    background-color: var(--gold-primary);
+    color: var(--bg-main);
+    border: none;
+    padding: 12px 24px;
+    border-radius: 10px;
+    font-weight: 700;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    font-size: 14px;
+    transition: all 0.3s ease;
+}
+
+.btn-gold:hover {
+    background-color: var(--gold-hover);
+}
+
+/* الأزرار الدلالية الملونة للتحكم في الجدول */
+.btn-danger {
+    background-color: rgba(239, 68, 68, 0.1);
+    color: var(--danger);
+    border: 1px solid rgba(239, 68, 68, 0.2);
+    padding: 6px 12px;
+    border-radius: 8px;
+    cursor: pointer;
+    font-weight: 700;
+    transition: all 0.2s ease;
+    margin-right: 4px;
+}
+
+.btn-danger:hover {
+    background-color: var(--danger);
+    color: white;
+}
+
+.btn-info {
+    background-color: rgba(59, 130, 246, 0.1);
+    color: var(--info);
+    border: 1px solid rgba(59, 130, 246, 0.2);
+    padding: 6px 12px;
+    border-radius: 8px;
+    cursor: pointer;
+    font-weight: 700;
+    margin-right: 4px;
+}
+
+.btn-info:hover {
+    background-color: var(--info);
+    color: white;
+}
+
+.btn-warning {
+    background-color: rgba(245, 158, 11, 0.1);
+    color: var(--warning);
+    border: 1px solid rgba(245, 158, 11, 0.2);
+    padding: 6px 12px;
+    border-radius: 8px;
+    cursor: pointer;
+    font-weight: 700;
+    transition: all 0.2s ease;
+}
+
+.btn-warning:hover {
+    background-color: var(--warning);
+    color: white;
+}
+
+.btn-success {
+    background-color: rgba(16, 185, 129, 0.1);
+    color: var(--success);
+    border: 1px solid rgba(16, 185, 129, 0.2);
+    padding: 8px 14px;
+    border-radius: 8px;
+    cursor: pointer;
+    font-weight: 700;
+    font-size: 13px;
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    transition: all 0.2s ease;
+    border: none;
+}
+
+.btn-success:hover {
+    background-color: var(--success);
+    color: white;
+}
+
+/* زر عرض المزيد من الطلاب */
+.btn-load-more {
+    background-color: transparent;
+    color: var(--gold-primary);
+    border: 1px solid var(--gold-primary);
+    padding: 10px 32px;
+    border-radius: 10px;
+    font-weight: 700;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    font-size: 14px;
+}
+
+.btn-load-more:hover {
+    background-color: var(--gold-primary);
+    color: var(--bg-main);
+}
+
+/* زر إرسال تذكير مالي عبر الواتساب */
+.btn-whatsapp {
+    background-color: rgba(16, 185, 129, 0.1);
+    color: var(--success);
+    border: 1px solid rgba(16, 185, 129, 0.2);
+    padding: 8px 16px;
+    border-radius: 8px;
+    cursor: pointer;
+    font-weight: 700;
+    font-size: 13px;
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    transition: all 0.2s ease;
+}
+
+.btn-whatsapp:hover {
+    background-color: var(--success);
+    color: white;
+}
+
+/* زر الإلغاء في المودال */
+.btn-cancel {
+    background: none;
+    border: 1px solid var(--border-color);
+    color: var(--text-secondary);
+    padding: 8px 16px;
+    border-radius: 8px;
+    cursor: pointer;
+}
+
+/* أزرار لوحة التحكم لأدوات السيرفر (settings.html) */
+.btn-control {
+    width: 100%;
+    padding: 14px;
+    border-radius: 10px;
+    font-size: 14px;
+    font-weight: 700;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 10px;
+    transition: all 0.3s ease;
+    border: none;
+}
+
+.btn-export-csv {
+    background-color: rgba(59, 130, 246, 0.1);
+    color: var(--info);
+    border: 1px solid rgba(59, 130, 246, 0.2);
+}
+
+.btn-export-csv:hover {
+    background-color: var(--info);
+    color: white;
+}
+
+.btn-upload-data {
+    background-color: rgba(212, 175, 55, 0.1);
+    color: var(--gold-primary);
+    border: 1px solid rgba(212, 175, 55, 0.2);
+}
+
+.btn-upload-data:hover {
+    background-color: var(--gold-primary);
+    color: #000;
+}
+
+.btn-export-json {
+    background-color: rgba(16, 185, 129, 0.1);
+    color: var(--success);
+    border: 1px solid rgba(16, 185, 129, 0.2);
+}
+
+.btn-export-json:hover {
+    background-color: var(--success);
+    color: white;
+}
+
+.btn-danger-zone {
+    background-color: rgba(239, 68, 68, 0.1);
+    color: var(--danger);
+    border: 1px solid rgba(239, 68, 68, 0.2);
+}
+
+.btn-danger-zone:hover {
+    background-color: var(--danger);
+    color: white;
+}

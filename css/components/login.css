@@ -1,0 +1,35 @@
+/* =========================================================================
+   🔑 login.css - لوحة تسجيل الدخول واللوجو الخاص ببوابة المشرفين
+   ========================================================================= */
+
+.login-container {
+    background-color: var(--bg-card);
+    border: 1px solid var(--border-color);
+    border-radius: 16px;
+    padding: 40px;
+    width: 100%;
+    max-width: 420px;
+    box-shadow: 0 4px 25px rgba(0, 0, 0, 0.3);
+    text-align: center;
+}
+
+.logo-section img {
+    width: 140px;
+    height: auto;
+    object-fit: contain;
+    border-radius: 8px;
+    margin-bottom: 15px;
+    display: inline-block;
+}
+
+.login-container h1 {
+    font-size: 24px;
+    font-weight: 800;
+    margin-bottom: 8px;
+}
+
+.login-container p {
+    color: var(--text-secondary);
+    font-size: 14px;
+    margin-bottom: 30px;
+}

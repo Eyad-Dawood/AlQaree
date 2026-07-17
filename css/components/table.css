@@ -1,0 +1,35 @@
+/* =========================================================================
+   📊 table.css - الجداول وقوائم البيانات وحالات الوقوف
+   ========================================================================= */
+
+.table-responsive {
+    width: 100%;
+    overflow-x: auto;
+}
+
+table {
+    width: 100%;
+    border-collapse: collapse;
+    text-align: right;
+}
+
+th {
+    background-color: rgba(36, 50, 77, 0.4);
+    color: var(--gold-primary);
+    padding: 16px;
+    font-weight: 700;
+    font-size: 14px;
+    border-bottom: 2px solid var(--border-color);
+}
+
+td {
+    padding: 16px;
+    border-bottom: 1px solid var(--border-color);
+    font-size: 14px;
+    color: var(--text-primary);
+    vertical-align: middle;
+}
+
+tr:hover td {
+    background-color: rgba(36, 50, 77, 0.2);
+}
