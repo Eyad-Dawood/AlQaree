@@ -3,41 +3,41 @@
    ========================================================================= */
 
 :root {
-    --bg-main: #0f141c;
-    --bg-card: #161f30;
-    --bg-nav: #121926;
-    --text-primary: #f8fafc;
-    --text-secondary: #94a3b8;
-    --gold-primary: #d4af37;
-    --gold-hover: #aa8416;
-    --success: #10b981;
-    --danger: #ef4444;
-    --warning: #f59e0b;
-    --info: #3b82f6;
-    --border-color: #24324d;
-    --input-bg: #1e293b;
+  --bg-main: #0f141c;
+  --bg-card: #161f30;
+  --bg-nav: #121926;
+  --text-primary: #f8fafc;
+  --text-secondary: #94a3b8;
+  --gold-primary: #d4af37;
+  --gold-hover: #aa8416;
+  --success: #10b981;
+  --danger: #ef4444;
+  --warning: #f59e0b;
+  --info: #3b82f6;
+  --border-color: #24324d;
+  --input-bg: #1e293b;
 }
 
 * {
-    box-sizing: border-box;
-    margin: 0;
-    padding: 0;
-    font-family: 'Cairo', sans-serif;
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+  font-family: "Cairo", sans-serif;
 }
 
 body {
-    background-color: var(--bg-main);
-    color: var(--text-primary);
-    min-height: 100vh;
+  background-color: var(--bg-main);
+  color: var(--text-primary);
+  min-height: 100vh;
 }
 
 /* 📜 شريط التمرير المخصص */
 ::-webkit-scrollbar {
-    width: 6px;
-    height: 6px;
+  width: 6px;
+  height: 6px;
 }
 
 ::-webkit-scrollbar-thumb {
-    background: var(--border-color);
-    border-radius: 10px;
+  background: var(--border-color);
+  border-radius: 10px;
 }
