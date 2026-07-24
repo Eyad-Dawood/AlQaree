@@ -1,0 +1,480 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>سجل وإدارة العائلات | أكاديمية القارئ</title>
+    
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Cairo:wght@300;400;600;700;800&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+    
+    <script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-app-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-auth-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore-compat.js"></script>
+    <script src="Scripts/auth-router.js"></script>
+
+    <link rel="stylesheet" href="css/style.css">
+    <style>
+        .families-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(320px, 1fr));
+            gap: 24px;
+            margin-top: 24px;
+        }
+        .family-card {
+            display: flex;
+            flex-direction: column;
+            justify-content: space-between;
+        }
+        .family-title {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            font-weight: 800;
+            color: var(--gold-primary);
+            border-bottom: 1px solid var(--border-color);
+            padding-bottom: 12px;
+            margin-bottom: 16px;
+        }
+        .family-student-item {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 8px 12px;
+            background: rgba(255, 255, 255, 0.02);
+            border: 1px solid var(--border-color);
+            border-radius: 8px;
+            margin-bottom: 8px;
+            font-size: 14px;
+            transition: all 0.2s ease;
+        }
+        .family-student-item:hover {
+            background: rgba(255, 255, 255, 0.05);
+            border-color: var(--gold-primary);
+        }
+        .student-list-container {
+            max-height: 200px;
+            overflow-y: auto;
+            margin-bottom: 16px;
+            padding-left: 4px;
+        }
+        .add-student-form {
+            display: flex;
+            gap: 8px;
+            margin-top: auto;
+            border-top: 1px solid var(--border-color);
+            padding-top: 16px;
+        }
+        .empty-badge {
+            color: var(--text-secondary);
+            font-style: italic;
+            font-size: 13px;
+            text-align: center;
+            padding: 16px 0;
+        }
+        .btn-remove-student {
+            background: none;
+            border: none;
+            color: var(--danger);
+            cursor: pointer;
+            font-size: 16px;
+            padding: 4px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            transition: transform 0.2s ease;
+        }
+        .btn-remove-student:hover {
+            transform: scale(1.15);
+        }
+    </style>
+</head>
+<body>
+
+    <nav class="sidebar">
+        <div class="sidebar-brand">
+            <i class="fa-solid fa-book-quran"></i>
+            <span>أكاديمية القارئ</span>
+        </div>
+        <ul class="sidebar-menu">
+            <li><a href="dashboard.html"><i class="fa-solid fa-chart-pie"></i>لوحة البيانات</a></li>
+            <li><a href="students.html"><i class="fa-solid fa-graduation-cap"></i>سجل الطلاب</a></li>
+            <li class="active"><a href="families.html"><i class="fa-solid fa-people-roof"></i>سجل العائلات</a></li>
+            <li><a href="teachers.html"><i class="fa-solid fa-chalkboard-user"></i>متابعة المعلمين</a></li>
+            <li><a href="financial.html"><i class="fa-solid fa-wallet"></i>كشف الحسابات</a></li>
+            <li><a href="archive.html"><i class="fa-solid fa-archive"></i>الأرشيف السحابي</a></li>
+            <li><a href="settings.html"><i class="fa-solid fa-sliders"></i>أدوات السيرفر</a></li>
+            <li><a href="#" onclick="logout(event)" class="logout-btn"><i class="fa-solid fa-right-from-bracket"></i>تسجيل الخروج</a></li>
+        </ul>
+    </nav>
+
+    <main class="main-content">
+        
+        <header class="header-panel">
+            <div class="welcome-section">
+                <h1>👥 منظومة إدارة وسجل العائلات المشترك</h1>
+                <p>إدارة وتجميع الطلاب كأخوة وعائلات لتسهيل المتابعة والعمليات المالية المشتركة.</p>
+            </div>
+            <div>
+                <span id="current-user-badge" class="badge">المشرف: جاري التحميل...</span>
+            </div>
+        </header>
+
+        <section class="stats-grid">
+            <div class="stat-card">
+                <div class="stat-info">
+                    <h3>إجمالي العائلات</h3>
+                    <div class="number" id="stat-total-families">0</div>
+                </div>
+                <div class="stat-icon" style="background-color: rgba(212, 175, 55, 0.1); color: var(--gold-primary);">
+                    <i class="fa-solid fa-people-roof"></i>
+                </div>
+            </div>
+            <div class="stat-card">
+                <div class="stat-info">
+                    <h3>طلاب مرتبطين بعائلات</h3>
+                    <div class="number" id="stat-linked-students">0</div>
+                </div>
+                <div class="stat-icon" style="background-color: rgba(16, 185, 129, 0.1); color: var(--success);">
+                    <i class="fa-solid fa-user-check"></i>
+                </div>
+            </div>
+            <div class="stat-card">
+                <div class="stat-info">
+                    <h3>طلاب بدون عائلة</h3>
+                    <div class="number" id="stat-unassigned-students">0</div>
+                </div>
+                <div class="stat-icon" style="background-color: rgba(239, 68, 68, 0.1); color: var(--danger);">
+                    <i class="fa-solid fa-user-minus"></i>
+                </div>
+            </div>
+        </section>
+
+        <section class="filter-panel">
+            <div class="search-box" style="flex: 1;">
+                <i class="fa-solid fa-magnifying-glass"></i>
+                <input type="text" id="search-input" oninput="filterFamilies()" placeholder="ابحث باسم العائلة...">
+            </div>
+            <button class="btn-gold" onclick="createNewFamily()">
+                <i class="fa-solid fa-circle-plus"></i> إضافة عائلة جديدة
+            </button>
+        </section>
+
+        <div class="families-grid" id="families-container">
+            <div style="grid-column: 1 / -1; text-align: center; padding: 40px; color: var(--text-secondary);">
+                <i class="fa-solid fa-spinner fa-spin" style="font-size: 24px; margin-bottom: 12px; color: var(--gold-primary);"></i>
+                <p>جاري تحميل سجل العائلات من السيرفر السحابي...</p>
+            </div>
+        </div>
+
+    </main>
+
+    <script>
+        if (!firebase.apps.length) firebase.initializeApp(firebaseConfig);
+        var db = firebase.firestore();
+
+        var allStudents = [];
+        var allFamilies = [];
+        var currentSupervisor = localStorage.getItem("currentSupervisor");
+        
+        if (!currentSupervisor) {
+            window.location.href = "index.html";
+        }
+
+        window.onload = function() {
+            if (typeof checkPageProtection === "function") {
+                checkPageProtection("كل المشرفين");
+            }
+            
+            let userBadge = document.getElementById("current-user-badge");
+            if (userBadge) userBadge.innerHTML = `<i class="fa-solid fa-user-shield"></i> المشرف: ${currentSupervisor}`;
+            
+            startSync();
+        };
+
+        function startSync() {
+            // الاستماع للطلاب
+            db.collection("students").onSnapshot((snapshot) => {
+                allStudents = [];
+                snapshot.forEach((doc) => {
+                    let data = doc.data();
+                    allStudents.push({
+                        id: doc.id,
+                        name: data.Name || data.studentName || 'مجهول',
+                        subscriptionNumber: data.SubscriptionNumber || data.membershipId || '',
+                        status: data.Status || data.status || 'نشط'
+                    });
+                });
+                renderUI();
+            });
+
+            // الاستماع للعائلات
+            db.collection("families").onSnapshot((snapshot) => {
+                allFamilies = [];
+                snapshot.forEach((doc) => {
+                    let data = doc.data();
+                    allFamilies.push({
+                        id: doc.id, // اسم العائلة
+                        students: data.Students || []
+                    });
+                });
+                renderUI();
+            });
+        }
+
+        function renderUI() {
+            const container = document.getElementById("families-container");
+            if (!container) return;
+
+            // بناء خريطة الطلاب للوصول السريع
+            const studentMap = {};
+            allStudents.forEach(s => {
+                studentMap[s.id] = s;
+            });
+
+            // بناء خريطة الطلاب المرتبطين بعائلات
+            const studentToFamilyMap = {};
+            let linkedActiveCount = 0;
+
+            allFamilies.forEach(f => {
+                f.students.forEach(sId => {
+                    studentToFamilyMap[sId] = f.id;
+                    const student = studentMap[sId];
+                    if (student && student.status !== "مؤرشف") {
+                        linkedActiveCount++;
+                    }
+                });
+            });
+
+            // تصفية الطلاب النشطين غير المؤرشفين
+            const activeStudents = allStudents.filter(s => s.status !== "مؤرشف");
+            const unassignedCount = activeStudents.length - linkedActiveCount;
+
+            // تحديث الإحصائيات
+            document.getElementById("stat-total-families").innerText = allFamilies.length;
+            document.getElementById("stat-linked-students").innerText = linkedActiveCount;
+            document.getElementById("stat-unassigned-students").innerText = Math.max(0, unassignedCount);
+
+            // تصفية العائلات بالبحث
+            const searchQuery = document.getElementById("search-input").value.trim().toLowerCase();
+            const filteredFamilies = allFamilies.filter(f => f.id.toLowerCase().includes(searchQuery));
+
+            // ترتيب العائلات أبجدياً
+            filteredFamilies.sort((a, b) => a.id.localeCompare(b.id, 'ar'));
+
+            if (filteredFamilies.length === 0) {
+                container.innerHTML = `
+                    <div style="grid-column: 1 / -1; text-align: center; padding: 40px; color: var(--text-secondary);" class="card">
+                        <i class="fa-solid fa-folder-open" style="font-size: 40px; margin-bottom: 12px; color: var(--border-color);"></i>
+                        <p>لا توجد عائلات تطابق البحث أو السجل فارغ.</p>
+                    </div>`;
+                return;
+            }
+
+            container.innerHTML = "";
+
+            filteredFamilies.forEach(family => {
+                const card = document.createElement("div");
+                card.className = "card family-card";
+
+                // تصفية الطلاب الفعليين داخل العائلة
+                const familyStudentsHTML = family.students.map(sId => {
+                    const student = studentMap[sId];
+                    if (!student) return ''; // طالب محذوف
+                    
+                    const archiveStatus = student.status === "مؤرشف" ? ' <span style="font-size:10px; color:var(--danger);">(مؤرشف)</span>' : '';
+                    return `
+                        <div class="family-student-item">
+                            <div>
+                                <i class="fa-solid fa-graduation-cap" style="color: var(--gold-primary); margin-left: 6px; font-size: 12px;"></i>
+                                <span style="font-weight: 600;">${student.name}</span>
+                                <span style="color: var(--text-secondary); font-size: 12px; margin-right: 5px;">(#${student.subscriptionNumber})${archiveStatus}</span>
+                            </div>
+                            <button class="btn-remove-student" onclick="removeStudentFromFamily('${family.id}', '${sId}', '${student.name}')" title="إزالة من العائلة">
+                                <i class="fa-solid fa-user-xmark"></i>
+                            </button>
+                        </div>
+                    `;
+                }).join("");
+
+                // بناء خيارات الإضافة (الطلاب غير المرتبطين بأي عائلة ونشطين)
+                let optionsHTML = '<option value="">اختر طالباً لإضافته...</option>';
+                activeStudents.forEach(s => {
+                    if (!studentToFamilyMap[s.id]) {
+                        optionsHTML += `<option value="${s.id}">${s.name} (#${s.subscriptionNumber})</option>`;
+                    }
+                });
+
+                card.innerHTML = `
+                    <div>
+                        <div class="family-title">
+                            <span><i class="fa-solid fa-users" style="margin-left: 8px;"></i>${family.id}</span>
+                            <button class="btn-danger" style="padding: 4px 8px; font-size: 12px; border-radius: 6px;" onclick="deleteFamily('${family.id}')" title="حذف العائلة بالكامل">
+                                <i class="fa-solid fa-trash-can"></i>
+                            </button>
+                        </div>
+                        <div class="student-list-container">
+                            ${familyStudentsHTML || '<div class="empty-badge">لا يوجد طلاب في هذه العائلة حالياً</div>'}
+                        </div>
+                    </div>
+                    <div class="add-student-form">
+                        <select class="filter-select" style="flex: 1; padding: 8px; font-size: 13px;" id="add-student-select-${family.id}">
+                            ${optionsHTML}
+                        </select>
+                        <button class="btn-gold" style="padding: 8px 14px; font-size: 13px; border-radius: 8px;" onclick="addStudentToFamily('${family.id}')">
+                            <i class="fa-solid fa-plus"></i> إضافة
+                        </button>
+                    </div>
+                `;
+
+                container.appendChild(card);
+            });
+        }
+
+        function filterFamilies() {
+            renderUI();
+        }
+
+        function createNewFamily() {
+            Swal.fire({
+                title: 'إنشاء سجل عائلة جديد',
+                input: 'text',
+                inputPlaceholder: 'أدخل اسم العائلة (مثال: عائلة أحمد محمود)',
+                showCancelButton: true,
+                confirmButtonText: 'إنشاء العائلة 🎉',
+                cancelButtonText: 'إلغاء',
+                confirmButtonColor: 'var(--gold-primary)',
+                cancelButtonColor: '#1e293b',
+                inputValidator: (value) => {
+                    if (!value || value.trim() === '') {
+                        return 'يجب إدخال اسم العائلة!';
+                    }
+                    const exists = allFamilies.some(f => f.id.trim() === value.trim());
+                    if (exists) {
+                        return 'هذه العائلة مسجلة بالفعل في النظام!';
+                    }
+                }
+            }).then((result) => {
+                if (result.isConfirmed) {
+                    const familyName = result.value.trim();
+                    Swal.fire({ title: 'جاري إنشاء السجل سحابياً...', didOpen: () => { Swal.showLoading(); } });
+
+                    db.collection("families").doc(familyName).set({
+                        Students: []
+                    }).then(() => {
+                        Swal.fire({
+                            icon: 'success',
+                            title: 'تم إنشاء العائلة بنجاح!',
+                            timer: 1500,
+                            showConfirmButton: false
+                        });
+                    }).catch(err => {
+                        Swal.fire('خطأ سحابي', err.message, 'error');
+                    });
+                }
+            });
+        }
+
+        function addStudentToFamily(familyId) {
+            const select = document.getElementById(`add-student-select-${familyId}`);
+            if (!select) return;
+
+            const studentId = select.value;
+            if (!studentId) {
+                Swal.fire('تنبيه', 'يرجى اختيار طالب من القائمة أولاً.', 'warning');
+                return;
+            }
+
+            Swal.fire({ title: 'جاري الإضافة للعائلة...', didOpen: () => { Swal.showLoading(); } });
+
+            db.collection("families").doc(familyId).update({
+                Students: firebase.firestore.FieldValue.arrayUnion(studentId)
+            }).then(() => {
+                Swal.fire({
+                    icon: 'success',
+                    title: 'تم إضافة الطالب للعائلة بنجاح!',
+                    timer: 1200,
+                    showConfirmButton: false
+                });
+            }).catch(err => {
+                Swal.fire('خطأ سحابي', err.message, 'error');
+            });
+        }
+
+        function removeStudentFromFamily(familyId, studentId, studentName) {
+            Swal.fire({
+                title: 'تأكيد إزالة الطالب؟',
+                text: `هل تريد إزالة الطالب (${studentName}) من (${familyId})؟ لن يتم حذف الطالب من المنظومة.`,
+                icon: 'warning',
+                showCancelButton: true,
+                confirmButtonColor: 'var(--danger)',
+                cancelButtonColor: '#1e293b',
+                confirmButtonText: 'نعم، أزل الطالب',
+                cancelButtonText: 'إلغاء'
+            }).then((result) => {
+                if (result.isConfirmed) {
+                    Swal.fire({ title: 'جاري الإزالة من العائلة...', didOpen: () => { Swal.showLoading(); } });
+
+                    db.collection("families").doc(familyId).update({
+                        Students: firebase.firestore.FieldValue.arrayRemove(studentId)
+                    }).then(() => {
+                        Swal.fire({
+                            icon: 'success',
+                            title: 'تمت إزالة الطالب بنجاح!',
+                            timer: 1200,
+                            showConfirmButton: false
+                        });
+                    }).catch(err => {
+                        Swal.fire('خطأ سحابي', err.message, 'error');
+                    });
+                }
+            });
+        }
+
+        function deleteFamily(familyId) {
+            Swal.fire({
+                title: 'تأكيد حذف العائلة بالكامل؟',
+                text: `سيتم حذف ملف العائلة (${familyId}) نهائياً من السيرفر. لن يتم إزالة أو تعديل بيانات الطلاب المشتركين فيها.`,
+                icon: 'warning',
+                showCancelButton: true,
+                confirmButtonColor: 'var(--danger)',
+                cancelButtonColor: '#1e293b',
+                confirmButtonText: 'نعم، احذف السجل',
+                cancelButtonText: 'إلغاء'
+            }).then((result) => {
+                if (result.isConfirmed) {
+                    Swal.fire({ title: 'جاري الحذف...', didOpen: () => { Swal.showLoading(); } });
+
+                    db.collection("families").doc(familyId).delete().then(() => {
+                        Swal.fire('تم الحذف!', 'تم إزالة سجل العائلة بنجاح.', 'success');
+                    }).catch(err => {
+                        Swal.fire('خطأ سحابي', err.message, 'error');
+                    });
+                }
+            });
+        }
+
+        function logout(event) {
+            if (event) event.preventDefault();
+            Swal.fire({
+                title: 'تسجيل الخروج',
+                text: 'هل تود العودة لصفحة الدخول؟',
+                icon: 'question',
+                showCancelButton: true,
+                confirmButtonText: 'خروج',
+                cancelButtonText: 'إلغاء'
+            }).then(r => {
+                if (r.isConfirmed) {
+                    localStorage.removeItem("currentSupervisor");
+                    localStorage.removeItem("userRole");
+                    window.location.href = "index.html";
+                }
+            });
+        }
+    </script>
+</body>
+</html>
