@@ -162,6 +162,7 @@
         var allStudentsData = [];
         var definedTeachers = []; 
         var teachersMap = {};
+        var teachersPhoneMap = {};
 
         document.addEventListener("DOMContentLoaded", function() {
             if (typeof checkPageProtection === "function") {
@@ -212,12 +213,15 @@
             db.collection("teachers").onSnapshot((snapshot) => {
                 definedTeachers = [];
                 teachersMap = {};
+                teachersPhoneMap = {};
                 snapshot.forEach(doc => {
                     let data = doc.data();
                     let name = data.Name || data.name;
+                    let phone = data.PhoneNumber || data.phone || '';
                     if(name) {
                         definedTeachers.push(name);
                         teachersMap[doc.id] = name;
+                        teachersPhoneMap[name] = phone;
                         if(data.UserId) {
                             teachersMap[data.UserId] = name;
                         }
@@ -468,7 +472,18 @@
             messageText += `\nتمنياتنا لكم بالتوفيق والسداد ✨`;
             
             const encodedMessage = encodeURIComponent(messageText);
-            const whatsappUrl = `https://wa.me/?text=${encodedMessage}`;
+
+            // جلب هاتف المعلم وتطهيره
+            let teacherPhone = teachersPhoneMap[teacherName] || '';
+            let formattedPhone = teacherPhone.replace(/[\s+\-()]/g, '');
+            if (formattedPhone.startsWith('00')) {
+                formattedPhone = formattedPhone.substring(2);
+            }
+
+            const whatsappUrl = formattedPhone 
+                ? `https://wa.me/${formattedPhone}?text=${encodedMessage}` 
+                : `https://wa.me/?text=${encodedMessage}`;
+                
             window.open(whatsappUrl, '_blank');
         }
 
