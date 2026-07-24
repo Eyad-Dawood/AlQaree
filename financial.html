@@ -81,6 +81,7 @@
                             <th>اسم الطالب</th>
                             <th>رقم الهاتف المسجل</th>
                             <th>المعلم المسؤول</th>
+                            <th>عدد الحصص</th>
                             <th>الحالة المالية الحالية</th>
                             <th>إجراء تسوية سريعة</th>
                             <th>محرك تذكير الرسوم (WhatsApp)</th>
@@ -119,7 +120,7 @@
         function startRealtimeFinancialSync() {
             if (typeof db === 'undefined') {
                 console.error("❌ متغير db غير معرف! تأكد من ربط ملف إعدادات فايربيز بشكل صحيح.");
-                document.getElementById('financial-students-tbody').innerHTML = `<tr><td colspan="7" style="text-align:center; color:var(--danger);">خطأ في الاتصال بقاعدة البيانات. تأكد من إعدادات الفايربيز.</td></tr>`;
+                document.getElementById('financial-students-tbody').innerHTML = `<tr><td colspan="8" style="text-align:center; color:var(--danger);">خطأ في الاتصال بقاعدة البيانات. تأكد من إعدادات الفايربيز.</td></tr>`;
                 return;
             }
 
@@ -148,7 +149,8 @@
                             teacherName: teachersMap[rawData.TeacherId] || rawData.teacherName || 'غير معين',
                             status: rawData.Status || rawData.status || 'نشط',
                             paymentStatus: rawData.PaymentStatus || rawData.paymentStatus || 'لم يدفع',
-                            phone: rawData.PhoneNumber || rawData.phone || ''
+                            phone: rawData.PhoneNumber || rawData.phone || '',
+                            sessionCount: rawData.SessionCount !== undefined ? rawData.SessionCount : (rawData.sessionCount !== undefined ? rawData.sessionCount : 0)
                         };
                         allStudentsData.push(student);
                     });
@@ -189,7 +191,7 @@
             document.getElementById('count-deferred').innerText = deferredCount;
 
             if (financialDefaulters.length === 0) {
-                tbody.innerHTML = `<tr><td colspan="7" style="padding:30px; color:var(--success); text-align:center; font-weight:600;">الحمد لله! لا توجد متأخرات مالية أو اشتراكات معلقة حالياً في نطاق حسابك.</td></tr>`;
+                tbody.innerHTML = `<tr><td colspan="8" style="padding:30px; color:var(--success); text-align:center; font-weight:600;">الحمد لله! لا توجد متأخرات مالية أو اشتراكات معلقة حالياً في نطاق حسابك.</td></tr>`;
                 return;
             }
 
@@ -203,6 +205,7 @@
                     <td style="font-weight:bold;">${student.studentName}</td>
                     <td dir="ltr">${student.phone || 'لا يوجد'}</td>
                     <td>👨‍🏫 ${student.teacherName}</td>
+                    <td><span style="font-weight:bold; color:var(--gold-primary);">${student.sessionCount} حصص</span></td>
                     <td><span class="status-badge ${statusBadgeClass}">${displayStatusText}</span></td>
                     <td>
                         <select class="inline-select" onchange="settlePaymentDirectly('${student.id}', this.value)">

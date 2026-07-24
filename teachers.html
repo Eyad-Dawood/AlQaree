@@ -92,13 +92,14 @@
                             <th>اسم الطالب</th>
                             <th>المعلم</th>
                             <th>رقم الاشتراك</th>
+                            <th>عدد الحصص</th>
                             <th>حالة الدفع</th>
                             <th>حالة الحصص</th>
                             <th>رقم الهاتف</th>
                         </tr>
                     </thead>
                     <tbody id="teacher-students-tbody">
-                        <tr><td colspan="7" style="text-align:center; color:gray;">جاري جلب البيانات من السيرفر السحابي...</td></tr>
+                        <tr><td colspan="8" style="text-align:center; color:gray;">جاري جلب البيانات من السيرفر السحابي...</td></tr>
                     </tbody>
                 </table>
             </div>
@@ -154,7 +155,8 @@
                         membershipId: rawData.SubscriptionNumber || rawData.membershipId || rawData.subscriptionNumber || 'غير حدد',
                         paymentStatus: rawData.PaymentStatus || rawData.paymentStatus || 'لم يدفع',
                         status: rawData.Status || rawData.status || rawData.studentStatus || 'نشط',
-                        phone: rawData.PhoneNumber || rawData.phone || 'بلا هاتف'
+                        phone: rawData.PhoneNumber || rawData.phone || 'بلا هاتف',
+                        sessionCount: rawData.SessionCount !== undefined ? rawData.SessionCount : (rawData.sessionCount !== undefined ? rawData.sessionCount : 0)
                     };
 
                     allStudentsData.push(student);
@@ -288,7 +290,7 @@
             tbody.innerHTML = "";
 
             if(students.length === 0) {
-                tbody.innerHTML = `<tr><td colspan="7" style="text-align:center; color:#94a3b8; padding:30px;">لا توجد نتائج مطابقة للفلاتر الحالية.</td></tr>`;
+                tbody.innerHTML = `<tr><td colspan="8" style="text-align:center; color:#94a3b8; padding:30px;">لا توجد نتائج مطابقة للفلاتر الحالية.</td></tr>`;
                 return;
             }
 
@@ -305,6 +307,7 @@
                     <td style="font-weight:bold;">${student.studentName}</td>
                     <td>👨‍🏫 ${student.teacherName || 'غير معين'}</td>
                     <td><span style="font-weight:700; color:var(--text-secondary);">#${student.membershipId}</span></td>
+                    <td><span style="font-weight:700; color:var(--gold-primary);">${student.sessionCount} حصص</span></td>
                     <td><span class="status-badge ${paymentClass}">${student.paymentStatus || 'لم يدفع'}</span></td>
                     <td><span class="status-badge ${statusClass}">${student.status || 'غير محدد'}</span></td>
                     <td dir="ltr">

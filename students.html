@@ -144,6 +144,7 @@
                 <th>اسم الطالب</th>
                 <th>رقم الهاتف</th>
                 <th>المعلم / الموعد</th>
+                <th>عدد الحصص</th>
                 <th>حالة الدفع</th>
                 <th>حالة الحصص</th>
                 <th>إشعارات</th>
@@ -247,6 +248,12 @@
               <option value="نشط">نشط</option>
               <option value="غير نشط">غير نشط</option>
             </select>
+          </div>
+        </div>
+        <div class="form-row three-cols">
+          <div class="form-group">
+            <label>عدد الحصص</label>
+            <input type="number" id="new-session-count" placeholder="مثال: 8" min="0" value="8" />
           </div>
         </div>
 
@@ -820,6 +827,12 @@
               <option value="نشط">نشط</option>
               <option value="غير نشط">غير نشط</option>
             </select>
+          </div>
+        </div>
+        <div class="form-row three-cols">
+          <div class="form-group">
+            <label>عدد الحصص</label>
+            <input type="number" id="edit-session-count" placeholder="مثال: 8" min="0" />
           </div>
         </div>
 
@@ -1481,6 +1494,8 @@
                 status: rawData.Status || rawData.status || "نشط",
                 paymentStatus:
                   rawData.PaymentStatus || rawData.paymentStatus || "لم يدفع",
+                sessionCount:
+                  rawData.SessionCount !== undefined ? rawData.SessionCount : (rawData.sessionCount !== undefined ? rawData.sessionCount : 0),
               };
 
               // بناء نص الجدول الزمني من الـ Map
@@ -1645,7 +1660,7 @@
         tbody.innerHTML = "";
 
         if (students.length === 0) {
-          tbody.innerHTML = `<tr><td colspan="10" style="padding:20px; color:gray; text-align:center;">لا توجد سجلات حالية مطابقة للفلاتر.</td></tr>`;
+          tbody.innerHTML = `<tr><td colspan="11" style="padding:20px; color:gray; text-align:center;">لا توجد سجلات حالية مطابقة للفلاتر.</td></tr>`;
           return;
         }
 
@@ -1664,6 +1679,9 @@
                 <td>
                     👨‍🏫 ${student.teacherName || "غير معين"}<br>
                     <small style="color:var(--text-secondary);"><i class="fa-regular fa-clock"></i> ${student.scheduleTime || "الموعد غير محدد"}</small>
+                </td>
+                <td>
+                    <span style="font-weight:bold; color:var(--gold-primary);">${student.sessionCount} حصص</span>
                 </td>
                 <td>
                     <select class="inline-select" onchange="updateStudentField('${student.id}', 'paymentStatus', this.value, '', '${student.PhoneNumber || student.phone || ""}')" style="color: ${student.paymentStatus === "تم الدفع" ? "#10b981" : student.paymentStatus === "مؤجل الدفع" ? "#f59e0b" : "#ef4444"}">
@@ -1722,6 +1740,7 @@
         let teacherId = document.getElementById("new-teacher-id").value;
         let paymentStatus = document.getElementById("new-payment-status").value;
         let status = document.getElementById("new-status").value;
+        let sessionCount = parseInt(document.getElementById("new-session-count").value.trim()) || 0;
 
         // بناء الـ Schedule map
         const daysEng = [
@@ -1775,6 +1794,7 @@
             TeacherId: teacherId,
             PaymentStatus: paymentStatus,
             Status: status,
+            SessionCount: sessionCount,
             Schedule: scheduleMap,
             createdBy: currentSupervisor,
             CreatedBy: currentSupervisor,
@@ -1794,6 +1814,7 @@
             document.getElementById("new-phone").value = "";
             document.getElementById("new-group-link").value = "";
             document.getElementById("new-teacher-id").value = "";
+            document.getElementById("new-session-count").value = "8";
             daysEng.forEach((day) => {
               let chk = document.getElementById(`sched-${day}-chk`);
               let hourSel = document.getElementById(`sched-${day}-hour`);
@@ -1912,6 +1933,7 @@
         document.getElementById("edit-payment-status").value =
           student.paymentStatus || "لم يدفع";
         document.getElementById("edit-status").value = student.status || "نشط";
+        document.getElementById("edit-session-count").value = student.sessionCount !== undefined ? student.sessionCount : 8;
 
         // تعبئة الجدول الزمني
         const daysEng = [
@@ -1987,6 +2009,7 @@
           "edit-payment-status",
         ).value;
         let status = document.getElementById("edit-status").value;
+        let sessionCount = parseInt(document.getElementById("edit-session-count").value.trim()) || 0;
 
         // بناء الـ Schedule map
         const daysEng = [
@@ -2041,6 +2064,7 @@
             TeacherId: teacherId,
             PaymentStatus: paymentStatus,
             Status: status,
+            SessionCount: sessionCount,
             Schedule: scheduleMap,
           })
           .then(() => {
@@ -2246,6 +2270,10 @@
                 <div>
                     <label style="color: var(--text-secondary); font-size: 11px; display: block; margin-bottom: 2px;">المعلم المباشر</label>
                     <span style="font-weight: 600; font-size: 14px; color: var(--gold-primary);"><i class="fa-solid fa-chalkboard-user" style="font-size: 11px;"></i> ${student.teacherName}</span>
+                </div>
+                <div>
+                    <label style="color: var(--text-secondary); font-size: 11px; display: block; margin-bottom: 2px;">عدد الحصص</label>
+                    <span style="font-weight: 600; font-size: 14px; color: var(--gold-primary);">${student.sessionCount} حصص</span>
                 </div>
                 <div>
                     <label style="color: var(--text-secondary); font-size: 11px; display: block; margin-bottom: 2px;">حالة الدفع</label>
