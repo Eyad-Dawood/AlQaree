@@ -91,6 +91,42 @@
         .btn-remove-student:hover {
             transform: scale(1.15);
         }
+        .dropdown-options {
+            display: none;
+            position: absolute;
+            bottom: 100%;
+            right: 0;
+            left: 0;
+            background: var(--bg-card);
+            border: 1px solid var(--border-color);
+            border-radius: 8px;
+            max-height: 220px;
+            overflow-y: auto;
+            z-index: 1000;
+            box-shadow: 0 4px 25px rgba(0,0,0,0.5);
+            margin-bottom: 6px;
+        }
+        .dropdown-option {
+            padding: 10px 14px;
+            cursor: pointer;
+            font-size: 13px;
+            color: var(--text-primary);
+            transition: background 0.2s ease, color 0.2s ease;
+            text-align: right;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.01);
+            display: flex;
+            align-items: center;
+            justify-content: flex-start;
+            gap: 8px;
+        }
+        .dropdown-option:hover {
+            background: rgba(212, 175, 55, 0.1);
+            color: var(--gold-primary);
+        }
+        .dropdown-input:focus {
+            border-color: var(--gold-primary);
+            box-shadow: 0 0 0 2px rgba(212, 175, 55, 0.15);
+        }
     </style>
 </head>
 <body>
@@ -301,14 +337,6 @@
                     `;
                 }).join("");
 
-                // بناء خيارات الإضافة (الطلاب غير المرتبطين بأي عائلة ونشطين)
-                let optionsHTML = '<option value="">اختر طالباً لإضافته...</option>';
-                activeStudents.forEach(s => {
-                    if (!studentToFamilyMap[s.id]) {
-                        optionsHTML += `<option value="${s.id}">${s.name} (#${s.subscriptionNumber})</option>`;
-                    }
-                });
-
                 card.innerHTML = `
                     <div>
                         <div class="family-title">
@@ -322,9 +350,12 @@
                         </div>
                     </div>
                     <div class="add-student-form">
-                        <select class="filter-select" style="flex: 1; padding: 8px; font-size: 13px;" id="add-student-select-${family.id}">
-                            ${optionsHTML}
-                        </select>
+                        <div class="searchable-dropdown" id="dropdown-${family.id}" style="position: relative; flex: 1;">
+                            <input type="text" class="filter-select dropdown-input" placeholder="ابحث باسم الطالب أو رقم الاشتراك..." onfocus="showDropdownOptions('${family.id}')" oninput="filterDropdownOptions('${family.id}')" id="add-student-input-${family.id}" autocomplete="off" style="width: 100%; padding: 8px;">
+                            <div class="dropdown-options" id="dropdown-options-${family.id}">
+                                <!-- يتم تعبئة الخيارات ديناميكياً -->
+                            </div>
+                        </div>
                         <button class="btn-gold" style="padding: 8px 14px; font-size: 13px; border-radius: 8px;" onclick="addStudentToFamily('${family.id}')">
                             <i class="fa-solid fa-plus"></i> إضافة
                         </button>
@@ -334,6 +365,88 @@
                 container.appendChild(card);
             });
         }
+
+        // تفعيل القائمة وعرض الخيارات
+        function showDropdownOptions(familyId) {
+            document.querySelectorAll(".dropdown-options").forEach(el => el.style.display = "none");
+            
+            const optionsDiv = document.getElementById(`dropdown-options-${familyId}`);
+            if (!optionsDiv) return;
+            
+            optionsDiv.style.display = "block";
+            filterDropdownOptions(familyId);
+        }
+
+        // تصفية الخيارات بناءً على المدخلات
+        function filterDropdownOptions(familyId) {
+            const input = document.getElementById(`add-student-input-${familyId}`);
+            const optionsDiv = document.getElementById(`dropdown-options-${familyId}`);
+            if (!input || !optionsDiv) return;
+
+            const query = input.value.trim().toLowerCase();
+            
+            // بناء خريطة الطلاب للعائلات للتحقق من العائلة الحالية لكل طالب
+            const studentToFamilyMap = {};
+            allFamilies.forEach(f => {
+                f.students.forEach(sId => {
+                    studentToFamilyMap[sId] = f.id;
+                });
+            });
+
+            // فلترة الطلاب النشطين
+            const activeStudents = allStudents.filter(s => s.status !== "مؤرشف");
+            
+            // فلترة الطلاب بناءً على البحث
+            const matchedStudents = activeStudents.filter(s => {
+                const searchString = `${s.name} ${s.subscriptionNumber}`.toLowerCase();
+                return searchString.includes(query);
+            });
+
+            // ترتيبهم أبجدياً
+            matchedStudents.sort((a, b) => a.name.localeCompare(b.name, 'ar'));
+
+            if (matchedStudents.length === 0) {
+                optionsDiv.innerHTML = `<div style="padding: 8px 12px; color: var(--text-secondary); font-style: italic; font-size: 13px; text-align: center;">لا توجد نتائج</div>`;
+                return;
+            }
+
+            optionsDiv.innerHTML = matchedStudents.map(s => {
+                const currentFamily = studentToFamilyMap[s.id];
+                const familyBadge = currentFamily ? ` <span style="font-size: 10px; color: var(--gold-primary); background: rgba(212, 175, 55, 0.1); padding: 2px 6px; border-radius: 4px; margin-right: 5px;">(مسجل بـ: ${currentFamily})</span>` : '';
+                const isAlreadyInThisFamily = currentFamily === familyId;
+                
+                const style = isAlreadyInThisFamily ? 'color: var(--text-secondary); pointer-events: none; opacity: 0.5;' : '';
+                
+                return `
+                    <div class="dropdown-option" style="${style}" onclick="selectStudentForFamily('${familyId}', '${s.id}', '${s.name}', '${s.subscriptionNumber}')">
+                        <i class="fa-solid fa-graduation-cap" style="color: var(--gold-primary); font-size: 11px;"></i>
+                        <span>${s.name}</span>
+                        <span style="color: var(--text-secondary); font-size: 11px;">(#${s.subscriptionNumber})</span>
+                        ${familyBadge}
+                    </div>
+                `;
+            }).join("");
+        }
+
+        // اختيار طالب من القائمة
+        function selectStudentForFamily(familyId, studentId, studentName, subNo) {
+            const input = document.getElementById(`add-student-input-${familyId}`);
+            const optionsDiv = document.getElementById(`dropdown-options-${familyId}`);
+            if (input && optionsDiv) {
+                input.value = `${studentName} (#${subNo})`;
+                input.dataset.selectedId = studentId;
+                optionsDiv.style.display = "none";
+            }
+        }
+
+        // إغلاق القوائم عند النقر خارجها
+        document.addEventListener("click", function(e) {
+            if (!e.target.closest(".searchable-dropdown")) {
+                document.querySelectorAll(".dropdown-options").forEach(el => {
+                    el.style.display = "none";
+                });
+            }
+        });
 
         function filterFamilies() {
             renderUI();
@@ -380,29 +493,93 @@
         }
 
         function addStudentToFamily(familyId) {
-            const select = document.getElementById(`add-student-select-${familyId}`);
-            if (!select) return;
+            const input = document.getElementById(`add-student-input-${familyId}`);
+            if (!input) return;
 
-            const studentId = select.value;
+            let studentId = input.dataset.selectedId;
+
+            // إذا كتب المستخدم ولم يختر من القائمة، نبحث عن تطابق تام
+            if (!studentId && input.value.trim() !== "") {
+                const queryText = input.value.trim().toLowerCase();
+                const found = allStudents.find(s => 
+                    s.status !== "مؤرشف" && 
+                    `${s.name} (#${s.subscriptionNumber})`.toLowerCase() === queryText
+                );
+                if (found) studentId = found.id;
+            }
+
             if (!studentId) {
-                Swal.fire('تنبيه', 'يرجى اختيار طالب من القائمة أولاً.', 'warning');
+                Swal.fire('تنبيه', 'يرجى اختيار طالب صالح من القائمة أولاً.', 'warning');
                 return;
             }
 
-            Swal.fire({ title: 'جاري الإضافة للعائلة...', didOpen: () => { Swal.showLoading(); } });
+            const student = allStudents.find(s => s.id === studentId);
+            if (!student) return;
 
-            db.collection("families").doc(familyId).update({
-                Students: firebase.firestore.FieldValue.arrayUnion(studentId)
-            }).then(() => {
-                Swal.fire({
-                    icon: 'success',
-                    title: 'تم إضافة الطالب للعائلة بنجاح!',
-                    timer: 1200,
-                    showConfirmButton: false
-                });
-            }).catch(err => {
-                Swal.fire('خطأ سحابي', err.message, 'error');
+            // التحقق إذا كان الطالب مسجلاً في عائلة أخرى
+            let oldFamilyId = null;
+            allFamilies.forEach(f => {
+                if (f.students.includes(studentId)) {
+                    oldFamilyId = f.id;
+                }
             });
+
+            if (oldFamilyId === familyId) {
+                Swal.fire('تنبيه', 'هذا الطالب مضاف بالفعل لهذه العائلة.', 'info');
+                return;
+            }
+
+            const executeAddAction = () => {
+                Swal.fire({ title: 'جاري الإضافة للعائلة...', didOpen: () => { Swal.showLoading(); } });
+
+                const batch = db.batch();
+
+                // إزالته من العائلة القديمة إذا وجد
+                if (oldFamilyId) {
+                    const oldFamilyRef = db.collection("families").doc(oldFamilyId);
+                    batch.update(oldFamilyRef, {
+                        Students: firebase.firestore.FieldValue.arrayRemove(studentId)
+                    });
+                }
+
+                // إضافته للعائلة الجديدة
+                const newFamilyRef = db.collection("families").doc(familyId);
+                batch.update(newFamilyRef, {
+                    Students: firebase.firestore.FieldValue.arrayUnion(studentId)
+                });
+
+                batch.commit().then(() => {
+                    Swal.fire({
+                        icon: 'success',
+                        title: 'تم نقل/إضافة الطالب بنجاح!',
+                        timer: 1200,
+                        showConfirmButton: false
+                    });
+                    input.value = "";
+                    delete input.dataset.selectedId;
+                }).catch(err => {
+                    Swal.fire('خطأ سحابي', err.message, 'error');
+                });
+            };
+
+            if (oldFamilyId) {
+                Swal.fire({
+                    title: 'تأكيد النقل',
+                    text: `الطالب (${student.name}) مسجل بالفعل في (${oldFamilyId}). هل تريد نقله إلى (${familyId})؟`,
+                    icon: 'question',
+                    showCancelButton: true,
+                    confirmButtonColor: 'var(--gold-primary)',
+                    cancelButtonColor: '#1e293b',
+                    confirmButtonText: 'نعم، انقل الطالب',
+                    cancelButtonText: 'إلغاء'
+                }).then((result) => {
+                    if (result.isConfirmed) {
+                        executeAddAction();
+                    }
+                });
+            } else {
+                executeAddAction();
+            }
         }
 
         function removeStudentFromFamily(familyId, studentId, studentName) {
@@ -417,7 +594,7 @@
                 cancelButtonText: 'إلغاء'
             }).then((result) => {
                 if (result.isConfirmed) {
-                    Swal.fire({ title: 'جاري الإزالة من العائلة...', didOpen: () => { Swal.showLoading(); } });
+                    Swal.fire({ title: 'جاري إزالة الطالب من السجل...', didOpen: () => { Swal.showLoading(); } });
 
                     db.collection("families").doc(familyId).update({
                         Students: firebase.firestore.FieldValue.arrayRemove(studentId)
