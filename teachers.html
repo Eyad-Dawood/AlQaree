@@ -77,6 +77,13 @@
                     <option value="موقف">الطلاب المتوقفين 🛑</option>
                 </select>
             </div>
+            
+            <div class="filter-group">
+                <label style="visibility: hidden;">إرسال</label>
+                <button onclick="sendTodayScheduleToTeacher()" class="btn-gold" style="background-color: var(--success); color: white; border: none; height: 42px; border-radius: 8px; font-family: 'Cairo'; font-weight: 600; padding: 0 16px; cursor: pointer; display: flex; align-items: center; gap: 8px; width: 100%;">
+                    <i class="fa-brands fa-whatsapp"></i> إرسال حصص اليوم للمعلم
+                </button>
+            </div>
         </section>
 
         <section class="card">
@@ -425,6 +432,44 @@
                 }
                 Swal.fire('خطأ في التسجيل', error.message, 'error');
             });
+        }
+
+        function sendTodayScheduleToTeacher() {
+            const teacherName = document.getElementById('filter-teacher').value;
+            if (!teacherName || teacherName === "الكل") {
+                Swal.fire('تنبيه', 'يرجى اختيار معلم معين من القائمة أولاً لتجميع حصص اليوم الخاصة به وإرسالها عبر الواتساب.', 'warning');
+                return;
+            }
+
+            const daysAr = ['الأحد', 'الإثنين', 'الثلاثاء', 'الأربعاء', 'الخميس', 'الجمعة', 'السبت'];
+            const daysEng = ['Sunday', 'Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday'];
+            const todayIdx = new Date().getDay();
+            const todayNameAr = daysAr[todayIdx];
+            const todayNameEng = daysEng[todayIdx];
+            
+            let todayLessons = allStudentsData.filter(s => {
+                let tName = teachersMap[s.TeacherId] || s.teacherName || 'غير معين';
+                return tName === teacherName && s.Schedule && s.Schedule[todayNameEng] && s.Schedule[todayNameEng].trim() !== "";
+            });
+            
+            if (todayLessons.length === 0) {
+                Swal.fire('لا توجد حصص', `المعلم/ة ${teacherName} ليس لديه حصص لليوم (${todayNameAr}).`, 'info');
+                return;
+            }
+
+            let messageText = `السلام عليكم ورحمة الله وبركاته، أ/ *${teacherName}* 🌹\n`;
+            messageText += `إليك جدول حصص اليوم (*${todayNameAr}*) الخاص بك في أكاديمية القارئ:\n\n`;
+            
+            todayLessons.forEach((lesson, index) => {
+                let studentDisplayName = lesson.Name || lesson.studentName || 'غير متوفر';
+                messageText += `${index + 1}. الطالب: *${studentDisplayName}* 📖 - الموعد: *${lesson.Schedule[todayNameEng]}*\n`;
+            });
+            
+            messageText += `\nتمنياتنا لكم بالتوفيق والسداد ✨`;
+            
+            const encodedMessage = encodeURIComponent(messageText);
+            const whatsappUrl = `https://wa.me/?text=${encodedMessage}`;
+            window.open(whatsappUrl, '_blank');
         }
 
         function logout(event) {
