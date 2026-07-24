@@ -1,705 +1,1686 @@
-<!DOCTYPE html>
+<!doctype html>
 <html lang="ar" dir="rtl">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>السجل العام للطلاب | أكاديمية القارئ</title>
-    
-    <link rel="preconnect" href="https://fonts.googleapis.com">
-    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Cairo:wght@300;400;600;700;800&display=swap" rel="stylesheet">
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
-    
+
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Cairo:wght@300;400;600;700;800&display=swap"
+      rel="stylesheet"
+    />
+    <link
+      rel="stylesheet"
+      href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css"
+    />
+
     <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
-    
+
     <script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-app-compat.js"></script>
     <script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-auth-compat.js"></script>
     <script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore-compat.js"></script>
     <script src="Scripts/auth-router.js"></script>
     <script src="Scripts/whatsapp-config.js"></script>
 
-    <link rel="stylesheet" href="css/style.css">
-</head>
-<body>
-
+    <link rel="stylesheet" href="css/style.css" />
+  </head>
+  <body>
     <nav class="sidebar">
-        <div class="sidebar-brand">
-            <i class="fa-solid fa-book-quran"></i>
-            <span>أكاديمية القارئ</span>
-        </div>
-        <ul class="sidebar-menu">
-            <li><a href="dashboard.html"><i class="fa-solid fa-chart-pie"></i>لوحة البيانات</a></li>
-            <li class="active"><a href="students.html"><i class="fa-solid fa-graduation-cap"></i>سجل الطلاب</a></li>
-            <li><a href="families.html"><i class="fa-solid fa-people-roof"></i>سجل العائلات</a></li>
-            <li><a href="teachers.html"><i class="fa-solid fa-chalkboard-user"></i>متابعة المعلمين</a></li>
-            <li><a href="manageTeachers.html"><i class="fa-solid fa-user-gear"></i>إدارة المعلمين</a></li>
-            <li><a href="financial.html"><i class="fa-solid fa-wallet"></i>كشف الحسابات</a></li>
-            <li><a href="archive.html"><i class="fa-solid fa-archive"></i>الأرشيف السحابي</a></li>
-            <li><a href="settings.html"><i class="fa-solid fa-sliders"></i>أدوات السيرفر</a></li>
-            <li><a href="#" onclick="logout(event)" class="logout-btn"><i class="fa-solid fa-right-from-bracket"></i>تسجيل الخروج</a></li>
-        </ul>
+      <div class="sidebar-brand">
+        <i class="fa-solid fa-book-quran"></i>
+        <span>أكاديمية القارئ</span>
+      </div>
+      <ul class="sidebar-menu">
+        <li>
+          <a href="dashboard.html"
+            ><i class="fa-solid fa-chart-pie"></i>لوحة البيانات</a
+          >
+        </li>
+        <li class="active">
+          <a href="students.html"
+            ><i class="fa-solid fa-graduation-cap"></i>سجل الطلاب</a
+          >
+        </li>
+        <li>
+          <a href="families.html"
+            ><i class="fa-solid fa-people-roof"></i>سجل العائلات</a
+          >
+        </li>
+        <li>
+          <a href="teachers.html"
+            ><i class="fa-solid fa-chalkboard-user"></i>متابعة المعلمين</a
+          >
+        </li>
+        <li>
+          <a href="manageTeachers.html"
+            ><i class="fa-solid fa-user-gear"></i>إدارة المعلمين</a
+          >
+        </li>
+        <li>
+          <a href="financial.html"
+            ><i class="fa-solid fa-wallet"></i>كشف الحسابات</a
+          >
+        </li>
+        <li>
+          <a href="archive.html"
+            ><i class="fa-solid fa-archive"></i>الأرشيف السحابي</a
+          >
+        </li>
+        <li>
+          <a href="settings.html"
+            ><i class="fa-solid fa-sliders"></i>أدوات السيرفر</a
+          >
+        </li>
+        <li>
+          <a href="#" onclick="logout(event)" class="logout-btn"
+            ><i class="fa-solid fa-right-from-bracket"></i>تسجيل الخروج</a
+          >
+        </li>
+      </ul>
     </nav>
 
     <main class="main-content">
-        
-        <header class="header-panel">
-            <div class="welcome-section">
-                <h1>👥 السجل العام والإداري الشامل للطلاب النشطين</h1>
-                <p>إدارة وتحديث بيانات الحصص، المواعيد، والمدفوعات حياً وبشكل مباشر.</p>
-            </div>
-            <div>
-                <span id="current-user-badge" class="badge">المشرف: جاري التحميل...</span>
-            </div>
-        </header>
+      <header class="header-panel">
+        <div class="welcome-section">
+          <h1>👥 السجل العام والإداري الشامل للطلاب النشطين</h1>
+          <p>
+            إدارة وتحديث بيانات الحصص، المواعيد، والمدفوعات حياً وبشكل مباشر.
+          </p>
+        </div>
+        <div>
+          <span id="current-user-badge" class="badge"
+            >المشرف: جاري التحميل...</span
+          >
+        </div>
+      </header>
 
-        <section class="filter-panel">
-            <div class="search-box">
-                <i class="fa-solid fa-magnifying-glass"></i>
-                <input type="text" id="search-input" oninput="filterAllTables()" placeholder="ابحث سريعاً باسم الطالب، رقم الهاتف، أو رقم الاشتراك...">
-            </div>
-            <select class="filter-select" id="filter-teacher" onchange="filterAllTables()">
-                <option value="الكل">كل المعلمين المسجلين</option>
-            </select>
-            <select class="filter-select" id="filter-payment" onchange="filterAllTables()">
-                <option value="الكل">كل حالات الدفع</option>
-                <option value="تم الدفع">تم الدفع</option>
-                <option value="لم يدفع">لم يدفع</option>
-                <option value="مؤجل الدفع">مؤجل الدفع</option>
-            </select>
-            <button class="btn-gold" onclick="openAddStudentModal()">
-                <i class="fa-solid fa-user-plus"></i> إضافة طالب جديد
-            </button>
-        </section>
+      <section class="filter-panel">
+        <div class="search-box">
+          <i class="fa-solid fa-magnifying-glass"></i>
+          <input
+            type="text"
+            id="search-input"
+            oninput="filterAllTables()"
+            placeholder="ابحث سريعاً باسم الطالب، رقم الهاتف، أو رقم الاشتراك..."
+          />
+        </div>
+        <select
+          class="filter-select"
+          id="filter-teacher"
+          onchange="filterAllTables()"
+        >
+          <option value="الكل">كل المعلمين المسجلين</option>
+        </select>
+        <select
+          class="filter-select"
+          id="filter-payment"
+          onchange="filterAllTables()"
+        >
+          <option value="الكل">كل حالات الدفع</option>
+          <option value="تم الدفع">تم الدفع</option>
+          <option value="لم يدفع">لم يدفع</option>
+          <option value="مؤجل الدفع">مؤجل الدفع</option>
+        </select>
+        <button class="btn-gold" onclick="openAddStudentModal()">
+          <i class="fa-solid fa-user-plus"></i> إضافة طالب جديد
+        </button>
+      </section>
 
-        <section class="card">
-            <h2>
-                <span><i class="fa-solid fa-address-book"></i> لائحة الطلاب الحاليين الملتزمين بالحصص</span>
-            </h2>
-            <div class="table-responsive">
-                <table>
-                    <thead>
-                        <tr>
-                            <th>رقم الاشتراك</th>
-                            <th>معرّف العائلة</th>
-                            <th>اسم الطالب</th>
-                            <th>رقم الهاتف</th>
-                            <th>المعلم / الموعد</th>
-                            <th>حالة الدفع</th>
-                            <th>حالة الحصص</th>
-                            <th>إشعارات</th>
-                            <th>التحكم</th>
-                        </tr>
-                    </thead>
-                    <tbody id="main-students-tbody"></tbody>
-                </table>
-            </div>
+      <section class="card">
+        <h2>
+          <span
+            ><i class="fa-solid fa-address-book"></i> لائحة الطلاب الحاليين
+            الملتزمين بالحصص</span
+          >
+        </h2>
+        <div class="table-responsive">
+          <table>
+            <thead>
+              <tr>
+                <th>رقم الاشتراك</th>
+                <th>معرّف العائلة</th>
+                <th>اسم الطالب</th>
+                <th>رقم الهاتف</th>
+                <th>المعلم / الموعد</th>
+                <th>حالة الدفع</th>
+                <th>حالة الحصص</th>
+                <th>إشعارات</th>
+                <th>التحكم</th>
+              </tr>
+            </thead>
+            <tbody id="main-students-tbody"></tbody>
+          </table>
+        </div>
 
-            <div class="load-more-container" id="load-more-wrapper" style="display: none;">
-                <button class="btn-load-more" onclick="loadMoreStudents()">عرض المزيد من الطلاب <i class="fa-solid fa-chevron-down"></i></button>
-            </div>
-        </section>
+        <div
+          class="load-more-container"
+          id="load-more-wrapper"
+          style="display: none"
+        >
+          <button class="btn-load-more" onclick="loadMoreStudents()">
+            عرض المزيد من الطلاب <i class="fa-solid fa-chevron-down"></i>
+          </button>
+        </div>
+      </section>
     </main>
 
     <div class="modal-overlay" id="add-student-modal">
-        <div class="modal-box" style="max-width: 650px;">
-            <div class="modal-header">
-                <h3><i class="fa-solid fa-user-plus"></i> تسجيل طالب جديد في النظام</h3>
-                <button class="close-modal" onclick="closeAddStudentModal()">&times;</button>
-            </div>
-            <div class="form-row three-cols">
-                <div class="form-group">
-                    <label>رقم الاشتراك</label>
-                    <input type="number" id="new-subscription-number" placeholder="مثال: 1024" required>
-                </div>
-                <div class="form-group">
-                    <label>السن (العمر)</label>
-                    <input type="number" id="new-age" placeholder="مثال: 12" required>
-                </div>
-                <div class="form-group">
-                    <label>الجنس</label>
-                    <select id="new-gender">
-                        <option value="false">ذكر</option>
-                        <option value="true">أنثى</option>
-                    </select>
-                </div>
-            </div>
-            <div class="form-row two-cols">
-                <div class="form-group">
-                    <label>اسم الطالب بالكامل</label>
-                    <input type="text" id="new-name" placeholder="أدخل الاسم كاملاً" required>
-                </div>
-                <div class="form-group">
-                    <label>رقم الهاتف للاتصال</label>
-                    <input type="text" id="new-phone" placeholder="مثال: 20100xxxxxxx" required>
-                </div>
-            </div>
-            <div class="form-row three-cols">
-                <div class="form-group">
-                    <label>المعلم المباشر</label>
-                    <select id="new-teacher-id" required>
-                        <option value="">جاري تحميل المعلمين...</option>
-                    </select>
-                </div>
-                <div class="form-group">
-                    <label>حالة الدفع الابتدائية</label>
-                    <select id="new-payment-status">
-                        <option value="لم يدفع">لم يدفع</option>
-                        <option value="تم الدفع">دافع (تم الدفع)</option>
-                        <option value="مؤجل الدفع">مؤجل</option>
-                    </select>
-                </div>
-                <div class="form-group">
-                    <label>حالة الحصص</label>
-                    <select id="new-status">
-                        <option value="نشط">نشط</option>
-                        <option value="غير نشط">غير نشط</option>
-                    </select>
-                </div>
-            </div>
-            
-            <div class="form-row" style="grid-column: span 12;">
-                <label style="font-weight: bold; margin-bottom: 8px; display: block; color: var(--gold-primary);">جدول المواعيد الأسبوعي (حدد الساعة والفترة عند تفعيل اليوم)</label>
-                <div class="schedule-grid" style="display: grid; grid-template-columns: repeat(auto-fit, minmax(130px, 1fr)); gap: 12px; background: rgba(255,255,255,0.02); padding: 12px; border-radius: 8px; border: 1px solid var(--border-color);">
-                    <div class="day-input-group" style="display: flex; flex-direction: column;">
-                        <label style="font-size: 13px; font-weight: 600; cursor: pointer; display: flex; align-items: center; gap: 5px;">
-                            <input type="checkbox" id="sched-Sunday-chk" onchange="toggleSchedTimeInput('Sunday')"> الأحد
-                        </label>
-                        <div style="display: flex; align-items: center; margin-top: 4px;">
-                            <select id="sched-Sunday-hour" disabled style="padding: 6px; font-size: 12px; flex: 1; border-radius: 4px; border: 1px solid var(--border-color); background: #121926; color: white;">
-                                <option value="1">1</option> <option value="2">2</option> <option value="3">3</option> <option value="4">4</option> <option value="5">5</option> <option value="6">6</option> <option value="7">7</option> <option value="8">8</option> <option value="9">9</option> <option value="10">10</option> <option value="11">11</option> <option value="12" selected>12</option>
-                            </select>
-                            <select id="sched-Sunday-ampm" disabled style="padding: 6px; font-size: 12px; border-radius: 4px; border: 1px solid var(--border-color); background: #121926; color: white; margin-right: 4px;">
-                                <option value="AM" selected>ص</option> <option value="PM">م</option>
-                            </select>
-                        </div>
-                    </div>
-                    <div class="day-input-group" style="display: flex; flex-direction: column;">
-                        <label style="font-size: 13px; font-weight: 600; cursor: pointer; display: flex; align-items: center; gap: 5px;">
-                            <input type="checkbox" id="sched-Monday-chk" onchange="toggleSchedTimeInput('Monday')"> الإثنين
-                        </label>
-                        <div style="display: flex; align-items: center; margin-top: 4px;">
-                            <select id="sched-Monday-hour" disabled style="padding: 6px; font-size: 12px; flex: 1; border-radius: 4px; border: 1px solid var(--border-color); background: #121926; color: white;">
-                                <option value="1">1</option> <option value="2">2</option> <option value="3">3</option> <option value="4">4</option> <option value="5">5</option> <option value="6">6</option> <option value="7">7</option> <option value="8">8</option> <option value="9">9</option> <option value="10">10</option> <option value="11">11</option> <option value="12" selected>12</option>
-                            </select>
-                            <select id="sched-Monday-ampm" disabled style="padding: 6px; font-size: 12px; border-radius: 4px; border: 1px solid var(--border-color); background: #121926; color: white; margin-right: 4px;">
-                                <option value="AM" selected>ص</option> <option value="PM">م</option>
-                            </select>
-                        </div>
-                    </div>
-                    <div class="day-input-group" style="display: flex; flex-direction: column;">
-                        <label style="font-size: 13px; font-weight: 600; cursor: pointer; display: flex; align-items: center; gap: 5px;">
-                            <input type="checkbox" id="sched-Tuesday-chk" onchange="toggleSchedTimeInput('Tuesday')"> الثلاثاء
-                        </label>
-                        <div style="display: flex; align-items: center; margin-top: 4px;">
-                            <select id="sched-Tuesday-hour" disabled style="padding: 6px; font-size: 12px; flex: 1; border-radius: 4px; border: 1px solid var(--border-color); background: #121926; color: white;">
-                                <option value="1">1</option> <option value="2">2</option> <option value="3">3</option> <option value="4">4</option> <option value="5">5</option> <option value="6">6</option> <option value="7">7</option> <option value="8">8</option> <option value="9">9</option> <option value="10">10</option> <option value="11">11</option> <option value="12" selected>12</option>
-                            </select>
-                            <select id="sched-Tuesday-ampm" disabled style="padding: 6px; font-size: 12px; border-radius: 4px; border: 1px solid var(--border-color); background: #121926; color: white; margin-right: 4px;">
-                                <option value="AM" selected>ص</option> <option value="PM">م</option>
-                            </select>
-                        </div>
-                    </div>
-                    <div class="day-input-group" style="display: flex; flex-direction: column;">
-                        <label style="font-size: 13px; font-weight: 600; cursor: pointer; display: flex; align-items: center; gap: 5px;">
-                            <input type="checkbox" id="sched-Wednesday-chk" onchange="toggleSchedTimeInput('Wednesday')"> الأربعاء
-                        </label>
-                        <div style="display: flex; align-items: center; margin-top: 4px;">
-                            <select id="sched-Wednesday-hour" disabled style="padding: 6px; font-size: 12px; flex: 1; border-radius: 4px; border: 1px solid var(--border-color); background: #121926; color: white;">
-                                <option value="1">1</option> <option value="2">2</option> <option value="3">3</option> <option value="4">4</option> <option value="5">5</option> <option value="6">6</option> <option value="7">7</option> <option value="8">8</option> <option value="9">9</option> <option value="10">10</option> <option value="11">11</option> <option value="12" selected>12</option>
-                            </select>
-                            <select id="sched-Wednesday-ampm" disabled style="padding: 6px; font-size: 12px; border-radius: 4px; border: 1px solid var(--border-color); background: #121926; color: white; margin-right: 4px;">
-                                <option value="AM" selected>ص</option> <option value="PM">م</option>
-                            </select>
-                        </div>
-                    </div>
-                    <div class="day-input-group" style="display: flex; flex-direction: column;">
-                        <label style="font-size: 13px; font-weight: 600; cursor: pointer; display: flex; align-items: center; gap: 5px;">
-                            <input type="checkbox" id="sched-Thursday-chk" onchange="toggleSchedTimeInput('Thursday')"> الخميس
-                        </label>
-                        <div style="display: flex; align-items: center; margin-top: 4px;">
-                            <select id="sched-Thursday-hour" disabled style="padding: 6px; font-size: 12px; flex: 1; border-radius: 4px; border: 1px solid var(--border-color); background: #121926; color: white;">
-                                <option value="1">1</option> <option value="2">2</option> <option value="3">3</option> <option value="4">4</option> <option value="5">5</option> <option value="6">6</option> <option value="7">7</option> <option value="8">8</option> <option value="9">9</option> <option value="10">10</option> <option value="11">11</option> <option value="12" selected>12</option>
-                            </select>
-                            <select id="sched-Thursday-ampm" disabled style="padding: 6px; font-size: 12px; border-radius: 4px; border: 1px solid var(--border-color); background: #121926; color: white; margin-right: 4px;">
-                                <option value="AM" selected>ص</option> <option value="PM">م</option>
-                            </select>
-                        </div>
-                    </div>
-                    <div class="day-input-group" style="display: flex; flex-direction: column;">
-                        <label style="font-size: 13px; font-weight: 600; cursor: pointer; display: flex; align-items: center; gap: 5px;">
-                            <input type="checkbox" id="sched-Friday-chk" onchange="toggleSchedTimeInput('Friday')"> الجمعة
-                        </label>
-                        <div style="display: flex; align-items: center; margin-top: 4px;">
-                            <select id="sched-Friday-hour" disabled style="padding: 6px; font-size: 12px; flex: 1; border-radius: 4px; border: 1px solid var(--border-color); background: #121926; color: white;">
-                                <option value="1">1</option> <option value="2">2</option> <option value="3">3</option> <option value="4">4</option> <option value="5">5</option> <option value="6">6</option> <option value="7">7</option> <option value="8">8</option> <option value="9">9</option> <option value="10">10</option> <option value="11">11</option> <option value="12" selected>12</option>
-                            </select>
-                            <select id="sched-Friday-ampm" disabled style="padding: 6px; font-size: 12px; border-radius: 4px; border: 1px solid var(--border-color); background: #121926; color: white; margin-right: 4px;">
-                                <option value="AM" selected>ص</option> <option value="PM">م</option>
-                            </select>
-                        </div>
-                    </div>
-                    <div class="day-input-group" style="display: flex; flex-direction: column;">
-                        <label style="font-size: 13px; font-weight: 600; cursor: pointer; display: flex; align-items: center; gap: 5px;">
-                            <input type="checkbox" id="sched-Saturday-chk" onchange="toggleSchedTimeInput('Saturday')"> السبت
-                        </label>
-                        <div style="display: flex; align-items: center; margin-top: 4px;">
-                            <select id="sched-Saturday-hour" disabled style="padding: 6px; font-size: 12px; flex: 1; border-radius: 4px; border: 1px solid var(--border-color); background: #121926; color: white;">
-                                <option value="1">1</option> <option value="2">2</option> <option value="3">3</option> <option value="4">4</option> <option value="5">5</option> <option value="6">6</option> <option value="7">7</option> <option value="8">8</option> <option value="9">9</option> <option value="10">10</option> <option value="11">11</option> <option value="12" selected>12</option>
-                            </select>
-                            <select id="sched-Saturday-ampm" disabled style="padding: 6px; font-size: 12px; border-radius: 4px; border: 1px solid var(--border-color); background: #121926; color: white; margin-right: 4px;">
-                                <option value="AM" selected>ص</option> <option value="PM">م</option>
-                            </select>
-                        </div>
-                    </div>
-                </div>
-            </div>
-            
-            <div class="modal-actions" style="margin-top: 20px;">
-                <button class="btn-danger" style="background: none; border: 1px solid var(--border-color);" onclick="closeAddStudentModal()">إلغاء</button>
-                <button class="btn-gold" onclick="addStudent()">حفظ السجل الجديد 🎉</button>
-            </div>
+      <div class="modal-box" style="max-width: 650px">
+        <div class="modal-header">
+          <h3>
+            <i class="fa-solid fa-user-plus"></i> تسجيل طالب جديد في النظام
+          </h3>
+          <button class="close-modal" onclick="closeAddStudentModal()">
+            &times;
+          </button>
         </div>
+        <div class="form-row three-cols">
+          <div class="form-group">
+            <label>رقم الاشتراك</label>
+            <input
+              type="number"
+              id="new-subscription-number"
+              placeholder="مثال: 1024"
+              required
+            />
+          </div>
+          <div class="form-group">
+            <label>السن (العمر)</label>
+            <input type="number" id="new-age" placeholder="مثال: 12" required />
+          </div>
+          <div class="form-group">
+            <label>الجنس</label>
+            <select id="new-gender">
+              <option value="false">ذكر</option>
+              <option value="true">أنثى</option>
+            </select>
+          </div>
+        </div>
+        <div class="form-row three-cols">
+          <div class="form-group">
+            <label>اسم الطالب بالكامل</label>
+            <input
+              type="text"
+              id="new-name"
+              placeholder="أدخل الاسم كاملاً"
+              required
+            />
+          </div>
+          <div class="form-group">
+            <label>رقم الهاتف للاتصال</label>
+            <input
+              type="text"
+              id="new-phone"
+              placeholder="مثال: 20100xxxxxxx"
+              required
+            />
+          </div>
+          <div class="form-group">
+            <label>رابط الجروب (GroupLink)</label>
+            <input
+              type="text"
+              id="new-group-link"
+              placeholder="مثال: https://t.me/..."
+            />
+          </div>
+        </div>
+        <div class="form-row three-cols">
+          <div class="form-group">
+            <label>المعلم المباشر</label>
+            <select id="new-teacher-id" required>
+              <option value="">جاري تحميل المعلمين...</option>
+            </select>
+          </div>
+          <div class="form-group">
+            <label>حالة الدفع الابتدائية</label>
+            <select id="new-payment-status">
+              <option value="لم يدفع">لم يدفع</option>
+              <option value="تم الدفع">دافع (تم الدفع)</option>
+              <option value="مؤجل الدفع">مؤجل</option>
+            </select>
+          </div>
+          <div class="form-group">
+            <label>حالة الحصص</label>
+            <select id="new-status">
+              <option value="نشط">نشط</option>
+              <option value="غير نشط">غير نشط</option>
+            </select>
+          </div>
+        </div>
+
+        <div class="form-row" style="grid-column: span 12">
+          <label
+            style="
+              font-weight: bold;
+              margin-bottom: 8px;
+              display: block;
+              color: var(--gold-primary);
+            "
+            >جدول المواعيد الأسبوعي (حدد الساعة والفترة عند تفعيل اليوم)</label
+          >
+          <div
+            class="schedule-grid"
+            style="
+              display: grid;
+              grid-template-columns: repeat(auto-fit, minmax(130px, 1fr));
+              gap: 12px;
+              background: rgba(255, 255, 255, 0.02);
+              padding: 12px;
+              border-radius: 8px;
+              border: 1px solid var(--border-color);
+            "
+          >
+            <div
+              class="day-input-group"
+              style="display: flex; flex-direction: column"
+            >
+              <label
+                style="
+                  font-size: 13px;
+                  font-weight: 600;
+                  cursor: pointer;
+                  display: flex;
+                  align-items: center;
+                  gap: 5px;
+                "
+              >
+                <input
+                  type="checkbox"
+                  id="sched-Sunday-chk"
+                  onchange="toggleSchedTimeInput('Sunday')"
+                />
+                الأحد
+              </label>
+              <div style="display: flex; align-items: center; margin-top: 4px">
+                <select
+                  id="sched-Sunday-hour"
+                  disabled
+                  style="
+                    padding: 6px;
+                    font-size: 12px;
+                    flex: 1;
+                    border-radius: 4px;
+                    border: 1px solid var(--border-color);
+                    background: #121926;
+                    color: white;
+                  "
+                >
+                  <option value="1">1</option>
+                  <option value="2">2</option>
+                  <option value="3">3</option>
+                  <option value="4">4</option>
+                  <option value="5">5</option>
+                  <option value="6">6</option>
+                  <option value="7">7</option>
+                  <option value="8">8</option>
+                  <option value="9">9</option>
+                  <option value="10">10</option>
+                  <option value="11">11</option>
+                  <option value="12" selected>12</option>
+                </select>
+                <select
+                  id="sched-Sunday-ampm"
+                  disabled
+                  style="
+                    padding: 6px;
+                    font-size: 12px;
+                    border-radius: 4px;
+                    border: 1px solid var(--border-color);
+                    background: #121926;
+                    color: white;
+                    margin-right: 4px;
+                  "
+                >
+                  <option value="AM" selected>ص</option>
+                  <option value="PM">م</option>
+                </select>
+              </div>
+            </div>
+            <div
+              class="day-input-group"
+              style="display: flex; flex-direction: column"
+            >
+              <label
+                style="
+                  font-size: 13px;
+                  font-weight: 600;
+                  cursor: pointer;
+                  display: flex;
+                  align-items: center;
+                  gap: 5px;
+                "
+              >
+                <input
+                  type="checkbox"
+                  id="sched-Monday-chk"
+                  onchange="toggleSchedTimeInput('Monday')"
+                />
+                الإثنين
+              </label>
+              <div style="display: flex; align-items: center; margin-top: 4px">
+                <select
+                  id="sched-Monday-hour"
+                  disabled
+                  style="
+                    padding: 6px;
+                    font-size: 12px;
+                    flex: 1;
+                    border-radius: 4px;
+                    border: 1px solid var(--border-color);
+                    background: #121926;
+                    color: white;
+                  "
+                >
+                  <option value="1">1</option>
+                  <option value="2">2</option>
+                  <option value="3">3</option>
+                  <option value="4">4</option>
+                  <option value="5">5</option>
+                  <option value="6">6</option>
+                  <option value="7">7</option>
+                  <option value="8">8</option>
+                  <option value="9">9</option>
+                  <option value="10">10</option>
+                  <option value="11">11</option>
+                  <option value="12" selected>12</option>
+                </select>
+                <select
+                  id="sched-Monday-ampm"
+                  disabled
+                  style="
+                    padding: 6px;
+                    font-size: 12px;
+                    border-radius: 4px;
+                    border: 1px solid var(--border-color);
+                    background: #121926;
+                    color: white;
+                    margin-right: 4px;
+                  "
+                >
+                  <option value="AM" selected>ص</option>
+                  <option value="PM">م</option>
+                </select>
+              </div>
+            </div>
+            <div
+              class="day-input-group"
+              style="display: flex; flex-direction: column"
+            >
+              <label
+                style="
+                  font-size: 13px;
+                  font-weight: 600;
+                  cursor: pointer;
+                  display: flex;
+                  align-items: center;
+                  gap: 5px;
+                "
+              >
+                <input
+                  type="checkbox"
+                  id="sched-Tuesday-chk"
+                  onchange="toggleSchedTimeInput('Tuesday')"
+                />
+                الثلاثاء
+              </label>
+              <div style="display: flex; align-items: center; margin-top: 4px">
+                <select
+                  id="sched-Tuesday-hour"
+                  disabled
+                  style="
+                    padding: 6px;
+                    font-size: 12px;
+                    flex: 1;
+                    border-radius: 4px;
+                    border: 1px solid var(--border-color);
+                    background: #121926;
+                    color: white;
+                  "
+                >
+                  <option value="1">1</option>
+                  <option value="2">2</option>
+                  <option value="3">3</option>
+                  <option value="4">4</option>
+                  <option value="5">5</option>
+                  <option value="6">6</option>
+                  <option value="7">7</option>
+                  <option value="8">8</option>
+                  <option value="9">9</option>
+                  <option value="10">10</option>
+                  <option value="11">11</option>
+                  <option value="12" selected>12</option>
+                </select>
+                <select
+                  id="sched-Tuesday-ampm"
+                  disabled
+                  style="
+                    padding: 6px;
+                    font-size: 12px;
+                    border-radius: 4px;
+                    border: 1px solid var(--border-color);
+                    background: #121926;
+                    color: white;
+                    margin-right: 4px;
+                  "
+                >
+                  <option value="AM" selected>ص</option>
+                  <option value="PM">م</option>
+                </select>
+              </div>
+            </div>
+            <div
+              class="day-input-group"
+              style="display: flex; flex-direction: column"
+            >
+              <label
+                style="
+                  font-size: 13px;
+                  font-weight: 600;
+                  cursor: pointer;
+                  display: flex;
+                  align-items: center;
+                  gap: 5px;
+                "
+              >
+                <input
+                  type="checkbox"
+                  id="sched-Wednesday-chk"
+                  onchange="toggleSchedTimeInput('Wednesday')"
+                />
+                الأربعاء
+              </label>
+              <div style="display: flex; align-items: center; margin-top: 4px">
+                <select
+                  id="sched-Wednesday-hour"
+                  disabled
+                  style="
+                    padding: 6px;
+                    font-size: 12px;
+                    flex: 1;
+                    border-radius: 4px;
+                    border: 1px solid var(--border-color);
+                    background: #121926;
+                    color: white;
+                  "
+                >
+                  <option value="1">1</option>
+                  <option value="2">2</option>
+                  <option value="3">3</option>
+                  <option value="4">4</option>
+                  <option value="5">5</option>
+                  <option value="6">6</option>
+                  <option value="7">7</option>
+                  <option value="8">8</option>
+                  <option value="9">9</option>
+                  <option value="10">10</option>
+                  <option value="11">11</option>
+                  <option value="12" selected>12</option>
+                </select>
+                <select
+                  id="sched-Wednesday-ampm"
+                  disabled
+                  style="
+                    padding: 6px;
+                    font-size: 12px;
+                    border-radius: 4px;
+                    border: 1px solid var(--border-color);
+                    background: #121926;
+                    color: white;
+                    margin-right: 4px;
+                  "
+                >
+                  <option value="AM" selected>ص</option>
+                  <option value="PM">م</option>
+                </select>
+              </div>
+            </div>
+            <div
+              class="day-input-group"
+              style="display: flex; flex-direction: column"
+            >
+              <label
+                style="
+                  font-size: 13px;
+                  font-weight: 600;
+                  cursor: pointer;
+                  display: flex;
+                  align-items: center;
+                  gap: 5px;
+                "
+              >
+                <input
+                  type="checkbox"
+                  id="sched-Thursday-chk"
+                  onchange="toggleSchedTimeInput('Thursday')"
+                />
+                الخميس
+              </label>
+              <div style="display: flex; align-items: center; margin-top: 4px">
+                <select
+                  id="sched-Thursday-hour"
+                  disabled
+                  style="
+                    padding: 6px;
+                    font-size: 12px;
+                    flex: 1;
+                    border-radius: 4px;
+                    border: 1px solid var(--border-color);
+                    background: #121926;
+                    color: white;
+                  "
+                >
+                  <option value="1">1</option>
+                  <option value="2">2</option>
+                  <option value="3">3</option>
+                  <option value="4">4</option>
+                  <option value="5">5</option>
+                  <option value="6">6</option>
+                  <option value="7">7</option>
+                  <option value="8">8</option>
+                  <option value="9">9</option>
+                  <option value="10">10</option>
+                  <option value="11">11</option>
+                  <option value="12" selected>12</option>
+                </select>
+                <select
+                  id="sched-Thursday-ampm"
+                  disabled
+                  style="
+                    padding: 6px;
+                    font-size: 12px;
+                    border-radius: 4px;
+                    border: 1px solid var(--border-color);
+                    background: #121926;
+                    color: white;
+                    margin-right: 4px;
+                  "
+                >
+                  <option value="AM" selected>ص</option>
+                  <option value="PM">م</option>
+                </select>
+              </div>
+            </div>
+            <div
+              class="day-input-group"
+              style="display: flex; flex-direction: column"
+            >
+              <label
+                style="
+                  font-size: 13px;
+                  font-weight: 600;
+                  cursor: pointer;
+                  display: flex;
+                  align-items: center;
+                  gap: 5px;
+                "
+              >
+                <input
+                  type="checkbox"
+                  id="sched-Friday-chk"
+                  onchange="toggleSchedTimeInput('Friday')"
+                />
+                الجمعة
+              </label>
+              <div style="display: flex; align-items: center; margin-top: 4px">
+                <select
+                  id="sched-Friday-hour"
+                  disabled
+                  style="
+                    padding: 6px;
+                    font-size: 12px;
+                    flex: 1;
+                    border-radius: 4px;
+                    border: 1px solid var(--border-color);
+                    background: #121926;
+                    color: white;
+                  "
+                >
+                  <option value="1">1</option>
+                  <option value="2">2</option>
+                  <option value="3">3</option>
+                  <option value="4">4</option>
+                  <option value="5">5</option>
+                  <option value="6">6</option>
+                  <option value="7">7</option>
+                  <option value="8">8</option>
+                  <option value="9">9</option>
+                  <option value="10">10</option>
+                  <option value="11">11</option>
+                  <option value="12" selected>12</option>
+                </select>
+                <select
+                  id="sched-Friday-ampm"
+                  disabled
+                  style="
+                    padding: 6px;
+                    font-size: 12px;
+                    border-radius: 4px;
+                    border: 1px solid var(--border-color);
+                    background: #121926;
+                    color: white;
+                    margin-right: 4px;
+                  "
+                >
+                  <option value="AM" selected>ص</option>
+                  <option value="PM">م</option>
+                </select>
+              </div>
+            </div>
+            <div
+              class="day-input-group"
+              style="display: flex; flex-direction: column"
+            >
+              <label
+                style="
+                  font-size: 13px;
+                  font-weight: 600;
+                  cursor: pointer;
+                  display: flex;
+                  align-items: center;
+                  gap: 5px;
+                "
+              >
+                <input
+                  type="checkbox"
+                  id="sched-Saturday-chk"
+                  onchange="toggleSchedTimeInput('Saturday')"
+                />
+                السبت
+              </label>
+              <div style="display: flex; align-items: center; margin-top: 4px">
+                <select
+                  id="sched-Saturday-hour"
+                  disabled
+                  style="
+                    padding: 6px;
+                    font-size: 12px;
+                    flex: 1;
+                    border-radius: 4px;
+                    border: 1px solid var(--border-color);
+                    background: #121926;
+                    color: white;
+                  "
+                >
+                  <option value="1">1</option>
+                  <option value="2">2</option>
+                  <option value="3">3</option>
+                  <option value="4">4</option>
+                  <option value="5">5</option>
+                  <option value="6">6</option>
+                  <option value="7">7</option>
+                  <option value="8">8</option>
+                  <option value="9">9</option>
+                  <option value="10">10</option>
+                  <option value="11">11</option>
+                  <option value="12" selected>12</option>
+                </select>
+                <select
+                  id="sched-Saturday-ampm"
+                  disabled
+                  style="
+                    padding: 6px;
+                    font-size: 12px;
+                    border-radius: 4px;
+                    border: 1px solid var(--border-color);
+                    background: #121926;
+                    color: white;
+                    margin-right: 4px;
+                  "
+                >
+                  <option value="AM" selected>ص</option>
+                  <option value="PM">م</option>
+                </select>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <div class="modal-actions" style="margin-top: 20px">
+          <button
+            class="btn-danger"
+            style="background: none; border: 1px solid var(--border-color)"
+            onclick="closeAddStudentModal()"
+          >
+            إلغاء
+          </button>
+          <button class="btn-gold" onclick="addStudent()">
+            حفظ السجل الجديد 🎉
+          </button>
+        </div>
+      </div>
     </div>
 
     <div class="modal-overlay" id="edit-student-modal">
-        <div class="modal-box" style="max-width: 650px;">
-            <div class="modal-header">
-                <h3><i class="fa-solid fa-pen-to-square"></i> تعديل بيانات الطالب الحالية</h3>
-                <button class="close-modal" onclick="closeEditStudentModal()">&times;</button>
-            </div>
-            <input type="hidden" id="edit-student-id">
-            <div class="form-row three-cols">
-                <div class="form-group">
-                    <label>رقم الاشتراك</label>
-                    <input type="number" id="edit-subscription-number" required>
-                </div>
-                <div class="form-group">
-                    <label>السن (العمر)</label>
-                    <input type="number" id="edit-age" required>
-                </div>
-                <div class="form-group">
-                    <label>الجنس</label>
-                    <select id="edit-gender">
-                        <option value="false">ذكر</option>
-                        <option value="true">أنثى</option>
-                    </select>
-                </div>
-            </div>
-            <div class="form-row two-cols">
-                <div class="form-group">
-                    <label>اسم الطالب بالكامل</label>
-                    <input type="text" id="edit-name" required>
-                </div>
-                <div class="form-group">
-                    <label>رقم الهاتف للاتصال</label>
-                    <input type="text" id="edit-phone" required>
-                </div>
-            </div>
-            <div class="form-row three-cols">
-                <div class="form-group">
-                    <label>المعلم المباشر</label>
-                    <select id="edit-teacher-id" required>
-                        <option value="">اختر معلماً...</option>
-                    </select>
-                </div>
-                <div class="form-group">
-                    <label>حالة الدفع</label>
-                    <select id="edit-payment-status">
-                        <option value="لم يدفع">لم يدفع</option>
-                        <option value="تم الدفع">دافع (تم الدفع)</option>
-                        <option value="مؤجل الدفع">مؤجل</option>
-                    </select>
-                </div>
-                <div class="form-group">
-                    <label>حالة الحصص</label>
-                    <select id="edit-status">
-                        <option value="نشط">نشط</option>
-                        <option value="غير نشط">غير نشط</option>
-                    </select>
-                </div>
-            </div>
-            
-            <div class="form-row" style="grid-column: span 12;">
-                <label style="font-weight: bold; margin-bottom: 8px; display: block; color: var(--gold-primary);">جدول المواعيد الأسبوعي (حدد الساعة والفترة عند تفعيل اليوم)</label>
-                <div class="schedule-grid" style="display: grid; grid-template-columns: repeat(auto-fit, minmax(130px, 1fr)); gap: 12px; background: rgba(255,255,255,0.02); padding: 12px; border-radius: 8px; border: 1px solid var(--border-color);">
-                    <div class="day-input-group" style="display: flex; flex-direction: column;">
-                        <label style="font-size: 13px; font-weight: 600; cursor: pointer; display: flex; align-items: center; gap: 5px;">
-                            <input type="checkbox" id="edit-sched-Sunday-chk" onchange="toggleSchedTimeInput('Sunday', 'edit-')"> الأحد
-                        </label>
-                        <div style="display: flex; align-items: center; margin-top: 4px;">
-                            <select id="edit-sched-Sunday-hour" disabled style="padding: 6px; font-size: 12px; flex: 1; border-radius: 4px; border: 1px solid var(--border-color); background: #121926; color: white;">
-                                <option value="1">1</option> <option value="2">2</option> <option value="3">3</option> <option value="4">4</option> <option value="5">5</option> <option value="6">6</option> <option value="7">7</option> <option value="8">8</option> <option value="9">9</option> <option value="10">10</option> <option value="11">11</option> <option value="12" selected>12</option>
-                            </select>
-                            <select id="edit-sched-Sunday-ampm" disabled style="padding: 6px; font-size: 12px; border-radius: 4px; border: 1px solid var(--border-color); background: #121926; color: white; margin-right: 4px;">
-                                <option value="AM" selected>ص</option> <option value="PM">م</option>
-                            </select>
-                        </div>
-                    </div>
-                    <div class="day-input-group" style="display: flex; flex-direction: column;">
-                        <label style="font-size: 13px; font-weight: 600; cursor: pointer; display: flex; align-items: center; gap: 5px;">
-                            <input type="checkbox" id="edit-sched-Monday-chk" onchange="toggleSchedTimeInput('Monday', 'edit-')"> الإثنين
-                        </label>
-                        <div style="display: flex; align-items: center; margin-top: 4px;">
-                            <select id="edit-sched-Monday-hour" disabled style="padding: 6px; font-size: 12px; flex: 1; border-radius: 4px; border: 1px solid var(--border-color); background: #121926; color: white;">
-                                <option value="1">1</option> <option value="2">2</option> <option value="3">3</option> <option value="4">4</option> <option value="5">5</option> <option value="6">6</option> <option value="7">7</option> <option value="8">8</option> <option value="9">9</option> <option value="10">10</option> <option value="11">11</option> <option value="12" selected>12</option>
-                            </select>
-                            <select id="edit-sched-Monday-ampm" disabled style="padding: 6px; font-size: 12px; border-radius: 4px; border: 1px solid var(--border-color); background: #121926; color: white; margin-right: 4px;">
-                                <option value="AM" selected>ص</option> <option value="PM">م</option>
-                            </select>
-                        </div>
-                    </div>
-                    <div class="day-input-group" style="display: flex; flex-direction: column;">
-                        <label style="font-size: 13px; font-weight: 600; cursor: pointer; display: flex; align-items: center; gap: 5px;">
-                            <input type="checkbox" id="edit-sched-Tuesday-chk" onchange="toggleSchedTimeInput('Tuesday', 'edit-')"> الثلاثاء
-                        </label>
-                        <div style="display: flex; align-items: center; margin-top: 4px;">
-                            <select id="edit-sched-Tuesday-hour" disabled style="padding: 6px; font-size: 12px; flex: 1; border-radius: 4px; border: 1px solid var(--border-color); background: #121926; color: white;">
-                                <option value="1">1</option> <option value="2">2</option> <option value="3">3</option> <option value="4">4</option> <option value="5">5</option> <option value="6">6</option> <option value="7">7</option> <option value="8">8</option> <option value="9">9</option> <option value="10">10</option> <option value="11">11</option> <option value="12" selected>12</option>
-                            </select>
-                            <select id="edit-sched-Tuesday-ampm" disabled style="padding: 6px; font-size: 12px; border-radius: 4px; border: 1px solid var(--border-color); background: #121926; color: white; margin-right: 4px;">
-                                <option value="AM" selected>ص</option> <option value="PM">م</option>
-                            </select>
-                        </div>
-                    </div>
-                    <div class="day-input-group" style="display: flex; flex-direction: column;">
-                        <label style="font-size: 13px; font-weight: 600; cursor: pointer; display: flex; align-items: center; gap: 5px;">
-                            <input type="checkbox" id="edit-sched-Wednesday-chk" onchange="toggleSchedTimeInput('Wednesday', 'edit-')"> الأربعاء
-                        </label>
-                        <div style="display: flex; align-items: center; margin-top: 4px;">
-                            <select id="edit-sched-Wednesday-hour" disabled style="padding: 6px; font-size: 12px; flex: 1; border-radius: 4px; border: 1px solid var(--border-color); background: #121926; color: white;">
-                                <option value="1">1</option> <option value="2">2</option> <option value="3">3</option> <option value="4">4</option> <option value="5">5</option> <option value="6">6</option> <option value="7">7</option> <option value="8">8</option> <option value="9">9</option> <option value="10">10</option> <option value="11">11</option> <option value="12" selected>12</option>
-                            </select>
-                            <select id="edit-sched-Wednesday-ampm" disabled style="padding: 6px; font-size: 12px; border-radius: 4px; border: 1px solid var(--border-color); background: #121926; color: white; margin-right: 4px;">
-                                <option value="AM" selected>ص</option> <option value="PM">م</option>
-                            </select>
-                        </div>
-                    </div>
-                    <div class="day-input-group" style="display: flex; flex-direction: column;">
-                        <label style="font-size: 13px; font-weight: 600; cursor: pointer; display: flex; align-items: center; gap: 5px;">
-                            <input type="checkbox" id="edit-sched-Thursday-chk" onchange="toggleSchedTimeInput('Thursday', 'edit-')"> الخميس
-                        </label>
-                        <div style="display: flex; align-items: center; margin-top: 4px;">
-                            <select id="edit-sched-Thursday-hour" disabled style="padding: 6px; font-size: 12px; flex: 1; border-radius: 4px; border: 1px solid var(--border-color); background: #121926; color: white;">
-                                <option value="1">1</option> <option value="2">2</option> <option value="3">3</option> <option value="4">4</option> <option value="5">5</option> <option value="6">6</option> <option value="7">7</option> <option value="8">8</option> <option value="9">9</option> <option value="10">10</option> <option value="11">11</option> <option value="12" selected>12</option>
-                            </select>
-                            <select id="edit-sched-Thursday-ampm" disabled style="padding: 6px; font-size: 12px; border-radius: 4px; border: 1px solid var(--border-color); background: #121926; color: white; margin-right: 4px;">
-                                <option value="AM" selected>ص</option> <option value="PM">م</option>
-                            </select>
-                        </div>
-                    </div>
-                    <div class="day-input-group" style="display: flex; flex-direction: column;">
-                        <label style="font-size: 13px; font-weight: 600; cursor: pointer; display: flex; align-items: center; gap: 5px;">
-                            <input type="checkbox" id="edit-sched-Friday-chk" onchange="toggleSchedTimeInput('Friday', 'edit-')"> الجمعة
-                        </label>
-                        <div style="display: flex; align-items: center; margin-top: 4px;">
-                            <select id="edit-sched-Friday-hour" disabled style="padding: 6px; font-size: 12px; flex: 1; border-radius: 4px; border: 1px solid var(--border-color); background: #121926; color: white;">
-                                <option value="1">1</option> <option value="2">2</option> <option value="3">3</option> <option value="4">4</option> <option value="5">5</option> <option value="6">6</option> <option value="7">7</option> <option value="8">8</option> <option value="9">9</option> <option value="10">10</option> <option value="11">11</option> <option value="12" selected>12</option>
-                            </select>
-                            <select id="edit-sched-Friday-ampm" disabled style="padding: 6px; font-size: 12px; border-radius: 4px; border: 1px solid var(--border-color); background: #121926; color: white; margin-right: 4px;">
-                                <option value="AM" selected>ص</option> <option value="PM">م</option>
-                            </select>
-                        </div>
-                    </div>
-                    <div class="day-input-group" style="display: flex; flex-direction: column;">
-                        <label style="font-size: 13px; font-weight: 600; cursor: pointer; display: flex; align-items: center; gap: 5px;">
-                            <input type="checkbox" id="edit-sched-Saturday-chk" onchange="toggleSchedTimeInput('Saturday', 'edit-')"> السبت
-                        </label>
-                        <div style="display: flex; align-items: center; margin-top: 4px;">
-                            <select id="edit-sched-Saturday-hour" disabled style="padding: 6px; font-size: 12px; flex: 1; border-radius: 4px; border: 1px solid var(--border-color); background: #121926; color: white;">
-                                <option value="1">1</option> <option value="2">2</option> <option value="3">3</option> <option value="4">4</option> <option value="5">5</option> <option value="6">6</option> <option value="7">7</option> <option value="8">8</option> <option value="9">9</option> <option value="10">10</option> <option value="11">11</option> <option value="12" selected>12</option>
-                            </select>
-                            <select id="edit-sched-Saturday-ampm" disabled style="padding: 6px; font-size: 12px; border-radius: 4px; border: 1px solid var(--border-color); background: #121926; color: white; margin-right: 4px;">
-                                <option value="AM" selected>ص</option> <option value="PM">م</option>
-                            </select>
-                        </div>
-                    </div>
-                </div>
-            </div>
-            
-            <div class="modal-actions" style="margin-top: 20px;">
-                <button class="btn-danger" style="background: none; border: 1px solid var(--border-color);" onclick="closeEditStudentModal()">إلغاء</button>
-                <button class="btn-gold" onclick="saveEditedStudent()">حفظ التعديلات 💾</button>
-            </div>
+      <div class="modal-box" style="max-width: 650px">
+        <div class="modal-header">
+          <h3>
+            <i class="fa-solid fa-pen-to-square"></i> تعديل بيانات الطالب
+            الحالية
+          </h3>
+          <button class="close-modal" onclick="closeEditStudentModal()">
+            &times;
+          </button>
         </div>
+        <input type="hidden" id="edit-student-id" />
+        <div class="form-row three-cols">
+          <div class="form-group">
+            <label>رقم الاشتراك</label>
+            <input type="number" id="edit-subscription-number" required />
+          </div>
+          <div class="form-group">
+            <label>السن (العمر)</label>
+            <input type="number" id="edit-age" required />
+          </div>
+          <div class="form-group">
+            <label>الجنس</label>
+            <select id="edit-gender">
+              <option value="false">ذكر</option>
+              <option value="true">أنثى</option>
+            </select>
+          </div>
+        </div>
+        <div class="form-row three-cols">
+          <div class="form-group">
+            <label>اسم الطالب بالكامل</label>
+            <input type="text" id="edit-name" required />
+          </div>
+          <div class="form-group">
+            <label>رقم الهاتف للاتصال</label>
+            <input type="text" id="edit-phone" required />
+          </div>
+          <div class="form-group">
+            <label>رابط الجروب (GroupLink)</label>
+            <input
+              type="text"
+              id="edit-group-link"
+              placeholder="مثال: https://t.me/..."
+            />
+          </div>
+        </div>
+        <div class="form-row three-cols">
+          <div class="form-group">
+            <label>المعلم المباشر</label>
+            <select id="edit-teacher-id" required>
+              <option value="">اختر معلماً...</option>
+            </select>
+          </div>
+          <div class="form-group">
+            <label>حالة الدفع</label>
+            <select id="edit-payment-status">
+              <option value="لم يدفع">لم يدفع</option>
+              <option value="تم الدفع">دافع (تم الدفع)</option>
+              <option value="مؤجل الدفع">مؤجل</option>
+            </select>
+          </div>
+          <div class="form-group">
+            <label>حالة الحصص</label>
+            <select id="edit-status">
+              <option value="نشط">نشط</option>
+              <option value="غير نشط">غير نشط</option>
+            </select>
+          </div>
+        </div>
+
+        <div class="form-row" style="grid-column: span 12">
+          <label
+            style="
+              font-weight: bold;
+              margin-bottom: 8px;
+              display: block;
+              color: var(--gold-primary);
+            "
+            >جدول المواعيد الأسبوعي (حدد الساعة والفترة عند تفعيل اليوم)</label
+          >
+          <div
+            class="schedule-grid"
+            style="
+              display: grid;
+              grid-template-columns: repeat(auto-fit, minmax(130px, 1fr));
+              gap: 12px;
+              background: rgba(255, 255, 255, 0.02);
+              padding: 12px;
+              border-radius: 8px;
+              border: 1px solid var(--border-color);
+            "
+          >
+            <div
+              class="day-input-group"
+              style="display: flex; flex-direction: column"
+            >
+              <label
+                style="
+                  font-size: 13px;
+                  font-weight: 600;
+                  cursor: pointer;
+                  display: flex;
+                  align-items: center;
+                  gap: 5px;
+                "
+              >
+                <input
+                  type="checkbox"
+                  id="edit-sched-Sunday-chk"
+                  onchange="toggleSchedTimeInput('Sunday', 'edit-')"
+                />
+                الأحد
+              </label>
+              <div style="display: flex; align-items: center; margin-top: 4px">
+                <select
+                  id="edit-sched-Sunday-hour"
+                  disabled
+                  style="
+                    padding: 6px;
+                    font-size: 12px;
+                    flex: 1;
+                    border-radius: 4px;
+                    border: 1px solid var(--border-color);
+                    background: #121926;
+                    color: white;
+                  "
+                >
+                  <option value="1">1</option>
+                  <option value="2">2</option>
+                  <option value="3">3</option>
+                  <option value="4">4</option>
+                  <option value="5">5</option>
+                  <option value="6">6</option>
+                  <option value="7">7</option>
+                  <option value="8">8</option>
+                  <option value="9">9</option>
+                  <option value="10">10</option>
+                  <option value="11">11</option>
+                  <option value="12" selected>12</option>
+                </select>
+                <select
+                  id="edit-sched-Sunday-ampm"
+                  disabled
+                  style="
+                    padding: 6px;
+                    font-size: 12px;
+                    border-radius: 4px;
+                    border: 1px solid var(--border-color);
+                    background: #121926;
+                    color: white;
+                    margin-right: 4px;
+                  "
+                >
+                  <option value="AM" selected>ص</option>
+                  <option value="PM">م</option>
+                </select>
+              </div>
+            </div>
+            <div
+              class="day-input-group"
+              style="display: flex; flex-direction: column"
+            >
+              <label
+                style="
+                  font-size: 13px;
+                  font-weight: 600;
+                  cursor: pointer;
+                  display: flex;
+                  align-items: center;
+                  gap: 5px;
+                "
+              >
+                <input
+                  type="checkbox"
+                  id="edit-sched-Monday-chk"
+                  onchange="toggleSchedTimeInput('Monday', 'edit-')"
+                />
+                الإثنين
+              </label>
+              <div style="display: flex; align-items: center; margin-top: 4px">
+                <select
+                  id="edit-sched-Monday-hour"
+                  disabled
+                  style="
+                    padding: 6px;
+                    font-size: 12px;
+                    flex: 1;
+                    border-radius: 4px;
+                    border: 1px solid var(--border-color);
+                    background: #121926;
+                    color: white;
+                  "
+                >
+                  <option value="1">1</option>
+                  <option value="2">2</option>
+                  <option value="3">3</option>
+                  <option value="4">4</option>
+                  <option value="5">5</option>
+                  <option value="6">6</option>
+                  <option value="7">7</option>
+                  <option value="8">8</option>
+                  <option value="9">9</option>
+                  <option value="10">10</option>
+                  <option value="11">11</option>
+                  <option value="12" selected>12</option>
+                </select>
+                <select
+                  id="edit-sched-Monday-ampm"
+                  disabled
+                  style="
+                    padding: 6px;
+                    font-size: 12px;
+                    border-radius: 4px;
+                    border: 1px solid var(--border-color);
+                    background: #121926;
+                    color: white;
+                    margin-right: 4px;
+                  "
+                >
+                  <option value="AM" selected>ص</option>
+                  <option value="PM">م</option>
+                </select>
+              </div>
+            </div>
+            <div
+              class="day-input-group"
+              style="display: flex; flex-direction: column"
+            >
+              <label
+                style="
+                  font-size: 13px;
+                  font-weight: 600;
+                  cursor: pointer;
+                  display: flex;
+                  align-items: center;
+                  gap: 5px;
+                "
+              >
+                <input
+                  type="checkbox"
+                  id="edit-sched-Tuesday-chk"
+                  onchange="toggleSchedTimeInput('Tuesday', 'edit-')"
+                />
+                الثلاثاء
+              </label>
+              <div style="display: flex; align-items: center; margin-top: 4px">
+                <select
+                  id="edit-sched-Tuesday-hour"
+                  disabled
+                  style="
+                    padding: 6px;
+                    font-size: 12px;
+                    flex: 1;
+                    border-radius: 4px;
+                    border: 1px solid var(--border-color);
+                    background: #121926;
+                    color: white;
+                  "
+                >
+                  <option value="1">1</option>
+                  <option value="2">2</option>
+                  <option value="3">3</option>
+                  <option value="4">4</option>
+                  <option value="5">5</option>
+                  <option value="6">6</option>
+                  <option value="7">7</option>
+                  <option value="8">8</option>
+                  <option value="9">9</option>
+                  <option value="10">10</option>
+                  <option value="11">11</option>
+                  <option value="12" selected>12</option>
+                </select>
+                <select
+                  id="edit-sched-Tuesday-ampm"
+                  disabled
+                  style="
+                    padding: 6px;
+                    font-size: 12px;
+                    border-radius: 4px;
+                    border: 1px solid var(--border-color);
+                    background: #121926;
+                    color: white;
+                    margin-right: 4px;
+                  "
+                >
+                  <option value="AM" selected>ص</option>
+                  <option value="PM">م</option>
+                </select>
+              </div>
+            </div>
+            <div
+              class="day-input-group"
+              style="display: flex; flex-direction: column"
+            >
+              <label
+                style="
+                  font-size: 13px;
+                  font-weight: 600;
+                  cursor: pointer;
+                  display: flex;
+                  align-items: center;
+                  gap: 5px;
+                "
+              >
+                <input
+                  type="checkbox"
+                  id="edit-sched-Wednesday-chk"
+                  onchange="toggleSchedTimeInput('Wednesday', 'edit-')"
+                />
+                الأربعاء
+              </label>
+              <div style="display: flex; align-items: center; margin-top: 4px">
+                <select
+                  id="edit-sched-Wednesday-hour"
+                  disabled
+                  style="
+                    padding: 6px;
+                    font-size: 12px;
+                    flex: 1;
+                    border-radius: 4px;
+                    border: 1px solid var(--border-color);
+                    background: #121926;
+                    color: white;
+                  "
+                >
+                  <option value="1">1</option>
+                  <option value="2">2</option>
+                  <option value="3">3</option>
+                  <option value="4">4</option>
+                  <option value="5">5</option>
+                  <option value="6">6</option>
+                  <option value="7">7</option>
+                  <option value="8">8</option>
+                  <option value="9">9</option>
+                  <option value="10">10</option>
+                  <option value="11">11</option>
+                  <option value="12" selected>12</option>
+                </select>
+                <select
+                  id="edit-sched-Wednesday-ampm"
+                  disabled
+                  style="
+                    padding: 6px;
+                    font-size: 12px;
+                    border-radius: 4px;
+                    border: 1px solid var(--border-color);
+                    background: #121926;
+                    color: white;
+                    margin-right: 4px;
+                  "
+                >
+                  <option value="AM" selected>ص</option>
+                  <option value="PM">م</option>
+                </select>
+              </div>
+            </div>
+            <div
+              class="day-input-group"
+              style="display: flex; flex-direction: column"
+            >
+              <label
+                style="
+                  font-size: 13px;
+                  font-weight: 600;
+                  cursor: pointer;
+                  display: flex;
+                  align-items: center;
+                  gap: 5px;
+                "
+              >
+                <input
+                  type="checkbox"
+                  id="edit-sched-Thursday-chk"
+                  onchange="toggleSchedTimeInput('Thursday', 'edit-')"
+                />
+                الخميس
+              </label>
+              <div style="display: flex; align-items: center; margin-top: 4px">
+                <select
+                  id="edit-sched-Thursday-hour"
+                  disabled
+                  style="
+                    padding: 6px;
+                    font-size: 12px;
+                    flex: 1;
+                    border-radius: 4px;
+                    border: 1px solid var(--border-color);
+                    background: #121926;
+                    color: white;
+                  "
+                >
+                  <option value="1">1</option>
+                  <option value="2">2</option>
+                  <option value="3">3</option>
+                  <option value="4">4</option>
+                  <option value="5">5</option>
+                  <option value="6">6</option>
+                  <option value="7">7</option>
+                  <option value="8">8</option>
+                  <option value="9">9</option>
+                  <option value="10">10</option>
+                  <option value="11">11</option>
+                  <option value="12" selected>12</option>
+                </select>
+                <select
+                  id="edit-sched-Thursday-ampm"
+                  disabled
+                  style="
+                    padding: 6px;
+                    font-size: 12px;
+                    border-radius: 4px;
+                    border: 1px solid var(--border-color);
+                    background: #121926;
+                    color: white;
+                    margin-right: 4px;
+                  "
+                >
+                  <option value="AM" selected>ص</option>
+                  <option value="PM">م</option>
+                </select>
+              </div>
+            </div>
+            <div
+              class="day-input-group"
+              style="display: flex; flex-direction: column"
+            >
+              <label
+                style="
+                  font-size: 13px;
+                  font-weight: 600;
+                  cursor: pointer;
+                  display: flex;
+                  align-items: center;
+                  gap: 5px;
+                "
+              >
+                <input
+                  type="checkbox"
+                  id="edit-sched-Friday-chk"
+                  onchange="toggleSchedTimeInput('Friday', 'edit-')"
+                />
+                الجمعة
+              </label>
+              <div style="display: flex; align-items: center; margin-top: 4px">
+                <select
+                  id="edit-sched-Friday-hour"
+                  disabled
+                  style="
+                    padding: 6px;
+                    font-size: 12px;
+                    flex: 1;
+                    border-radius: 4px;
+                    border: 1px solid var(--border-color);
+                    background: #121926;
+                    color: white;
+                  "
+                >
+                  <option value="1">1</option>
+                  <option value="2">2</option>
+                  <option value="3">3</option>
+                  <option value="4">4</option>
+                  <option value="5">5</option>
+                  <option value="6">6</option>
+                  <option value="7">7</option>
+                  <option value="8">8</option>
+                  <option value="9">9</option>
+                  <option value="10">10</option>
+                  <option value="11">11</option>
+                  <option value="12" selected>12</option>
+                </select>
+                <select
+                  id="edit-sched-Friday-ampm"
+                  disabled
+                  style="
+                    padding: 6px;
+                    font-size: 12px;
+                    border-radius: 4px;
+                    border: 1px solid var(--border-color);
+                    background: #121926;
+                    color: white;
+                    margin-right: 4px;
+                  "
+                >
+                  <option value="AM" selected>ص</option>
+                  <option value="PM">م</option>
+                </select>
+              </div>
+            </div>
+            <div
+              class="day-input-group"
+              style="display: flex; flex-direction: column"
+            >
+              <label
+                style="
+                  font-size: 13px;
+                  font-weight: 600;
+                  cursor: pointer;
+                  display: flex;
+                  align-items: center;
+                  gap: 5px;
+                "
+              >
+                <input
+                  type="checkbox"
+                  id="edit-sched-Saturday-chk"
+                  onchange="toggleSchedTimeInput('Saturday', 'edit-')"
+                />
+                السبت
+              </label>
+              <div style="display: flex; align-items: center; margin-top: 4px">
+                <select
+                  id="edit-sched-Saturday-hour"
+                  disabled
+                  style="
+                    padding: 6px;
+                    font-size: 12px;
+                    flex: 1;
+                    border-radius: 4px;
+                    border: 1px solid var(--border-color);
+                    background: #121926;
+                    color: white;
+                  "
+                >
+                  <option value="1">1</option>
+                  <option value="2">2</option>
+                  <option value="3">3</option>
+                  <option value="4">4</option>
+                  <option value="5">5</option>
+                  <option value="6">6</option>
+                  <option value="7">7</option>
+                  <option value="8">8</option>
+                  <option value="9">9</option>
+                  <option value="10">10</option>
+                  <option value="11">11</option>
+                  <option value="12" selected>12</option>
+                </select>
+                <select
+                  id="edit-sched-Saturday-ampm"
+                  disabled
+                  style="
+                    padding: 6px;
+                    font-size: 12px;
+                    border-radius: 4px;
+                    border: 1px solid var(--border-color);
+                    background: #121926;
+                    color: white;
+                    margin-right: 4px;
+                  "
+                >
+                  <option value="AM" selected>ص</option>
+                  <option value="PM">م</option>
+                </select>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <div class="modal-actions" style="margin-top: 20px">
+          <button
+            class="btn-danger"
+            style="background: none; border: 1px solid var(--border-color)"
+            onclick="closeEditStudentModal()"
+          >
+            إلغاء
+          </button>
+          <button class="btn-gold" onclick="saveEditedStudent()">
+            حفظ التعديلات 💾
+          </button>
+        </div>
+      </div>
     </div>
 
     <div class="modal-overlay" id="details-student-modal">
-        <div class="modal-box" style="max-width: 550px;">
-            <div class="modal-header">
-                <h3><i class="fa-solid fa-address-card"></i> ملف بيانات الطالب التفصيلي</h3>
-                <button class="close-modal" onclick="closeDetailsStudentModal()">&times;</button>
-            </div>
-            <div class="details-content" id="details-content-body" style="color: white; font-family: 'Cairo';">
-                <!-- يتم تعبئتها ديناميكياً -->
-            </div>
-            <div class="modal-actions" style="margin-top: 20px;">
-                <button class="btn-cancel" style="border: 1px solid var(--border-color); background: none; color: white; cursor: pointer; padding: 8px 16px; border-radius: 6px;" onclick="closeDetailsStudentModal()">إغلاق النافذة</button>
-            </div>
+      <div class="modal-box" style="max-width: 550px">
+        <div class="modal-header">
+          <h3>
+            <i class="fa-solid fa-address-card"></i> ملف بيانات الطالب التفصيلي
+          </h3>
+          <button class="close-modal" onclick="closeDetailsStudentModal()">
+            &times;
+          </button>
         </div>
+        <div
+          class="details-content"
+          id="details-content-body"
+          style="color: white; font-family: &quot;Cairo&quot;"
+        >
+          <!-- يتم تعبئتها ديناميكياً -->
+        </div>
+        <div class="modal-actions" style="margin-top: 20px">
+          <button
+            class="btn-cancel"
+            style="
+              border: 1px solid var(--border-color);
+              background: none;
+              color: white;
+              cursor: pointer;
+              padding: 8px 16px;
+              border-radius: 6px;
+            "
+            onclick="closeDetailsStudentModal()"
+          >
+            إغلاق النافذة
+          </button>
+        </div>
+      </div>
     </div>
 
-<script>
-    if (!firebase.apps.length) firebase.initializeApp(firebaseConfig);
-    var db = firebase.firestore();
+    <script>
+      if (!firebase.apps.length) firebase.initializeApp(firebaseConfig);
+      var db = firebase.firestore();
 
-    var allStudentsData = [];
-    var teachersList = [];
-    var teachersMap = {};
-    var studentToFamilyMap = {};
-    var currentSupervisor = localStorage.getItem("currentSupervisor");
+      var allStudentsData = [];
+      var teachersList = [];
+      var teachersMap = {};
+      var studentToFamilyMap = {};
+      var currentSupervisor = localStorage.getItem("currentSupervisor");
 
-    function get24Hour(hour12, ampm) {
+      function get24Hour(hour12, ampm) {
         let hr = parseInt(hour12);
         if (ampm === "PM") {
-            if (hr !== 12) hr += 12;
-        } else { // AM
-            if (hr === 12) hr = 0;
+          if (hr !== 12) hr += 12;
+        } else {
+          // AM
+          if (hr === 12) hr = 0;
         }
         return String(hr);
-    }
+      }
 
-    function get12Hour(hour24) {
-        if (hour24 === undefined || hour24 === null || String(hour24).trim() === "") return null;
+      function get12Hour(hour24) {
+        if (
+          hour24 === undefined ||
+          hour24 === null ||
+          String(hour24).trim() === ""
+        )
+          return null;
         let hr = parseInt(hour24);
         if (isNaN(hr)) return null;
         let ampm = hr >= 12 ? "PM" : "AM";
         let hr12 = hr % 12;
         if (hr12 === 0) hr12 = 12;
         return { hour: String(hr12), ampm: ampm };
-    }
+      }
 
-    function formatHour12(hour24) {
+      function formatHour12(hour24) {
         let hrVal = get12Hour(hour24);
         if (!hrVal) return "";
         let ampmAr = hrVal.ampm === "PM" ? "م" : "ص";
         return `${hrVal.hour} ${ampmAr}`;
-    }
-    if (!currentSupervisor) {
+      }
+      if (!currentSupervisor) {
         window.location.href = "index.html";
-    }
+      }
 
-    var studentsPerPage = 10; 
-    var currentVisibleLimit = 10;
+      var studentsPerPage = 10;
+      var currentVisibleLimit = 10;
 
-    window.onload = function() {
+      window.onload = function () {
         // 🛡️ الاستدعاء من محرك الأمان الموحد المركزي
         if (typeof checkPageProtection === "function") {
-            checkPageProtection("كل المشرفين");
+          checkPageProtection("كل المشرفين");
         }
-        
+
         let userBadge = document.getElementById("current-user-badge");
         if (userBadge) userBadge.innerText = `المشرف: ${currentSupervisor}`;
-        
-        startRealtimeStudentsSync();
-    };
 
-    function startRealtimeStudentsSync() {
+        startRealtimeStudentsSync();
+      };
+
+      function startRealtimeStudentsSync() {
         // الاستماع لقائمة المعلمين أولاً لربط معرّف المعلم بالاسم وسعر الساعة
         db.collection("teachers").onSnapshot((teachersSnapshot) => {
-            teachersList = [];
-            teachersMap = {};
-            teachersSnapshot.forEach((doc) => {
-                let data = doc.data();
-                let name = data.Name || data.name || 'مجهول';
-                let rate = data.HourlyRate || data.hourlyRate || 0;
-                teachersList.push({ id: doc.id, name: name, hourlyRate: rate });
-                teachersMap[doc.id] = name;
-                if (data.UserId) {
-                    teachersMap[data.UserId] = name;
-                }
+          teachersList = [];
+          teachersMap = {};
+          teachersSnapshot.forEach((doc) => {
+            let data = doc.data();
+            let name = data.Name || data.name || "مجهول";
+            let rate = data.HourlyRate || data.hourlyRate || 0;
+            teachersList.push({ id: doc.id, name: name, hourlyRate: rate });
+            teachersMap[doc.id] = name;
+            if (data.UserId) {
+              teachersMap[data.UserId] = name;
+            }
+          });
+
+          // تحديث قوائم الاختيار في المودال
+          let newTeacherSelect = document.getElementById("new-teacher-id");
+          if (newTeacherSelect) {
+            newTeacherSelect.innerHTML =
+              '<option value="">اختر معلماً...</option>';
+            teachersList.forEach((t) => {
+              newTeacherSelect.innerHTML += `<option value="${t.id}">${t.name} (${t.hourlyRate} ج.م/ساعة)</option>`;
             });
+          }
 
-            // تحديث قوائم الاختيار في المودال
-            let newTeacherSelect = document.getElementById("new-teacher-id");
-            if (newTeacherSelect) {
-                newTeacherSelect.innerHTML = '<option value="">اختر معلماً...</option>';
-                teachersList.forEach(t => {
-                    newTeacherSelect.innerHTML += `<option value="${t.id}">${t.name} (${t.hourlyRate} ج.م/ساعة)</option>`;
-                });
-            }
+          let editTeacherSelect = document.getElementById("edit-teacher-id");
+          if (editTeacherSelect) {
+            editTeacherSelect.innerHTML =
+              '<option value="">اختر معلماً...</option>';
+            teachersList.forEach((t) => {
+              editTeacherSelect.innerHTML += `<option value="${t.id}">${t.name} (${t.hourlyRate} ج.م/ساعة)</option>`;
+            });
+          }
 
-            let editTeacherSelect = document.getElementById("edit-teacher-id");
-            if (editTeacherSelect) {
-                editTeacherSelect.innerHTML = '<option value="">اختر معلماً...</option>';
-                teachersList.forEach(t => {
-                    editTeacherSelect.innerHTML += `<option value="${t.id}">${t.name} (${t.hourlyRate} ج.م/ساعة)</option>`;
-                });
-            }
-
-            populateTeacherFilters();
-            renderAllTablesSummary();
+          populateTeacherFilters();
+          renderAllTablesSummary();
         });
 
         // الاستماع للطلاب
-        db.collection("students").onSnapshot((snapshot) => {
+        db.collection("students").onSnapshot(
+          (snapshot) => {
             allStudentsData = [];
             snapshot.forEach((doc) => {
-                let rawData = doc.data();
-                
-                let student = {
-                    ...rawData, 
-                    id: doc.id,
-                    studentName: rawData.Name || rawData.studentName || 'مجهول',
-                    membershipId: rawData.SubscriptionNumber || rawData.membershipId || 'معلق',
-                    teacherName: teachersMap[rawData.TeacherId] || rawData.teacherName || 'غير معين',
-                    status: rawData.Status || rawData.status || 'نشط',
-                    paymentStatus: rawData.PaymentStatus || rawData.paymentStatus || 'لم يدفع'
+              let rawData = doc.data();
+
+              let student = {
+                ...rawData,
+                id: doc.id,
+                studentName: rawData.Name || rawData.studentName || "مجهول",
+                membershipId:
+                  rawData.SubscriptionNumber || rawData.membershipId || "معلق",
+                teacherName:
+                  teachersMap[rawData.TeacherId] ||
+                  rawData.teacherName ||
+                  "غير معين",
+                status: rawData.Status || rawData.status || "نشط",
+                paymentStatus:
+                  rawData.PaymentStatus || rawData.paymentStatus || "لم يدفع",
+              };
+
+              // بناء نص الجدول الزمني من الـ Map
+              let studentDays = [];
+              if (student.Schedule) {
+                const dayMappingAr = {
+                  Sunday: "الأحد",
+                  Monday: "الإثنين",
+                  Tuesday: "الثلاثاء",
+                  Wednesday: "الأربعاء",
+                  Thursday: "الخميس",
+                  Friday: "الجمعة",
+                  Saturday: "السبت",
                 };
+                const daysOrder = [
+                  "Sunday",
+                  "Monday",
+                  "Tuesday",
+                  "Wednesday",
+                  "Thursday",
+                  "Friday",
+                  "Saturday",
+                ];
+                daysOrder.forEach((dayEng) => {
+                  let time = student.Schedule[dayEng];
+                  if (time && String(time).trim() !== "") {
+                    let formattedTime = formatHour12(time);
+                    studentDays.push(
+                      `${dayMappingAr[dayEng] || dayEng} (${formattedTime})`,
+                    );
+                  }
+                });
+              }
+              student.scheduleTime =
+                studentDays.length > 0
+                  ? studentDays.join("، ")
+                  : "الموعد غير محدد";
 
-                // بناء نص الجدول الزمني من الـ Map
-                let studentDays = [];
-                if (student.Schedule) {
-                    const dayMappingAr = {
-                        Sunday: 'الأحد',
-                        Monday: 'الإثنين',
-                        Tuesday: 'الثلاثاء',
-                        Wednesday: 'الأربعاء',
-                        Thursday: 'الخميس',
-                        Friday: 'الجمعة',
-                        Saturday: 'السبت'
-                    };
-                    const daysOrder = ['Sunday', 'Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday'];
-                    daysOrder.forEach(dayEng => {
-                        let time = student.Schedule[dayEng];
-                        if (time && String(time).trim() !== "") {
-                            let formattedTime = formatHour12(time);
-                            studentDays.push(`${dayMappingAr[dayEng] || dayEng} (${formattedTime})`);
-                        }
-                    });
-                }
-                student.scheduleTime = studentDays.length > 0 ? studentDays.join('، ') : 'الموعد غير محدد';
-
-                allStudentsData.push(student);
+              allStudentsData.push(student);
             });
-            
+
             allStudentsData.sort((a, b) => {
-                const dateA = a.CreatedAt ? (a.CreatedAt.seconds || new Date(a.CreatedAt).getTime()) : (a.createdAt ? (a.createdAt.seconds || new Date(a.createdAt).getTime()) : 0);
-                const dateB = b.CreatedAt ? (b.CreatedAt.seconds || new Date(b.CreatedAt).getTime()) : (b.createdAt ? (b.createdAt.seconds || new Date(b.createdAt).getTime()) : 0);
-                return dateB - dateA;
+              const dateA = a.CreatedAt
+                ? a.CreatedAt.seconds || new Date(a.CreatedAt).getTime()
+                : a.createdAt
+                  ? a.createdAt.seconds || new Date(a.createdAt).getTime()
+                  : 0;
+              const dateB = b.CreatedAt
+                ? b.CreatedAt.seconds || new Date(b.CreatedAt).getTime()
+                : b.createdAt
+                  ? b.createdAt.seconds || new Date(b.createdAt).getTime()
+                  : 0;
+              return dateB - dateA;
             });
 
             populateTeacherFilters();
             renderAllTablesSummary();
-        }, (error) => {
+          },
+          (error) => {
             console.error("❌ حدث خطأ في محرك الاستماع للطلاب: ", error);
-        });
+          },
+        );
 
         // الاستماع للعائلات لبناء خريطة الطلاب للعائلات
-        db.collection("families").onSnapshot((familiesSnapshot) => {
+        db.collection("families").onSnapshot(
+          (familiesSnapshot) => {
             studentToFamilyMap = {};
             familiesSnapshot.forEach((doc) => {
-                let data = doc.data();
-                let familyName = doc.id;
-                let studentIds = data.Students || [];
-                studentIds.forEach(sId => {
-                    studentToFamilyMap[sId] = familyName;
-                });
+              let data = doc.data();
+              let familyName = doc.id;
+              let studentIds = data.Students || [];
+              studentIds.forEach((sId) => {
+                studentToFamilyMap[sId] = familyName;
+              });
             });
             renderAllTablesSummary();
-        }, (error) => {
+          },
+          (error) => {
             console.error("❌ حدث خطأ في محرك الاستماع للعائلات: ", error);
-        });
-    }
+          },
+        );
+      }
 
-    function populateTeacherFilters() {
-        let filterTeacherSelect = document.getElementById('filter-teacher');
-        if (!filterTeacherSelect) return; 
-        
+      function populateTeacherFilters() {
+        let filterTeacherSelect = document.getElementById("filter-teacher");
+        if (!filterTeacherSelect) return;
+
         let currentSelection = filterTeacherSelect.value;
-        filterTeacherSelect.innerHTML = '<option value="الكل">كل المعلمين المسجلين</option>';
-        teachersList.forEach(t => {
-            filterTeacherSelect.innerHTML += `<option value="${t.name}">${t.name}</option>`;
+        filterTeacherSelect.innerHTML =
+          '<option value="الكل">كل المعلمين المسجلين</option>';
+        teachersList.forEach((t) => {
+          filterTeacherSelect.innerHTML += `<option value="${t.name}">${t.name}</option>`;
         });
         filterTeacherSelect.value = currentSelection || "الكل";
-    }
+      }
 
-    function renderAllTablesSummary() {
-        let searchEl = document.getElementById('search-input');
-        let teacherEl = document.getElementById('filter-teacher');
-        let paymentEl = document.getElementById('filter-payment');
+      function renderAllTablesSummary() {
+        let searchEl = document.getElementById("search-input");
+        let teacherEl = document.getElementById("filter-teacher");
+        let paymentEl = document.getElementById("filter-payment");
 
-        let searchQuery = searchEl ? searchEl.value.toLowerCase().trim() : '';
-        let teacherFilter = teacherEl ? teacherEl.value : 'الكل';
-        let paymentFilter = paymentEl ? paymentEl.value : 'الكل';
+        let searchQuery = searchEl ? searchEl.value.toLowerCase().trim() : "";
+        let teacherFilter = teacherEl ? teacherEl.value : "الكل";
+        let paymentFilter = paymentEl ? paymentEl.value : "الكل";
 
-        let baseFiltered = allStudentsData.filter(student => {
-            let sName = student.studentName ? student.studentName.toLowerCase() : '';
-            let sPhone = student.PhoneNumber || student.phone || '';
-            let sSub = String(student.membershipId) || '';
+        let baseFiltered = allStudentsData.filter((student) => {
+          let sName = student.studentName
+            ? student.studentName.toLowerCase()
+            : "";
+          let sPhone = student.PhoneNumber || student.phone || "";
+          let sSub = String(student.membershipId) || "";
 
-            let matchSearch = !searchQuery || 
-                              sName.includes(searchQuery) ||
-                              sPhone.includes(searchQuery) ||
-                              sSub.includes(searchQuery);
+          let matchSearch =
+            !searchQuery ||
+            sName.includes(searchQuery) ||
+            sPhone.includes(searchQuery) ||
+            sSub.includes(searchQuery);
 
-            let matchTeacher = (teacherFilter === "الكل") || (student.teacherName === teacherFilter);
-            let matchPayment = (paymentFilter === "الكل") || (student.paymentStatus === paymentFilter);
-            return matchSearch && matchTeacher && matchPayment;
+          let matchTeacher =
+            teacherFilter === "الكل" || student.teacherName === teacherFilter;
+          let matchPayment =
+            paymentFilter === "الكل" || student.paymentStatus === paymentFilter;
+          return matchSearch && matchTeacher && matchPayment;
         });
 
-        let finalSupervisorStudents = (currentSupervisor === "المدير العام") ? baseFiltered : baseFiltered.filter(s => !s.createdBy || s.createdBy === currentSupervisor || s.CreatedBy === currentSupervisor);
-        let activeStudents = finalSupervisorStudents.filter(s => s.status !== "مؤرشف");
+        let finalSupervisorStudents =
+          currentSupervisor === "المدير العام"
+            ? baseFiltered
+            : baseFiltered.filter(
+                (s) =>
+                  !s.createdBy ||
+                  s.createdBy === currentSupervisor ||
+                  s.CreatedBy === currentSupervisor,
+              );
+        let activeStudents = finalSupervisorStudents.filter(
+          (s) => s.status !== "مؤرشف",
+        );
 
-        let loadMoreWrapper = document.getElementById('load-more-wrapper');
+        let loadMoreWrapper = document.getElementById("load-more-wrapper");
         if (loadMoreWrapper) {
-            loadMoreWrapper.style.display = (activeStudents.length > currentVisibleLimit) ? "flex" : "none";
+          loadMoreWrapper.style.display =
+            activeStudents.length > currentVisibleLimit ? "flex" : "none";
         }
 
         let chunkedStudents = activeStudents.slice(0, currentVisibleLimit);
         buildActiveMainTableHTML(chunkedStudents);
-    }
+      }
 
-    function loadMoreStudents() {
+      function loadMoreStudents() {
         currentVisibleLimit += studentsPerPage;
         renderAllTablesSummary();
-    }
+      }
 
-    function filterAllTables() { 
-        currentVisibleLimit = studentsPerPage; 
-        renderAllTablesSummary(); 
-    }
+      function filterAllTables() {
+        currentVisibleLimit = studentsPerPage;
+        renderAllTablesSummary();
+      }
 
-    function buildActiveMainTableHTML(students) {
-        let tbody = document.getElementById('main-students-tbody');
+      function buildActiveMainTableHTML(students) {
+        let tbody = document.getElementById("main-students-tbody");
         if (!tbody) return;
         tbody.innerHTML = "";
 
         if (students.length === 0) {
-            tbody.innerHTML = `<tr><td colspan="9" style="padding:20px; color:gray; text-align:center;">لا توجد سجلات حالية مطابقة للفلاتر.</td></tr>`;
-            return;
+          tbody.innerHTML = `<tr><td colspan="10" style="padding:20px; color:gray; text-align:center;">لا توجد سجلات حالية مطابقة للفلاتر.</td></tr>`;
+          return;
         }
 
-        students.forEach(student => {
-            let row = document.createElement('tr');
-            let familyName = studentToFamilyMap[student.id] || 'لا يوجد';
-            row.innerHTML = `
+        students.forEach((student) => {
+          let row = document.createElement("tr");
+          let familyName = studentToFamilyMap[student.id] || "لا يوجد";
+          let groupLinkVal = student.GroupLink || student.groupLink || "";
+          row.innerHTML = `
                 <td><span style="font-weight:700; color:var(--gold-primary);">#${student.membershipId}</span></td>
                 <td><span style="color:var(--text-secondary); font-size:12px; font-weight:bold;">${familyName}</span></td>
-                <td style="font-weight:bold;">${student.studentName} <span style="font-size: 11px; font-weight: normal; color: var(--text-secondary);">(${student.Gender === true ? 'أنثى' : 'ذكر'})</span></td>
+                <td style="font-weight:bold;">${student.studentName} <span style="font-size: 11px; font-weight: normal; color: var(--text-secondary);">(${student.Gender === true ? "أنثى" : "ذكر"})</span></td>
                 <td dir="ltr" style="white-space: nowrap;">
                     <a href="tel:${student.PhoneNumber || student.phone}" style="color:var(--info); font-weight:600; text-decoration:none; margin-left: 5px;"><i class="fa-solid fa-phone"></i> ${student.PhoneNumber || student.phone}</a>
                     <button class="btn-whatsapp" onclick="sendPaymentReminder('${student.id}')" style="background: none; border: none; color: #25d366; cursor: pointer; font-size: 15px; display: inline-flex; align-items: center; vertical-align: middle;" title="إرسال تذكير الدفع بالواتساب"><i class="fa-brands fa-whatsapp"></i></button>
                 </td>
                 <td>
-                    👨‍🏫 ${student.teacherName || 'غير معين'}<br>
-                    <small style="color:var(--text-secondary);"><i class="fa-regular fa-clock"></i> ${student.scheduleTime || 'الموعد غير محدد'}</small>
+                    👨‍🏫 ${student.teacherName || "غير معين"}<br>
+                    <small style="color:var(--text-secondary);"><i class="fa-regular fa-clock"></i> ${student.scheduleTime || "الموعد غير محدد"}</small>
                 </td>
                 <td>
-                    <select class="inline-select" onchange="updateStudentField('${student.id}', 'paymentStatus', this.value, '', '${student.PhoneNumber || student.phone || ''}')" style="color: ${student.paymentStatus === 'تم الدفع' ? '#10b981' : student.paymentStatus === 'مؤجل الدفع' ? '#f59e0b' : '#ef4444'}">
-                        <option value="لم يدفع" ${student.paymentStatus === 'لم يدفع' ? 'selected' : ''}>لم يدفع</option>
-                        <option value="مؤجل الدفع" ${student.paymentStatus === 'مؤجل الدفع' ? 'selected' : ''}>مؤجل الدفع</option>
-                        <option value="تم الدفع" ${student.paymentStatus === 'تم الدفع' ? 'selected' : ''}>تم الدفع</option>
+                    <select class="inline-select" onchange="updateStudentField('${student.id}', 'paymentStatus', this.value, '', '${student.PhoneNumber || student.phone || ""}')" style="color: ${student.paymentStatus === "تم الدفع" ? "#10b981" : student.paymentStatus === "مؤجل الدفع" ? "#f59e0b" : "#ef4444"}">
+                        <option value="لم يدفع" ${student.paymentStatus === "لم يدفع" ? "selected" : ""}>لم يدفع</option>
+                        <option value="مؤجل الدفع" ${student.paymentStatus === "مؤجل الدفع" ? "selected" : ""}>مؤجل الدفع</option>
+                        <option value="تم الدفع" ${student.paymentStatus === "تم الدفع" ? "selected" : ""}>تم الدفع</option>
                     </select>
                 </td>
                 <td>
                     <select class="inline-select" onchange="updateStudentField('${student.id}', 'status', this.value, '', '')">
-                        <option value="نشط" ${student.status === 'نشط' ? 'selected' : ''}>نشط</option>
-                        <option value="غير نشط" ${student.status === 'غير نشط' ? 'selected' : ''}>غير نشط</option>
+                        <option value="نشط" ${student.status === "نشط" ? "selected" : ""}>نشط</option>
+                        <option value="غير نشط" ${student.status === "غير نشط" ? "selected" : ""}>غير نشط</option>
                         <option value="مؤرشف">نقل للأرشيف 📁</option>
                     </select>
                 </td>
                 <td>
-                    <button class="btn-info" onclick="sendGroupScheduleReminder('${student.id}')" title="إرسال تذكير واتساب"><i class="fa-solid fa-paper-plane"></i></button>
+                    <button class="btn-info" onclick="sendGroupScheduleReminder('${student.id}')" title="إرسال تذكير"><i class="fa-brands fa-telegram"></i></button>
                 </td>
                 <td style="white-space: nowrap;">
                     <button class="btn-info" style="background: rgba(59, 130, 246, 0.1); color: var(--info); border: 1px solid rgba(59, 130, 246, 0.2); padding: 5px 10px; margin-left: 3px;" onclick="openDetailsModal('${student.id}')" title="تفاصيل كاملة"><i class="fa-solid fa-eye"></i></button>
@@ -707,368 +1688,535 @@
                     <button class="btn-danger" onclick="executeDelete('${student.id}')" title="حذف الحساب"><i class="fa-solid fa-trash"></i></button>
                 </td>
             `;
-            tbody.appendChild(row);
+          tbody.appendChild(row);
         });
-    }
+      }
 
-    function openAddStudentModal() { document.getElementById('add-student-modal').classList.add('active'); }
-    
-    function closeAddStudentModal() { 
-        document.getElementById('add-student-modal').classList.remove('active'); 
-    }
+      function openAddStudentModal() {
+        document.getElementById("add-student-modal").classList.add("active");
+      }
 
-    function toggleSchedTimeInput(day, prefix = "") {
+      function closeAddStudentModal() {
+        document.getElementById("add-student-modal").classList.remove("active");
+      }
+
+      function toggleSchedTimeInput(day, prefix = "") {
         let chk = document.getElementById(`${prefix}sched-${day}-chk`);
         let hourSel = document.getElementById(`${prefix}sched-${day}-hour`);
         let ampmSel = document.getElementById(`${prefix}sched-${day}-ampm`);
         if (chk) {
-            if (hourSel) hourSel.disabled = !chk.checked;
-            if (ampmSel) ampmSel.disabled = !chk.checked;
+          if (hourSel) hourSel.disabled = !chk.checked;
+          if (ampmSel) ampmSel.disabled = !chk.checked;
         }
-    }
+      }
 
-    function addStudent() {
-        let subscriptionNumber = parseInt(document.getElementById('new-subscription-number').value.trim());
-        let age = parseInt(document.getElementById('new-age').value.trim());
-        let genderVal = document.getElementById('new-gender').value === "true"; 
-        let name = document.getElementById('new-name').value.trim();
-        let phone = document.getElementById('new-phone').value.trim();
-        let teacherId = document.getElementById('new-teacher-id').value;
-        let paymentStatus = document.getElementById('new-payment-status').value;
-        let status = document.getElementById('new-status').value;
+      function addStudent() {
+        let subscriptionNumber = parseInt(
+          document.getElementById("new-subscription-number").value.trim(),
+        );
+        let age = parseInt(document.getElementById("new-age").value.trim());
+        let genderVal = document.getElementById("new-gender").value === "true";
+        let name = document.getElementById("new-name").value.trim();
+        let phone = document.getElementById("new-phone").value.trim();
+        let groupLink = document.getElementById("new-group-link").value.trim();
+        let teacherId = document.getElementById("new-teacher-id").value;
+        let paymentStatus = document.getElementById("new-payment-status").value;
+        let status = document.getElementById("new-status").value;
 
         // بناء الـ Schedule map
-        const daysEng = ['Sunday', 'Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday'];
+        const daysEng = [
+          "Sunday",
+          "Monday",
+          "Tuesday",
+          "Wednesday",
+          "Thursday",
+          "Friday",
+          "Saturday",
+        ];
         let scheduleMap = {};
-        daysEng.forEach(day => {
-            let chk = document.getElementById(`sched-${day}-chk`);
-            let hourVal = document.getElementById(`sched-${day}-hour`).value;
-            let ampmVal = document.getElementById(`sched-${day}-ampm`).value;
-            let time24 = get24Hour(hourVal, ampmVal);
-            scheduleMap[day] = (chk && chk.checked) ? time24 : "";
+        daysEng.forEach((day) => {
+          let chk = document.getElementById(`sched-${day}-chk`);
+          let hourVal = document.getElementById(`sched-${day}-hour`).value;
+          let ampmVal = document.getElementById(`sched-${day}-ampm`).value;
+          let time24 = get24Hour(hourVal, ampmVal);
+          scheduleMap[day] = chk && chk.checked ? time24 : "";
         });
 
-        if (!name || !phone || !teacherId || isNaN(subscriptionNumber) || isNaN(age)) {
-            Swal.fire('بيانات ناقصة', 'يرجى ملء كافة البيانات المطلوبة للطلب الجديد.', 'warning');
-            return;
+        if (
+          !name ||
+          !phone ||
+          !teacherId ||
+          isNaN(subscriptionNumber) ||
+          isNaN(age)
+        ) {
+          Swal.fire(
+            "بيانات ناقصة",
+            "يرجى ملء كافة البيانات المطلوبة للطلب الجديد.",
+            "warning",
+          );
+          return;
         }
 
-        Swal.fire({ title: 'جارِ تسجيل الطالب سحابياً...', didOpen: () => { Swal.showLoading(); } });
+        Swal.fire({
+          title: "جارِ تسجيل الطالب سحابياً...",
+          didOpen: () => {
+            Swal.showLoading();
+          },
+        });
 
-        db.collection("students").add({
+        db.collection("students")
+          .add({
             SubscriptionNumber: subscriptionNumber,
             Age: age,
             Gender: genderVal,
             Name: name,
             PhoneNumber: phone,
+            GroupLink: groupLink,
             TeacherId: teacherId,
             PaymentStatus: paymentStatus,
             Status: status,
             Schedule: scheduleMap,
             createdBy: currentSupervisor,
             CreatedBy: currentSupervisor,
-            CreatedAt: firebase.firestore.FieldValue.serverTimestamp()
-        }).then(() => {
-            Swal.fire({ icon: 'success', title: 'تم تسجيل الطالب بنجاح!', timer: 1500, showConfirmButton: false });
+            CreatedAt: firebase.firestore.FieldValue.serverTimestamp(),
+          })
+          .then(() => {
+            Swal.fire({
+              icon: "success",
+              title: "تم تسجيل الطالب بنجاح!",
+              timer: 1500,
+              showConfirmButton: false,
+            });
             // تفريغ المدخلات
-            document.getElementById('new-subscription-number').value = '';
-            document.getElementById('new-age').value = '';
-            document.getElementById('new-name').value = '';
-            document.getElementById('new-phone').value = '';
-            document.getElementById('new-teacher-id').value = '';
-            daysEng.forEach(day => {
-                let chk = document.getElementById(`sched-${day}-chk`);
-                let hourSel = document.getElementById(`sched-${day}-hour`);
-                let ampmSel = document.getElementById(`sched-${day}-ampm`);
-                if(chk) chk.checked = false;
-                if(hourSel) {
-                    hourSel.value = '12';
-                    hourSel.disabled = true;
-                }
-                if(ampmSel) {
-                    ampmSel.value = 'AM';
-                    ampmSel.disabled = true;
-                }
+            document.getElementById("new-subscription-number").value = "";
+            document.getElementById("new-age").value = "";
+            document.getElementById("new-name").value = "";
+            document.getElementById("new-phone").value = "";
+            document.getElementById("new-group-link").value = "";
+            document.getElementById("new-teacher-id").value = "";
+            daysEng.forEach((day) => {
+              let chk = document.getElementById(`sched-${day}-chk`);
+              let hourSel = document.getElementById(`sched-${day}-hour`);
+              let ampmSel = document.getElementById(`sched-${day}-ampm`);
+              if (chk) chk.checked = false;
+              if (hourSel) {
+                hourSel.value = "12";
+                hourSel.disabled = true;
+              }
+              if (ampmSel) {
+                ampmSel.value = "AM";
+                ampmSel.disabled = true;
+              }
             });
             closeAddStudentModal();
-        }).catch(error => Swal.fire('خطأ سحابي', error.message, 'error'));
-    }
+          })
+          .catch((error) => Swal.fire("خطأ سحابي", error.message, "error"));
+      }
 
-    function updateStudentField(studentId, field, newValue, familyId, studentPhone) {
+      function updateStudentField(
+        studentId,
+        field,
+        newValue,
+        familyId,
+        studentPhone,
+      ) {
         let updateData = {};
-        if (field === 'paymentStatus') {
-            updateData['PaymentStatus'] = newValue;
-            updateData['paymentStatus'] = newValue;
-        } else if (field === 'status') {
-            updateData['Status'] = newValue;
-            updateData['status'] = newValue;
+        if (field === "paymentStatus") {
+          updateData["PaymentStatus"] = newValue;
+          updateData["paymentStatus"] = newValue;
+        } else if (field === "status") {
+          updateData["Status"] = newValue;
+          updateData["status"] = newValue;
         } else {
-            updateData[field] = newValue;
+          updateData[field] = newValue;
         }
-        
-        db.collection("students").doc(studentId).update(updateData)
-        .then(() => {
-            if (field === 'paymentStatus') {
-                let batch = db.batch();
-                let hasSiblings = false;
 
-                allStudentsData.forEach(s => {
-                    if (s.id !== studentId) {
-                        let isSibling = false;
-                        let sPhone = s.PhoneNumber || s.phone || '';
-                        if (studentPhone && studentPhone.trim() !== "" && sPhone === studentPhone) {
-                            isSibling = true;
-                        }
+        db.collection("students")
+          .doc(studentId)
+          .update(updateData)
+          .then(() => {
+            if (field === "paymentStatus") {
+              let batch = db.batch();
+              let hasSiblings = false;
 
-                        if (isSibling) {
-                            let ref = db.collection("students").doc(s.id);
-                            batch.update(ref, { 
-                                PaymentStatus: newValue,
-                                paymentStatus: newValue
-                            });
-                            hasSiblings = true;
-                        }
-                    }
-                });
+              allStudentsData.forEach((s) => {
+                if (s.id !== studentId) {
+                  let isSibling = false;
+                  let sPhone = s.PhoneNumber || s.phone || "";
+                  if (
+                    studentPhone &&
+                    studentPhone.trim() !== "" &&
+                    sPhone === studentPhone
+                  ) {
+                    isSibling = true;
+                  }
 
-                if (hasSiblings) {
-                    batch.commit().then(() => {
-                        Swal.fire({ 
-                            icon: 'success', 
-                            title: 'تحديث مالي مشترك!', 
-                            text: `تم مزامنة حالة (${newValue}) لكافة الأشقاء المرتبطين بنجاح.`,
-                            timer: 2000, 
-                            showConfirmButton: false 
-                        });
+                  if (isSibling) {
+                    let ref = db.collection("students").doc(s.id);
+                    batch.update(ref, {
+                      PaymentStatus: newValue,
+                      paymentStatus: newValue,
                     });
-                } else {
-                    Swal.fire({ icon: 'success', title: 'تم التحديث بنجاح!', timer: 1000, showConfirmButton: false });
+                    hasSiblings = true;
+                  }
                 }
+              });
+
+              if (hasSiblings) {
+                batch.commit().then(() => {
+                  Swal.fire({
+                    icon: "success",
+                    title: "تحديث مالي مشترك!",
+                    text: `تم مزامنة حالة (${newValue}) لكافة الأشقاء المرتبطين بنجاح.`,
+                    timer: 2000,
+                    showConfirmButton: false,
+                  });
+                });
+              } else {
+                Swal.fire({
+                  icon: "success",
+                  title: "تم التحديث بنجاح!",
+                  timer: 1000,
+                  showConfirmButton: false,
+                });
+              }
             } else {
-                Swal.fire({ icon: 'success', title: 'تم التحديث بنجاح!', timer: 1000, showConfirmButton: false });
+              Swal.fire({
+                icon: "success",
+                title: "تم التحديث بنجاح!",
+                timer: 1000,
+                showConfirmButton: false,
+              });
             }
-        })
-        .catch(error => Swal.fire('خطأ برمجي', error.message, 'error'));
-    }
+          })
+          .catch((error) => Swal.fire("خطأ برمجي", error.message, "error"));
+      }
 
-    function openEditModal(id) {
-        let student = allStudentsData.find(s => s.id === id);
-        if(!student) return;
+      function openEditModal(id) {
+        let student = allStudentsData.find((s) => s.id === id);
+        if (!student) return;
 
-        document.getElementById('edit-student-id').value = student.id;
-        document.getElementById('edit-subscription-number').value = student.SubscriptionNumber || student.membershipId || '';
-        document.getElementById('edit-age').value = student.Age || '';
-        document.getElementById('edit-gender').value = student.Gender === true ? "true" : "false";
-        document.getElementById('edit-name').value = student.studentName || '';
-        document.getElementById('edit-phone').value = student.PhoneNumber || student.phone || '';
-        document.getElementById('edit-teacher-id').value = student.TeacherId || '';
-        document.getElementById('edit-payment-status').value = student.paymentStatus || 'لم يدفع';
-        document.getElementById('edit-status').value = student.status || 'نشط';
+        document.getElementById("edit-student-id").value = student.id;
+        document.getElementById("edit-subscription-number").value =
+          student.SubscriptionNumber || student.membershipId || "";
+        document.getElementById("edit-age").value = student.Age || "";
+        document.getElementById("edit-gender").value =
+          student.Gender === true ? "true" : "false";
+        document.getElementById("edit-name").value = student.studentName || "";
+        document.getElementById("edit-phone").value =
+          student.PhoneNumber || student.phone || "";
+        document.getElementById("edit-group-link").value =
+          student.GroupLink || student.groupLink || "";
+        document.getElementById("edit-teacher-id").value =
+          student.TeacherId || "";
+        document.getElementById("edit-payment-status").value =
+          student.paymentStatus || "لم يدفع";
+        document.getElementById("edit-status").value = student.status || "نشط";
 
         // تعبئة الجدول الزمني
-        const daysEng = ['Sunday', 'Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday'];
-        daysEng.forEach(day => {
-            let chk = document.getElementById(`edit-sched-${day}-chk`);
-            let hrSelect = document.getElementById(`edit-sched-${day}-hour`);
-            let ampmSelect = document.getElementById(`edit-sched-${day}-ampm`);
-            let savedTime = (student.Schedule && student.Schedule[day]) ? student.Schedule[day] : "";
-            
-            if (chk) {
-                if (savedTime && String(savedTime).trim() !== "") {
-                    chk.checked = true;
-                    if (hrSelect) {
-                        hrSelect.disabled = false;
-                        let hr12Val = get12Hour(savedTime);
-                        if (hr12Val) {
-                            hrSelect.value = hr12Val.hour;
-                        }
-                    }
-                    if (ampmSelect) {
-                        ampmSelect.disabled = false;
-                        let hr12Val = get12Hour(savedTime);
-                        if (hr12Val) {
-                            ampmSelect.value = hr12Val.ampm;
-                        }
-                    }
-                } else {
-                    chk.checked = false;
-                    if (hrSelect) {
-                        hrSelect.disabled = true;
-                        hrSelect.value = "12";
-                    }
-                    if (ampmSelect) {
-                        ampmSelect.disabled = true;
-                        ampmSelect.value = "AM";
-                    }
+        const daysEng = [
+          "Sunday",
+          "Monday",
+          "Tuesday",
+          "Wednesday",
+          "Thursday",
+          "Friday",
+          "Saturday",
+        ];
+        daysEng.forEach((day) => {
+          let chk = document.getElementById(`edit-sched-${day}-chk`);
+          let hrSelect = document.getElementById(`edit-sched-${day}-hour`);
+          let ampmSelect = document.getElementById(`edit-sched-${day}-ampm`);
+          let savedTime =
+            student.Schedule && student.Schedule[day]
+              ? student.Schedule[day]
+              : "";
+
+          if (chk) {
+            if (savedTime && String(savedTime).trim() !== "") {
+              chk.checked = true;
+              if (hrSelect) {
+                hrSelect.disabled = false;
+                let hr12Val = get12Hour(savedTime);
+                if (hr12Val) {
+                  hrSelect.value = hr12Val.hour;
                 }
+              }
+              if (ampmSelect) {
+                ampmSelect.disabled = false;
+                let hr12Val = get12Hour(savedTime);
+                if (hr12Val) {
+                  ampmSelect.value = hr12Val.ampm;
+                }
+              }
+            } else {
+              chk.checked = false;
+              if (hrSelect) {
+                hrSelect.disabled = true;
+                hrSelect.value = "12";
+              }
+              if (ampmSelect) {
+                ampmSelect.disabled = true;
+                ampmSelect.value = "AM";
+              }
             }
+          }
         });
 
-        document.getElementById('edit-student-modal').classList.add('active');
-    }
+        document.getElementById("edit-student-modal").classList.add("active");
+      }
 
-    function closeEditStudentModal() { document.getElementById('edit-student-modal').classList.remove('active'); }
+      function closeEditStudentModal() {
+        document
+          .getElementById("edit-student-modal")
+          .classList.remove("active");
+      }
 
-    function saveEditedStudent() {
-        let id = document.getElementById('edit-student-id').value;
-        let subscriptionNumber = parseInt(document.getElementById('edit-subscription-number').value.trim());
-        let age = parseInt(document.getElementById('edit-age').value.trim());
-        let genderVal = document.getElementById('edit-gender').value === "true"; 
-        let name = document.getElementById('edit-name').value.trim();
-        let phone = document.getElementById('edit-phone').value.trim();
-        let teacherId = document.getElementById('edit-teacher-id').value;
-        let paymentStatus = document.getElementById('edit-payment-status').value;
-        let status = document.getElementById('edit-status').value;
+      function saveEditedStudent() {
+        let id = document.getElementById("edit-student-id").value;
+        let subscriptionNumber = parseInt(
+          document.getElementById("edit-subscription-number").value.trim(),
+        );
+        let age = parseInt(document.getElementById("edit-age").value.trim());
+        let genderVal = document.getElementById("edit-gender").value === "true";
+        let name = document.getElementById("edit-name").value.trim();
+        let phone = document.getElementById("edit-phone").value.trim();
+        let groupLink = document.getElementById("edit-group-link").value.trim();
+        let teacherId = document.getElementById("edit-teacher-id").value;
+        let paymentStatus = document.getElementById(
+          "edit-payment-status",
+        ).value;
+        let status = document.getElementById("edit-status").value;
 
         // بناء الـ Schedule map
-        const daysEng = ['Sunday', 'Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday'];
+        const daysEng = [
+          "Sunday",
+          "Monday",
+          "Tuesday",
+          "Wednesday",
+          "Thursday",
+          "Friday",
+          "Saturday",
+        ];
         let scheduleMap = {};
-        daysEng.forEach(day => {
-            let chk = document.getElementById(`edit-sched-${day}-chk`);
-            let hourVal = document.getElementById(`edit-sched-${day}-hour`).value;
-            let ampmVal = document.getElementById(`edit-sched-${day}-ampm`).value;
-            let time24 = get24Hour(hourVal, ampmVal);
-            scheduleMap[day] = (chk && chk.checked) ? time24 : "";
+        daysEng.forEach((day) => {
+          let chk = document.getElementById(`edit-sched-${day}-chk`);
+          let hourVal = document.getElementById(`edit-sched-${day}-hour`).value;
+          let ampmVal = document.getElementById(`edit-sched-${day}-ampm`).value;
+          let time24 = get24Hour(hourVal, ampmVal);
+          scheduleMap[day] = chk && chk.checked ? time24 : "";
         });
 
-        if (!name || !phone || !teacherId || isNaN(subscriptionNumber) || isNaN(age)) { 
-            Swal.fire('تنبيه', 'يرجى إدخال كافة الحقول المطلوبة للتعديل.', 'warning'); 
-            return; 
+        if (
+          !name ||
+          !phone ||
+          !teacherId ||
+          isNaN(subscriptionNumber) ||
+          isNaN(age)
+        ) {
+          Swal.fire(
+            "تنبيه",
+            "يرجى إدخال كافة الحقول المطلوبة للتعديل.",
+            "warning",
+          );
+          return;
         }
 
-        Swal.fire({ title: 'جارِ تحديث البيانات سحابياً...', didOpen: () => { Swal.showLoading(); } });
+        Swal.fire({
+          title: "جارِ تحديث البيانات سحابياً...",
+          didOpen: () => {
+            Swal.showLoading();
+          },
+        });
 
-        db.collection("students").doc(id).update({
+        db.collection("students")
+          .doc(id)
+          .update({
             SubscriptionNumber: subscriptionNumber,
             Age: age,
             Gender: genderVal,
             Name: name,
             PhoneNumber: phone,
+            GroupLink: groupLink,
             TeacherId: teacherId,
             PaymentStatus: paymentStatus,
             Status: status,
-            Schedule: scheduleMap
-        }).then(() => {
-            Swal.fire({ icon: 'success', title: 'تم الحفظ وتثبيت التعديلات!', timer: 1500, showConfirmButton: false });
+            Schedule: scheduleMap,
+          })
+          .then(() => {
+            Swal.fire({
+              icon: "success",
+              title: "تم الحفظ وتثبيت التعديلات!",
+              timer: 1500,
+              showConfirmButton: false,
+            });
             closeEditStudentModal();
-        }).catch(error => Swal.fire('خطأ', error.message, 'error'));
-    }
+          })
+          .catch((error) => Swal.fire("خطأ", error.message, "error"));
+      }
 
-    function executeDelete(id) {
+      function executeDelete(id) {
         Swal.fire({
-            title: 'تأكيد إزالة الطالب نهائياً؟', text: "سيتم حذف بيانات وسجل هذا الطالب بشكل كامل وسحبي من السيرفر!", icon: 'warning',
-            showCancelButton: true, confirmButtonColor: '#ef4444', cancelButtonText: 'إلغاء', confirmButtonText: 'احذف الآن'
+          title: "تأكيد إزالة الطالب نهائياً؟",
+          text: "سيتم حذف بيانات وسجل هذا الطالب بشكل كامل وسحبي من السيرفر!",
+          icon: "warning",
+          showCancelButton: true,
+          confirmButtonColor: "#ef4444",
+          cancelButtonText: "إلغاء",
+          confirmButtonText: "احذف الآن",
         }).then((result) => {
-            if (result.isConfirmed) {
-                db.collection("students").doc(id).delete().then(() => Swal.fire('تم الحذف!', 'تمت إزالة المستند بنجاح.', 'success'));
-            }
+          if (result.isConfirmed) {
+            db.collection("students")
+              .doc(id)
+              .delete()
+              .then(() =>
+                Swal.fire("تم الحذف!", "تمت إزالة المستند بنجاح.", "success"),
+              );
+          }
         });
-    }
+      }
 
-    function sendGroupScheduleReminder(studentId) {
-        let student = allStudentsData.find(s => s.id === studentId);
+      function sendGroupScheduleReminder(studentId) {
+        let student = allStudentsData.find((s) => s.id === studentId);
         if (!student) return;
-        let groupLink = student.groupLink;
+        let groupLink = student.GroupLink || student.groupLink;
         if (!groupLink || !groupLink.startsWith("http")) {
-            Swal.fire('تنبيه', 'لا يوجد رابط جروب واتساب صالح!', 'warning'); return;
+          Swal.fire("تنبيه", "لا يوجد رابط جروب صالح!", "warning");
+          return;
         }
-        let message = `نذكركم بحصتنا اليوم 🌹\n\nالطالب/ة: *${student.studentName}*\n⏰ الموعد: ${student.scheduleTime || 'غير محدد بعد'}\n👨‍🏫 المعلم المشرف: ${student.teacherName || 'غير حدد'}`;
+        let message = `نذكركم بحصتنا اليوم 🌹\n\nالطالب/ة: *${student.studentName}*\n⏰ الموعد: ${student.scheduleTime || "غير محدد بعد"}\n👨‍🏫 المعلم المشرف: ${student.teacherName || "غير حدد"}`;
         navigator.clipboard.writeText(message).then(() => {
-            Swal.fire({ icon: 'success', title: 'تم النسخ!', text: 'سيتم فتح الجروب الآن لصق الرسالة.', timer: 2000, showConfirmButton: false })
-            .then(() => { window.open(groupLink, '_blank'); });
+          Swal.fire({
+            icon: "success",
+            title: "تم النسخ!",
+            text: "سيتم فتح الجروب الآن لصق الرسالة.",
+            timer: 2000,
+            showConfirmButton: false,
+          }).then(() => {
+            window.open(groupLink, "_blank");
+          });
         });
-    }
+      }
 
-    function sendPaymentReminder(studentId) {
-        let student = allStudentsData.find(s => s.id === studentId);
+      function sendPaymentReminder(studentId) {
+        let student = allStudentsData.find((s) => s.id === studentId);
         if (!student) return;
 
         let phone = student.PhoneNumber || student.phone;
         if (!phone || phone.trim() === "") {
-            Swal.fire('تنبيه الحسابات', 'لم نجد رقم هاتف مسجل للطالب لتجهيز شات التذكير الشخصي له!', 'warning');
-            return;
+          Swal.fire(
+            "تنبيه الحسابات",
+            "لم نجد رقم هاتف مسجل للطالب لتجهيز شات التذكير الشخصي له!",
+            "warning",
+          );
+          return;
         }
 
-        let cleanPhone = phone.replace(/\D/g, '');
-        
-        let subNumber = student.membershipId || student.SubscriptionNumber || '';
-        let message = WHATSAPP_PAYMENT_REMINDER_TEMPLATE
-            .replace(/{SubscriptionNumber}/gi, subNumber)
-            .replace(/{subscription\s*number}/gi, subNumber)
-            .replace(/{subsciption\s*number}/gi, subNumber);
+        let cleanPhone = phone.replace(/\D/g, "");
+
+        let subNumber =
+          student.membershipId || student.SubscriptionNumber || "";
+        let message = WHATSAPP_PAYMENT_REMINDER_TEMPLATE.replace(
+          /{SubscriptionNumber}/gi,
+          subNumber,
+        )
+          .replace(/{subscription\s*number}/gi, subNumber)
+          .replace(/{subsciption\s*number}/gi, subNumber);
         let encodedMessage = encodeURIComponent(message);
 
         Swal.fire({
-            icon: 'info',
-            title: 'تجهيز الشات المالي المباشر',
-            text: `جاري تحويلك الآن لإرسال المطالبة المالية للطالب (${student.studentName}).`,
-            timer: 1800,
-            showConfirmButton: false
+          icon: "info",
+          title: "تجهيز الشات المالي المباشر",
+          text: `جاري تحويلك الآن لإرسال المطالبة المالية للطالب (${student.studentName}).`,
+          timer: 1800,
+          showConfirmButton: false,
         }).then(() => {
-            window.open(`https://wa.me/${cleanPhone}?text=${encodedMessage}`, '_blank');
+          window.open(
+            `https://wa.me/${cleanPhone}?text=${encodedMessage}`,
+            "_blank",
+          );
         });
-    }
+      }
 
-    function logout(event) {
-        if(event) event.preventDefault();
+      function logout(event) {
+        if (event) event.preventDefault();
         Swal.fire({
-            title: 'تسجيل الخروج', text: 'هل تود العودة لصفحة الدخول؟', icon: 'question', showCancelButton: true, confirmButtonText: 'خروج'
-        }).then(r => {
-            if(r.isConfirmed) {
-                localStorage.removeItem("currentSupervisor");
-                localStorage.removeItem("userRole");
-                window.location.href = "index.html";
-            }
+          title: "تسجيل الخروج",
+          text: "هل تود العودة لصفحة الدخول؟",
+          icon: "question",
+          showCancelButton: true,
+          confirmButtonText: "خروج",
+        }).then((r) => {
+          if (r.isConfirmed) {
+            localStorage.removeItem("currentSupervisor");
+            localStorage.removeItem("userRole");
+            window.location.href = "index.html";
+          }
         });
-    }
+      }
 
-    function openDetailsModal(id) {
-        let student = allStudentsData.find(s => s.id === id);
+      function openDetailsModal(id) {
+        let student = allStudentsData.find((s) => s.id === id);
         if (!student) return;
 
-        let content = document.getElementById('details-content-body');
+        let content = document.getElementById("details-content-body");
         if (!content) return;
 
         // تنسيق التاريخ والوقت
         let createdAtStr = "غير محدد";
         if (student.CreatedAt) {
-            createdAtStr = new Date(student.CreatedAt.seconds * 1000).toLocaleString('ar-EG', { dateStyle: 'long', timeStyle: 'short' });
+          createdAtStr = new Date(
+            student.CreatedAt.seconds * 1000,
+          ).toLocaleString("ar-EG", { dateStyle: "long", timeStyle: "short" });
         } else if (student.createdAt) {
-            createdAtStr = new Date(student.createdAt.seconds * 1000).toLocaleString('ar-EG', { dateStyle: 'long', timeStyle: 'short' });
+          createdAtStr = new Date(
+            student.createdAt.seconds * 1000,
+          ).toLocaleString("ar-EG", { dateStyle: "long", timeStyle: "short" });
         }
 
         // بناء مواعيد الأسبوع
         let scheduleHTML = "";
         const dayMappingAr = {
-            Sunday: 'الأحد',
-            Monday: 'الإثنين',
-            Tuesday: 'الثلاثاء',
-            Wednesday: 'الأربعاء',
-            Thursday: 'الخميس',
-            Friday: 'الجمعة',
-            Saturday: 'السبت'
+          Sunday: "الأحد",
+          Monday: "الإثنين",
+          Tuesday: "الثلاثاء",
+          Wednesday: "الأربعاء",
+          Thursday: "الخميس",
+          Friday: "الجمعة",
+          Saturday: "السبت",
         };
-        const daysEng = ['Sunday', 'Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday'];
-        
+        const daysEng = [
+          "Sunday",
+          "Monday",
+          "Tuesday",
+          "Wednesday",
+          "Thursday",
+          "Friday",
+          "Saturday",
+        ];
+
         let hasSchedule = false;
         scheduleHTML = `<div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(110px, 1fr)); gap: 8px; margin-top: 10px;">`;
-        daysEng.forEach(day => {
-            let timeVal = (student.Schedule && student.Schedule[day]) ? student.Schedule[day] : "";
-            if (timeVal && timeVal.trim() !== "") {
-                hasSchedule = true;
-                let formattedTime = formatHour12(timeVal);
-                scheduleHTML += `
+        daysEng.forEach((day) => {
+          let timeVal =
+            student.Schedule && student.Schedule[day]
+              ? student.Schedule[day]
+              : "";
+          if (timeVal && timeVal.trim() !== "") {
+            hasSchedule = true;
+            let formattedTime = formatHour12(timeVal);
+            scheduleHTML += `
                     <div style="background: rgba(212, 175, 55, 0.08); border: 1px solid rgba(212, 175, 55, 0.2); padding: 8px; border-radius: 6px; text-align: center;">
                         <div style="font-weight: bold; color: var(--gold-primary); font-size: 13px;">${dayMappingAr[day]}</div>
                         <div style="font-size: 12px; margin-top: 4px; color: #f8fafc;">${formattedTime}</div>
                     </div>
                 `;
-            }
+          }
         });
         scheduleHTML += `</div>`;
 
         if (!hasSchedule) {
-            scheduleHTML = `<p style="color: var(--text-secondary); font-style: italic; margin-top: 10px;">لم يتم تحديد أي مواعيد حصص أسبوعية في الجدول.</p>`;
+          scheduleHTML = `<p style="color: var(--text-secondary); font-style: italic; margin-top: 10px;">لم يتم تحديد أي مواعيد حصص أسبوعية في الجدول.</p>`;
         }
 
         content.innerHTML = `
@@ -1085,15 +2233,15 @@
             <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 15px; margin-bottom: 25px; background: rgba(255,255,255,0.02); border: 1px solid var(--border-color); padding: 15px; border-radius: 8px;">
                 <div>
                     <label style="color: var(--text-secondary); font-size: 11px; display: block; margin-bottom: 2px;">العمر (السن)</label>
-                    <span style="font-weight: 600; font-size: 14px;">${student.Age || 'غير محدد'} سنة</span>
+                    <span style="font-weight: 600; font-size: 14px;">${student.Age || "غير محدد"} سنة</span>
                 </div>
                 <div>
                     <label style="color: var(--text-secondary); font-size: 11px; display: block; margin-bottom: 2px;">الجنس (النوع)</label>
-                    <span style="font-weight: 600; font-size: 14px;">${student.Gender === true ? 'أنثى' : 'ذكر'}</span>
+                    <span style="font-weight: 600; font-size: 14px;">${student.Gender === true ? "أنثى" : "ذكر"}</span>
                 </div>
                 <div>
                     <label style="color: var(--text-secondary); font-size: 11px; display: block; margin-bottom: 2px;">رقم الهاتف</label>
-                    <span style="font-weight: 600; font-size: 14px; color: var(--info);"><i class="fa-solid fa-phone" style="font-size: 11px;"></i> ${student.PhoneNumber || student.phone || 'لا يوجد'}</span>
+                    <span style="font-weight: 600; font-size: 14px; color: var(--info);"><i class="fa-solid fa-phone" style="font-size: 11px;"></i> ${student.PhoneNumber || student.phone || "لا يوجد"}</span>
                 </div>
                 <div>
                     <label style="color: var(--text-secondary); font-size: 11px; display: block; margin-bottom: 2px;">المعلم المباشر</label>
@@ -1101,23 +2249,29 @@
                 </div>
                 <div>
                     <label style="color: var(--text-secondary); font-size: 11px; display: block; margin-bottom: 2px;">حالة الدفع</label>
-                    <span class="status-badge" style="display: inline-block; padding: 2px 8px; border-radius: 4px; font-size: 12px; font-weight: bold; background: ${student.paymentStatus === 'تم الدفع' ? 'rgba(16, 185, 129, 0.1)' : student.paymentStatus === 'مؤجل الدفع' ? 'rgba(245, 158, 11, 0.1)' : 'rgba(239, 68, 68, 0.1)'}; color: ${student.paymentStatus === 'تم الدفع' ? '#10b981' : student.paymentStatus === 'مؤجل الدفع' ? '#f59e0b' : '#ef4444'};">
+                    <span class="status-badge" style="display: inline-block; padding: 2px 8px; border-radius: 4px; font-size: 12px; font-weight: bold; background: ${student.paymentStatus === "تم الدفع" ? "rgba(16, 185, 129, 0.1)" : student.paymentStatus === "مؤجل الدفع" ? "rgba(245, 158, 11, 0.1)" : "rgba(239, 68, 68, 0.1)"}; color: ${student.paymentStatus === "تم الدفع" ? "#10b981" : student.paymentStatus === "مؤجل الدفع" ? "#f59e0b" : "#ef4444"};">
                         ${student.paymentStatus}
                     </span>
                 </div>
                 <div>
                     <label style="color: var(--text-secondary); font-size: 11px; display: block; margin-bottom: 2px;">حالة الحصص</label>
-                    <span class="status-badge" style="display: inline-block; padding: 2px 8px; border-radius: 4px; font-size: 12px; font-weight: bold; background: ${student.status === 'نشط' ? 'rgba(16, 185, 129, 0.1)' : 'rgba(239, 68, 68, 0.1)'}; color: ${student.status === 'نشط' ? '#10b981' : '#ef4444'};">
+                    <span class="status-badge" style="display: inline-block; padding: 2px 8px; border-radius: 4px; font-size: 12px; font-weight: bold; background: ${student.status === "نشط" ? "rgba(16, 185, 129, 0.1)" : "rgba(239, 68, 68, 0.1)"}; color: ${student.status === "نشط" ? "#10b981" : "#ef4444"};">
                         ${student.status}
                     </span>
                 </div>
                 <div style="grid-column: span 2; border-top: 1px solid var(--border-color); padding-top: 10px; margin-top: 5px;">
+                    <label style="color: var(--text-secondary); font-size: 11px; display: block; margin-bottom: 2px;">رابط الجروب (GroupLink)</label>
+                    <span style="font-weight: 600; font-size: 13px; color: var(--gold-primary);">
+                        ${student.GroupLink || student.groupLink ? `<a href="${student.GroupLink || student.groupLink}" target="_blank" style="color: var(--gold-primary); text-decoration: underline;"><i class="fa-solid fa-link"></i> ${student.GroupLink || student.groupLink}</a>` : "لا يوجد"}
+                    </span>
+                </div>
+                <div style="grid-column: span 2; border-top: 1px solid var(--border-color); padding-top: 10px; margin-top: 5px;">
                     <label style="color: var(--text-secondary); font-size: 11px; display: block; margin-bottom: 2px;">العائلة المنتسب إليها</label>
-                    <span style="font-weight: 600; font-size: 13px; color: var(--gold-primary);"><i class="fa-solid fa-people-roof" style="font-size: 12px; margin-left: 5px;"></i>${studentToFamilyMap[student.id] || 'لا يوجد عائلة منتسبة'}</span>
+                    <span style="font-weight: 600; font-size: 13px; color: var(--gold-primary);"><i class="fa-solid fa-people-roof" style="font-size: 12px; margin-left: 5px;"></i>${studentToFamilyMap[student.id] || "لا يوجد عائلة منتسبة"}</span>
                 </div>
                 <div style="grid-column: span 2; border-top: 1px solid var(--border-color); padding-top: 10px; margin-top: 5px;">
                     <label style="color: var(--text-secondary); font-size: 11px; display: block; margin-bottom: 2px;">تم التسجيل بواسطة</label>
-                    <span style="font-weight: 600; font-size: 13px;">${student.createdBy || student.CreatedBy || 'غير معروف'}</span>
+                    <span style="font-weight: 600; font-size: 13px;">${student.createdBy || student.CreatedBy || "غير معروف"}</span>
                 </div>
                 <div style="grid-column: span 2;">
                     <label style="color: var(--text-secondary); font-size: 11px; display: block; margin-bottom: 2px;">تاريخ التسجيل سحابياً</label>
@@ -1133,14 +2287,18 @@
             </div>
         `;
 
-        document.getElementById('details-student-modal').classList.add('active');
-    }
+        document
+          .getElementById("details-student-modal")
+          .classList.add("active");
+      }
 
-    function closeDetailsStudentModal() {
-        document.getElementById('details-student-modal').classList.remove('active');
-    }
+      function closeDetailsStudentModal() {
+        document
+          .getElementById("details-student-modal")
+          .classList.remove("active");
+      }
 
-    var buildTeacherFilterOptions = populateTeacherFilters;
-</script>
-</body>
+      var buildTeacherFilterOptions = populateTeacherFilters;
+    </script>
+  </body>
 </html>
