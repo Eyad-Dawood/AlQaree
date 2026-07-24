@@ -158,49 +158,98 @@
             </div>
             
             <div class="form-row" style="grid-column: span 12;">
-                <label style="font-weight: bold; margin-bottom: 8px; display: block; color: var(--gold-primary);">جدول المواعيد الأسبوعي (أدخل الوقت عند تفعيل اليوم)</label>
+                <label style="font-weight: bold; margin-bottom: 8px; display: block; color: var(--gold-primary);">جدول المواعيد الأسبوعي (حدد الساعة والفترة عند تفعيل اليوم)</label>
                 <div class="schedule-grid" style="display: grid; grid-template-columns: repeat(auto-fit, minmax(130px, 1fr)); gap: 12px; background: rgba(255,255,255,0.02); padding: 12px; border-radius: 8px; border: 1px solid var(--border-color);">
-                    <div class="day-input-group">
+                    <div class="day-input-group" style="display: flex; flex-direction: column;">
                         <label style="font-size: 13px; font-weight: 600; cursor: pointer; display: flex; align-items: center; gap: 5px;">
                             <input type="checkbox" id="sched-Sunday-chk" onchange="toggleSchedTimeInput('Sunday')"> الأحد
                         </label>
-                        <input type="text" id="sched-Sunday-time" placeholder="مثال: 5:00 م" disabled style="padding: 6px; font-size: 12px; margin-top: 4px; display: block; width: 100%; border-radius: 4px; border: 1px solid var(--border-color); background: rgba(0,0,0,0.2); color: white;">
+                        <div style="display: flex; align-items: center; margin-top: 4px;">
+                            <select id="sched-Sunday-hour" disabled style="padding: 6px; font-size: 12px; flex: 1; border-radius: 4px; border: 1px solid var(--border-color); background: #121926; color: white;">
+                                <option value="1">1</option> <option value="2">2</option> <option value="3">3</option> <option value="4">4</option> <option value="5">5</option> <option value="6">6</option> <option value="7">7</option> <option value="8">8</option> <option value="9">9</option> <option value="10">10</option> <option value="11">11</option> <option value="12" selected>12</option>
+                            </select>
+                            <select id="sched-Sunday-ampm" disabled style="padding: 6px; font-size: 12px; border-radius: 4px; border: 1px solid var(--border-color); background: #121926; color: white; margin-right: 4px;">
+                                <option value="AM" selected>ص</option> <option value="PM">م</option>
+                            </select>
+                        </div>
                     </div>
-                    <div class="day-input-group">
+                    <div class="day-input-group" style="display: flex; flex-direction: column;">
                         <label style="font-size: 13px; font-weight: 600; cursor: pointer; display: flex; align-items: center; gap: 5px;">
                             <input type="checkbox" id="sched-Monday-chk" onchange="toggleSchedTimeInput('Monday')"> الإثنين
                         </label>
-                        <input type="text" id="sched-Monday-time" placeholder="مثال: 5:00 م" disabled style="padding: 6px; font-size: 12px; margin-top: 4px; display: block; width: 100%; border-radius: 4px; border: 1px solid var(--border-color); background: rgba(0,0,0,0.2); color: white;">
+                        <div style="display: flex; align-items: center; margin-top: 4px;">
+                            <select id="sched-Monday-hour" disabled style="padding: 6px; font-size: 12px; flex: 1; border-radius: 4px; border: 1px solid var(--border-color); background: #121926; color: white;">
+                                <option value="1">1</option> <option value="2">2</option> <option value="3">3</option> <option value="4">4</option> <option value="5">5</option> <option value="6">6</option> <option value="7">7</option> <option value="8">8</option> <option value="9">9</option> <option value="10">10</option> <option value="11">11</option> <option value="12" selected>12</option>
+                            </select>
+                            <select id="sched-Monday-ampm" disabled style="padding: 6px; font-size: 12px; border-radius: 4px; border: 1px solid var(--border-color); background: #121926; color: white; margin-right: 4px;">
+                                <option value="AM" selected>ص</option> <option value="PM">م</option>
+                            </select>
+                        </div>
                     </div>
-                    <div class="day-input-group">
+                    <div class="day-input-group" style="display: flex; flex-direction: column;">
                         <label style="font-size: 13px; font-weight: 600; cursor: pointer; display: flex; align-items: center; gap: 5px;">
                             <input type="checkbox" id="sched-Tuesday-chk" onchange="toggleSchedTimeInput('Tuesday')"> الثلاثاء
                         </label>
-                        <input type="text" id="sched-Tuesday-time" placeholder="مثال: 5:00 م" disabled style="padding: 6px; font-size: 12px; margin-top: 4px; display: block; width: 100%; border-radius: 4px; border: 1px solid var(--border-color); background: rgba(0,0,0,0.2); color: white;">
+                        <div style="display: flex; align-items: center; margin-top: 4px;">
+                            <select id="sched-Tuesday-hour" disabled style="padding: 6px; font-size: 12px; flex: 1; border-radius: 4px; border: 1px solid var(--border-color); background: #121926; color: white;">
+                                <option value="1">1</option> <option value="2">2</option> <option value="3">3</option> <option value="4">4</option> <option value="5">5</option> <option value="6">6</option> <option value="7">7</option> <option value="8">8</option> <option value="9">9</option> <option value="10">10</option> <option value="11">11</option> <option value="12" selected>12</option>
+                            </select>
+                            <select id="sched-Tuesday-ampm" disabled style="padding: 6px; font-size: 12px; border-radius: 4px; border: 1px solid var(--border-color); background: #121926; color: white; margin-right: 4px;">
+                                <option value="AM" selected>ص</option> <option value="PM">م</option>
+                            </select>
+                        </div>
                     </div>
-                    <div class="day-input-group">
+                    <div class="day-input-group" style="display: flex; flex-direction: column;">
                         <label style="font-size: 13px; font-weight: 600; cursor: pointer; display: flex; align-items: center; gap: 5px;">
                             <input type="checkbox" id="sched-Wednesday-chk" onchange="toggleSchedTimeInput('Wednesday')"> الأربعاء
                         </label>
-                        <input type="text" id="sched-Wednesday-time" placeholder="مثال: 5:00 م" disabled style="padding: 6px; font-size: 12px; margin-top: 4px; display: block; width: 100%; border-radius: 4px; border: 1px solid var(--border-color); background: rgba(0,0,0,0.2); color: white;">
+                        <div style="display: flex; align-items: center; margin-top: 4px;">
+                            <select id="sched-Wednesday-hour" disabled style="padding: 6px; font-size: 12px; flex: 1; border-radius: 4px; border: 1px solid var(--border-color); background: #121926; color: white;">
+                                <option value="1">1</option> <option value="2">2</option> <option value="3">3</option> <option value="4">4</option> <option value="5">5</option> <option value="6">6</option> <option value="7">7</option> <option value="8">8</option> <option value="9">9</option> <option value="10">10</option> <option value="11">11</option> <option value="12" selected>12</option>
+                            </select>
+                            <select id="sched-Wednesday-ampm" disabled style="padding: 6px; font-size: 12px; border-radius: 4px; border: 1px solid var(--border-color); background: #121926; color: white; margin-right: 4px;">
+                                <option value="AM" selected>ص</option> <option value="PM">م</option>
+                            </select>
+                        </div>
                     </div>
-                    <div class="day-input-group">
+                    <div class="day-input-group" style="display: flex; flex-direction: column;">
                         <label style="font-size: 13px; font-weight: 600; cursor: pointer; display: flex; align-items: center; gap: 5px;">
                             <input type="checkbox" id="sched-Thursday-chk" onchange="toggleSchedTimeInput('Thursday')"> الخميس
                         </label>
-                        <input type="text" id="sched-Thursday-time" placeholder="مثال: 5:00 م" disabled style="padding: 6px; font-size: 12px; margin-top: 4px; display: block; width: 100%; border-radius: 4px; border: 1px solid var(--border-color); background: rgba(0,0,0,0.2); color: white;">
+                        <div style="display: flex; align-items: center; margin-top: 4px;">
+                            <select id="sched-Thursday-hour" disabled style="padding: 6px; font-size: 12px; flex: 1; border-radius: 4px; border: 1px solid var(--border-color); background: #121926; color: white;">
+                                <option value="1">1</option> <option value="2">2</option> <option value="3">3</option> <option value="4">4</option> <option value="5">5</option> <option value="6">6</option> <option value="7">7</option> <option value="8">8</option> <option value="9">9</option> <option value="10">10</option> <option value="11">11</option> <option value="12" selected>12</option>
+                            </select>
+                            <select id="sched-Thursday-ampm" disabled style="padding: 6px; font-size: 12px; border-radius: 4px; border: 1px solid var(--border-color); background: #121926; color: white; margin-right: 4px;">
+                                <option value="AM" selected>ص</option> <option value="PM">م</option>
+                            </select>
+                        </div>
                     </div>
-                    <div class="day-input-group">
+                    <div class="day-input-group" style="display: flex; flex-direction: column;">
                         <label style="font-size: 13px; font-weight: 600; cursor: pointer; display: flex; align-items: center; gap: 5px;">
                             <input type="checkbox" id="sched-Friday-chk" onchange="toggleSchedTimeInput('Friday')"> الجمعة
                         </label>
-                        <input type="text" id="sched-Friday-time" placeholder="مثال: 5:00 م" disabled style="padding: 6px; font-size: 12px; margin-top: 4px; display: block; width: 100%; border-radius: 4px; border: 1px solid var(--border-color); background: rgba(0,0,0,0.2); color: white;">
+                        <div style="display: flex; align-items: center; margin-top: 4px;">
+                            <select id="sched-Friday-hour" disabled style="padding: 6px; font-size: 12px; flex: 1; border-radius: 4px; border: 1px solid var(--border-color); background: #121926; color: white;">
+                                <option value="1">1</option> <option value="2">2</option> <option value="3">3</option> <option value="4">4</option> <option value="5">5</option> <option value="6">6</option> <option value="7">7</option> <option value="8">8</option> <option value="9">9</option> <option value="10">10</option> <option value="11">11</option> <option value="12" selected>12</option>
+                            </select>
+                            <select id="sched-Friday-ampm" disabled style="padding: 6px; font-size: 12px; border-radius: 4px; border: 1px solid var(--border-color); background: #121926; color: white; margin-right: 4px;">
+                                <option value="AM" selected>ص</option> <option value="PM">م</option>
+                            </select>
+                        </div>
                     </div>
-                    <div class="day-input-group">
+                    <div class="day-input-group" style="display: flex; flex-direction: column;">
                         <label style="font-size: 13px; font-weight: 600; cursor: pointer; display: flex; align-items: center; gap: 5px;">
                             <input type="checkbox" id="sched-Saturday-chk" onchange="toggleSchedTimeInput('Saturday')"> السبت
                         </label>
-                        <input type="text" id="sched-Saturday-time" placeholder="مثال: 5:00 م" disabled style="padding: 6px; font-size: 12px; margin-top: 4px; display: block; width: 100%; border-radius: 4px; border: 1px solid var(--border-color); background: rgba(0,0,0,0.2); color: white;">
+                        <div style="display: flex; align-items: center; margin-top: 4px;">
+                            <select id="sched-Saturday-hour" disabled style="padding: 6px; font-size: 12px; flex: 1; border-radius: 4px; border: 1px solid var(--border-color); background: #121926; color: white;">
+                                <option value="1">1</option> <option value="2">2</option> <option value="3">3</option> <option value="4">4</option> <option value="5">5</option> <option value="6">6</option> <option value="7">7</option> <option value="8">8</option> <option value="9">9</option> <option value="10">10</option> <option value="11">11</option> <option value="12" selected>12</option>
+                            </select>
+                            <select id="sched-Saturday-ampm" disabled style="padding: 6px; font-size: 12px; border-radius: 4px; border: 1px solid var(--border-color); background: #121926; color: white; margin-right: 4px;">
+                                <option value="AM" selected>ص</option> <option value="PM">م</option>
+                            </select>
+                        </div>
                     </div>
                 </div>
             </div>
@@ -271,49 +320,98 @@
             </div>
             
             <div class="form-row" style="grid-column: span 12;">
-                <label style="font-weight: bold; margin-bottom: 8px; display: block; color: var(--gold-primary);">جدول المواعيد الأسبوعي (أدخل الوقت عند تفعيل اليوم)</label>
+                <label style="font-weight: bold; margin-bottom: 8px; display: block; color: var(--gold-primary);">جدول المواعيد الأسبوعي (حدد الساعة والفترة عند تفعيل اليوم)</label>
                 <div class="schedule-grid" style="display: grid; grid-template-columns: repeat(auto-fit, minmax(130px, 1fr)); gap: 12px; background: rgba(255,255,255,0.02); padding: 12px; border-radius: 8px; border: 1px solid var(--border-color);">
-                    <div class="day-input-group">
+                    <div class="day-input-group" style="display: flex; flex-direction: column;">
                         <label style="font-size: 13px; font-weight: 600; cursor: pointer; display: flex; align-items: center; gap: 5px;">
                             <input type="checkbox" id="edit-sched-Sunday-chk" onchange="toggleSchedTimeInput('Sunday', 'edit-')"> الأحد
                         </label>
-                        <input type="text" id="edit-sched-Sunday-time" placeholder="مثال: 5:00 م" disabled style="padding: 6px; font-size: 12px; margin-top: 4px; display: block; width: 100%; border-radius: 4px; border: 1px solid var(--border-color); background: rgba(0,0,0,0.2); color: white;">
+                        <div style="display: flex; align-items: center; margin-top: 4px;">
+                            <select id="edit-sched-Sunday-hour" disabled style="padding: 6px; font-size: 12px; flex: 1; border-radius: 4px; border: 1px solid var(--border-color); background: #121926; color: white;">
+                                <option value="1">1</option> <option value="2">2</option> <option value="3">3</option> <option value="4">4</option> <option value="5">5</option> <option value="6">6</option> <option value="7">7</option> <option value="8">8</option> <option value="9">9</option> <option value="10">10</option> <option value="11">11</option> <option value="12" selected>12</option>
+                            </select>
+                            <select id="edit-sched-Sunday-ampm" disabled style="padding: 6px; font-size: 12px; border-radius: 4px; border: 1px solid var(--border-color); background: #121926; color: white; margin-right: 4px;">
+                                <option value="AM" selected>ص</option> <option value="PM">م</option>
+                            </select>
+                        </div>
                     </div>
-                    <div class="day-input-group">
+                    <div class="day-input-group" style="display: flex; flex-direction: column;">
                         <label style="font-size: 13px; font-weight: 600; cursor: pointer; display: flex; align-items: center; gap: 5px;">
                             <input type="checkbox" id="edit-sched-Monday-chk" onchange="toggleSchedTimeInput('Monday', 'edit-')"> الإثنين
                         </label>
-                        <input type="text" id="edit-sched-Monday-time" placeholder="مثال: 5:00 م" disabled style="padding: 6px; font-size: 12px; margin-top: 4px; display: block; width: 100%; border-radius: 4px; border: 1px solid var(--border-color); background: rgba(0,0,0,0.2); color: white;">
+                        <div style="display: flex; align-items: center; margin-top: 4px;">
+                            <select id="edit-sched-Monday-hour" disabled style="padding: 6px; font-size: 12px; flex: 1; border-radius: 4px; border: 1px solid var(--border-color); background: #121926; color: white;">
+                                <option value="1">1</option> <option value="2">2</option> <option value="3">3</option> <option value="4">4</option> <option value="5">5</option> <option value="6">6</option> <option value="7">7</option> <option value="8">8</option> <option value="9">9</option> <option value="10">10</option> <option value="11">11</option> <option value="12" selected>12</option>
+                            </select>
+                            <select id="edit-sched-Monday-ampm" disabled style="padding: 6px; font-size: 12px; border-radius: 4px; border: 1px solid var(--border-color); background: #121926; color: white; margin-right: 4px;">
+                                <option value="AM" selected>ص</option> <option value="PM">م</option>
+                            </select>
+                        </div>
                     </div>
-                    <div class="day-input-group">
+                    <div class="day-input-group" style="display: flex; flex-direction: column;">
                         <label style="font-size: 13px; font-weight: 600; cursor: pointer; display: flex; align-items: center; gap: 5px;">
                             <input type="checkbox" id="edit-sched-Tuesday-chk" onchange="toggleSchedTimeInput('Tuesday', 'edit-')"> الثلاثاء
                         </label>
-                        <input type="text" id="edit-sched-Tuesday-time" placeholder="مثال: 5:00 م" disabled style="padding: 6px; font-size: 12px; margin-top: 4px; display: block; width: 100%; border-radius: 4px; border: 1px solid var(--border-color); background: rgba(0,0,0,0.2); color: white;">
+                        <div style="display: flex; align-items: center; margin-top: 4px;">
+                            <select id="edit-sched-Tuesday-hour" disabled style="padding: 6px; font-size: 12px; flex: 1; border-radius: 4px; border: 1px solid var(--border-color); background: #121926; color: white;">
+                                <option value="1">1</option> <option value="2">2</option> <option value="3">3</option> <option value="4">4</option> <option value="5">5</option> <option value="6">6</option> <option value="7">7</option> <option value="8">8</option> <option value="9">9</option> <option value="10">10</option> <option value="11">11</option> <option value="12" selected>12</option>
+                            </select>
+                            <select id="edit-sched-Tuesday-ampm" disabled style="padding: 6px; font-size: 12px; border-radius: 4px; border: 1px solid var(--border-color); background: #121926; color: white; margin-right: 4px;">
+                                <option value="AM" selected>ص</option> <option value="PM">م</option>
+                            </select>
+                        </div>
                     </div>
-                    <div class="day-input-group">
+                    <div class="day-input-group" style="display: flex; flex-direction: column;">
                         <label style="font-size: 13px; font-weight: 600; cursor: pointer; display: flex; align-items: center; gap: 5px;">
                             <input type="checkbox" id="edit-sched-Wednesday-chk" onchange="toggleSchedTimeInput('Wednesday', 'edit-')"> الأربعاء
                         </label>
-                        <input type="text" id="edit-sched-Wednesday-time" placeholder="مثال: 5:00 م" disabled style="padding: 6px; font-size: 12px; margin-top: 4px; display: block; width: 100%; border-radius: 4px; border: 1px solid var(--border-color); background: rgba(0,0,0,0.2); color: white;">
+                        <div style="display: flex; align-items: center; margin-top: 4px;">
+                            <select id="edit-sched-Wednesday-hour" disabled style="padding: 6px; font-size: 12px; flex: 1; border-radius: 4px; border: 1px solid var(--border-color); background: #121926; color: white;">
+                                <option value="1">1</option> <option value="2">2</option> <option value="3">3</option> <option value="4">4</option> <option value="5">5</option> <option value="6">6</option> <option value="7">7</option> <option value="8">8</option> <option value="9">9</option> <option value="10">10</option> <option value="11">11</option> <option value="12" selected>12</option>
+                            </select>
+                            <select id="edit-sched-Wednesday-ampm" disabled style="padding: 6px; font-size: 12px; border-radius: 4px; border: 1px solid var(--border-color); background: #121926; color: white; margin-right: 4px;">
+                                <option value="AM" selected>ص</option> <option value="PM">م</option>
+                            </select>
+                        </div>
                     </div>
-                    <div class="day-input-group">
+                    <div class="day-input-group" style="display: flex; flex-direction: column;">
                         <label style="font-size: 13px; font-weight: 600; cursor: pointer; display: flex; align-items: center; gap: 5px;">
                             <input type="checkbox" id="edit-sched-Thursday-chk" onchange="toggleSchedTimeInput('Thursday', 'edit-')"> الخميس
                         </label>
-                        <input type="text" id="edit-sched-Thursday-time" placeholder="مثال: 5:00 م" disabled style="padding: 6px; font-size: 12px; margin-top: 4px; display: block; width: 100%; border-radius: 4px; border: 1px solid var(--border-color); background: rgba(0,0,0,0.2); color: white;">
+                        <div style="display: flex; align-items: center; margin-top: 4px;">
+                            <select id="edit-sched-Thursday-hour" disabled style="padding: 6px; font-size: 12px; flex: 1; border-radius: 4px; border: 1px solid var(--border-color); background: #121926; color: white;">
+                                <option value="1">1</option> <option value="2">2</option> <option value="3">3</option> <option value="4">4</option> <option value="5">5</option> <option value="6">6</option> <option value="7">7</option> <option value="8">8</option> <option value="9">9</option> <option value="10">10</option> <option value="11">11</option> <option value="12" selected>12</option>
+                            </select>
+                            <select id="edit-sched-Thursday-ampm" disabled style="padding: 6px; font-size: 12px; border-radius: 4px; border: 1px solid var(--border-color); background: #121926; color: white; margin-right: 4px;">
+                                <option value="AM" selected>ص</option> <option value="PM">م</option>
+                            </select>
+                        </div>
                     </div>
-                    <div class="day-input-group">
+                    <div class="day-input-group" style="display: flex; flex-direction: column;">
                         <label style="font-size: 13px; font-weight: 600; cursor: pointer; display: flex; align-items: center; gap: 5px;">
                             <input type="checkbox" id="edit-sched-Friday-chk" onchange="toggleSchedTimeInput('Friday', 'edit-')"> الجمعة
                         </label>
-                        <input type="text" id="edit-sched-Friday-time" placeholder="مثال: 5:00 م" disabled style="padding: 6px; font-size: 12px; margin-top: 4px; display: block; width: 100%; border-radius: 4px; border: 1px solid var(--border-color); background: rgba(0,0,0,0.2); color: white;">
+                        <div style="display: flex; align-items: center; margin-top: 4px;">
+                            <select id="edit-sched-Friday-hour" disabled style="padding: 6px; font-size: 12px; flex: 1; border-radius: 4px; border: 1px solid var(--border-color); background: #121926; color: white;">
+                                <option value="1">1</option> <option value="2">2</option> <option value="3">3</option> <option value="4">4</option> <option value="5">5</option> <option value="6">6</option> <option value="7">7</option> <option value="8">8</option> <option value="9">9</option> <option value="10">10</option> <option value="11">11</option> <option value="12" selected>12</option>
+                            </select>
+                            <select id="edit-sched-Friday-ampm" disabled style="padding: 6px; font-size: 12px; border-radius: 4px; border: 1px solid var(--border-color); background: #121926; color: white; margin-right: 4px;">
+                                <option value="AM" selected>ص</option> <option value="PM">م</option>
+                            </select>
+                        </div>
                     </div>
-                    <div class="day-input-group">
+                    <div class="day-input-group" style="display: flex; flex-direction: column;">
                         <label style="font-size: 13px; font-weight: 600; cursor: pointer; display: flex; align-items: center; gap: 5px;">
                             <input type="checkbox" id="edit-sched-Saturday-chk" onchange="toggleSchedTimeInput('Saturday', 'edit-')"> السبت
                         </label>
-                        <input type="text" id="edit-sched-Saturday-time" placeholder="مثال: 5:00 م" disabled style="padding: 6px; font-size: 12px; margin-top: 4px; display: block; width: 100%; border-radius: 4px; border: 1px solid var(--border-color); background: rgba(0,0,0,0.2); color: white;">
+                        <div style="display: flex; align-items: center; margin-top: 4px;">
+                            <select id="edit-sched-Saturday-hour" disabled style="padding: 6px; font-size: 12px; flex: 1; border-radius: 4px; border: 1px solid var(--border-color); background: #121926; color: white;">
+                                <option value="1">1</option> <option value="2">2</option> <option value="3">3</option> <option value="4">4</option> <option value="5">5</option> <option value="6">6</option> <option value="7">7</option> <option value="8">8</option> <option value="9">9</option> <option value="10">10</option> <option value="11">11</option> <option value="12" selected>12</option>
+                            </select>
+                            <select id="edit-sched-Saturday-ampm" disabled style="padding: 6px; font-size: 12px; border-radius: 4px; border: 1px solid var(--border-color); background: #121926; color: white; margin-right: 4px;">
+                                <option value="AM" selected>ص</option> <option value="PM">م</option>
+                            </select>
+                        </div>
                     </div>
                 </div>
             </div>
@@ -349,6 +447,33 @@
     var teachersMap = {};
     var studentToFamilyMap = {};
     var currentSupervisor = localStorage.getItem("currentSupervisor");
+
+    function get24Hour(hour12, ampm) {
+        let hr = parseInt(hour12);
+        if (ampm === "PM") {
+            if (hr !== 12) hr += 12;
+        } else { // AM
+            if (hr === 12) hr = 0;
+        }
+        return String(hr);
+    }
+
+    function get12Hour(hour24) {
+        if (hour24 === undefined || hour24 === null || String(hour24).trim() === "") return null;
+        let hr = parseInt(hour24);
+        if (isNaN(hr)) return null;
+        let ampm = hr >= 12 ? "PM" : "AM";
+        let hr12 = hr % 12;
+        if (hr12 === 0) hr12 = 12;
+        return { hour: String(hr12), ampm: ampm };
+    }
+
+    function formatHour12(hour24) {
+        let hrVal = get12Hour(hour24);
+        if (!hrVal) return "";
+        let ampmAr = hrVal.ampm === "PM" ? "م" : "ص";
+        return `${hrVal.hour} ${ampmAr}`;
+    }
     if (!currentSupervisor) {
         window.location.href = "index.html";
     }
@@ -423,7 +548,6 @@
 
                 // بناء نص الجدول الزمني من الـ Map
                 let studentDays = [];
-                let lessonTimes = [];
                 if (student.Schedule) {
                     const dayMappingAr = {
                         Sunday: 'الأحد',
@@ -434,16 +558,16 @@
                         Friday: 'الجمعة',
                         Saturday: 'السبت'
                     };
-                    for (const [dayEng, time] of Object.entries(student.Schedule)) {
-                        if (time && time.trim() !== "") {
-                            studentDays.push(dayMappingAr[dayEng] || dayEng);
-                            if (!lessonTimes.includes(time)) {
-                                lessonTimes.push(time);
-                            }
+                    const daysOrder = ['Sunday', 'Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday'];
+                    daysOrder.forEach(dayEng => {
+                        let time = student.Schedule[dayEng];
+                        if (time && String(time).trim() !== "") {
+                            let formattedTime = formatHour12(time);
+                            studentDays.push(`${dayMappingAr[dayEng] || dayEng} (${formattedTime})`);
                         }
-                    }
+                    });
                 }
-                student.scheduleTime = studentDays.length > 0 ? `${studentDays.join(' و ')} (${lessonTimes.join(', ')})` : 'الموعد غير محدد';
+                student.scheduleTime = studentDays.length > 0 ? studentDays.join('، ') : 'الموعد غير محدد';
 
                 allStudentsData.push(student);
             });
@@ -595,14 +719,11 @@
 
     function toggleSchedTimeInput(day, prefix = "") {
         let chk = document.getElementById(`${prefix}sched-${day}-chk`);
-        let timeInput = document.getElementById(`${prefix}sched-${day}-time`);
-        if (chk && timeInput) {
-            timeInput.disabled = !chk.checked;
-            if (!chk.checked) {
-                timeInput.value = "";
-            } else {
-                timeInput.focus();
-            }
+        let hourSel = document.getElementById(`${prefix}sched-${day}-hour`);
+        let ampmSel = document.getElementById(`${prefix}sched-${day}-ampm`);
+        if (chk) {
+            if (hourSel) hourSel.disabled = !chk.checked;
+            if (ampmSel) ampmSel.disabled = !chk.checked;
         }
     }
 
@@ -621,8 +742,10 @@
         let scheduleMap = {};
         daysEng.forEach(day => {
             let chk = document.getElementById(`sched-${day}-chk`);
-            let timeVal = document.getElementById(`sched-${day}-time`).value.trim();
-            scheduleMap[day] = (chk && chk.checked) ? timeVal : "";
+            let hourVal = document.getElementById(`sched-${day}-hour`).value;
+            let ampmVal = document.getElementById(`sched-${day}-ampm`).value;
+            let time24 = get24Hour(hourVal, ampmVal);
+            scheduleMap[day] = (chk && chk.checked) ? time24 : "";
         });
 
         if (!name || !phone || !teacherId || isNaN(subscriptionNumber) || isNaN(age)) {
@@ -655,11 +778,16 @@
             document.getElementById('new-teacher-id').value = '';
             daysEng.forEach(day => {
                 let chk = document.getElementById(`sched-${day}-chk`);
-                let timeVal = document.getElementById(`sched-${day}-time`);
+                let hourSel = document.getElementById(`sched-${day}-hour`);
+                let ampmSel = document.getElementById(`sched-${day}-ampm`);
                 if(chk) chk.checked = false;
-                if(timeVal) {
-                    timeVal.value = '';
-                    timeVal.disabled = true;
+                if(hourSel) {
+                    hourSel.value = '12';
+                    hourSel.disabled = true;
+                }
+                if(ampmSel) {
+                    ampmSel.value = 'AM';
+                    ampmSel.disabled = true;
                 }
             });
             closeAddStudentModal();
@@ -741,18 +869,37 @@
         const daysEng = ['Sunday', 'Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday'];
         daysEng.forEach(day => {
             let chk = document.getElementById(`edit-sched-${day}-chk`);
-            let timeVal = document.getElementById(`edit-sched-${day}-time`);
+            let hrSelect = document.getElementById(`edit-sched-${day}-hour`);
+            let ampmSelect = document.getElementById(`edit-sched-${day}-ampm`);
             let savedTime = (student.Schedule && student.Schedule[day]) ? student.Schedule[day] : "";
             
-            if (chk && timeVal) {
-                if (savedTime && savedTime.trim() !== "") {
+            if (chk) {
+                if (savedTime && String(savedTime).trim() !== "") {
                     chk.checked = true;
-                    timeVal.value = savedTime;
-                    timeVal.disabled = false;
+                    if (hrSelect) {
+                        hrSelect.disabled = false;
+                        let hr12Val = get12Hour(savedTime);
+                        if (hr12Val) {
+                            hrSelect.value = hr12Val.hour;
+                        }
+                    }
+                    if (ampmSelect) {
+                        ampmSelect.disabled = false;
+                        let hr12Val = get12Hour(savedTime);
+                        if (hr12Val) {
+                            ampmSelect.value = hr12Val.ampm;
+                        }
+                    }
                 } else {
                     chk.checked = false;
-                    timeVal.value = "";
-                    timeVal.disabled = true;
+                    if (hrSelect) {
+                        hrSelect.disabled = true;
+                        hrSelect.value = "12";
+                    }
+                    if (ampmSelect) {
+                        ampmSelect.disabled = true;
+                        ampmSelect.value = "AM";
+                    }
                 }
             }
         });
@@ -778,8 +925,10 @@
         let scheduleMap = {};
         daysEng.forEach(day => {
             let chk = document.getElementById(`edit-sched-${day}-chk`);
-            let timeVal = document.getElementById(`edit-sched-${day}-time`).value.trim();
-            scheduleMap[day] = (chk && chk.checked) ? timeVal : "";
+            let hourVal = document.getElementById(`edit-sched-${day}-hour`).value;
+            let ampmVal = document.getElementById(`edit-sched-${day}-ampm`).value;
+            let time24 = get24Hour(hourVal, ampmVal);
+            scheduleMap[day] = (chk && chk.checked) ? time24 : "";
         });
 
         if (!name || !phone || !teacherId || isNaN(subscriptionNumber) || isNaN(age)) { 
@@ -907,10 +1056,11 @@
             let timeVal = (student.Schedule && student.Schedule[day]) ? student.Schedule[day] : "";
             if (timeVal && timeVal.trim() !== "") {
                 hasSchedule = true;
+                let formattedTime = formatHour12(timeVal);
                 scheduleHTML += `
                     <div style="background: rgba(212, 175, 55, 0.08); border: 1px solid rgba(212, 175, 55, 0.2); padding: 8px; border-radius: 6px; text-align: center;">
                         <div style="font-weight: bold; color: var(--gold-primary); font-size: 13px;">${dayMappingAr[day]}</div>
-                        <div style="font-size: 12px; margin-top: 4px; color: #f8fafc;">${timeVal}</div>
+                        <div style="font-size: 12px; margin-top: 4px; color: #f8fafc;">${formattedTime}</div>
                     </div>
                 `;
             }

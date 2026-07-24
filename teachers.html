@@ -114,6 +114,23 @@
         var teachersMap = {};
         var teachersPhoneMap = {};
 
+        function get12Hour(hour24) {
+            if (hour24 === undefined || hour24 === null || String(hour24).trim() === "") return null;
+            let hr = parseInt(hour24);
+            if (isNaN(hr)) return null;
+            let ampm = hr >= 12 ? "PM" : "AM";
+            let hr12 = hr % 12;
+            if (hr12 === 0) hr12 = 12;
+            return { hour: String(hr12), ampm: ampm };
+        }
+
+        function formatHour12(hour24) {
+            let hrVal = get12Hour(hour24);
+            if (!hrVal) return "";
+            let ampmAr = hrVal.ampm === "PM" ? "م" : "ص";
+            return `${hrVal.hour} ${ampmAr}`;
+        }
+
         document.addEventListener("DOMContentLoaded", function() {
             if (typeof checkPageProtection === "function") {
                 checkPageProtection("كل المشرفين");
@@ -256,7 +273,8 @@
             daysOrder.forEach(day => {
                 let timeVal = schedule[day];
                 if (timeVal && String(timeVal).trim() !== "") {
-                    formattedDays.push(`${dayMappingAr[day]} (${timeVal})`);
+                    let formattedTime = formatHour12(timeVal);
+                    formattedDays.push(`${dayMappingAr[day]} (${formattedTime})`);
                 }
             });
             return formattedDays.length > 0 ? formattedDays.join('، ') : '<span style="color:var(--text-secondary);">غير محدد</span>';
@@ -327,7 +345,8 @@
             
             todayLessons.forEach((lesson, index) => {
                 let studentDisplayName = lesson.Name || lesson.studentName || 'غير متوفر';
-                messageText += `${index + 1}. الطالب: *${studentDisplayName}* 📖 - الموعد: *${lesson.Schedule[todayNameEng]}*\n`;
+                let formattedTime = formatHour12(lesson.Schedule[todayNameEng]);
+                messageText += `${index + 1}. الطالب: *${studentDisplayName}* 📖 - الموعد: *${formattedTime}*\n`;
             });
             
             messageText += `\nتمنياتنا لكم بالتوفيق والسداد ✨`;
