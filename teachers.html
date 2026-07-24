@@ -1,497 +1,1000 @@
-<!DOCTYPE html>
+<!doctype html>
 <html lang="ar" dir="rtl">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>تقرير وإدارة المعلمين | أكاديمية القارئ</title>
-    
-    <link rel="preconnect" href="https://fonts.googleapis.com">
-    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Cairo:wght@300;400;600;700;800&display=swap" rel="stylesheet">
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
-    
+
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Cairo:wght@300;400;600;700;800&display=swap"
+      rel="stylesheet"
+    />
+    <link
+      rel="stylesheet"
+      href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css"
+    />
+
     <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
-    
+
     <script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-app-compat.js"></script>
     <script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-auth-compat.js"></script>
     <script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore-compat.js"></script>
     <script src="Scripts/auth-router.js"></script>
 
-    <link rel="stylesheet" href="css/style.css">
-</head>
-<body>
-
+    <link rel="stylesheet" href="css/style.css" />
+  </head>
+  <body>
     <nav class="sidebar">
-        <div class="sidebar-brand">
-            <i class="fa-solid fa-book-quran"></i>
-            <span>أكاديمية القارئ</span>
-        </div>
-        <ul class="sidebar-menu">
-            <li><a href="dashboard.html"><i class="fa-solid fa-chart-pie"></i>لوحة البيانات</a></li>
-            <li><a href="students.html"><i class="fa-solid fa-graduation-cap"></i>سجل الطلاب</a></li>
-            <li><a href="families.html"><i class="fa-solid fa-people-roof"></i>سجل العائلات</a></li>
-            <li class="active"><a href="teachers.html"><i class="fa-solid fa-chalkboard-user"></i>متابعة المعلمين</a></li>
-            <li><a href="financial.html"><i class="fa-solid fa-wallet"></i>كشف الحسابات</a></li>
-            <li><a href="archive.html"><i class="fa-solid fa-archive"></i>الأرشيف السحابي</a></li>
-            <li><a href="settings.html"><i class="fa-solid fa-sliders"></i>أدوات السيرفر</a></li>
-            <li><a href="#" onclick="logout(event)" class="logout-btn"><i class="fa-solid fa-right-from-bracket"></i>تسجيل الخروج</a></li>
-        </ul>
+      <div class="sidebar-brand">
+        <i class="fa-solid fa-book-quran"></i>
+        <span>أكاديمية القارئ</span>
+      </div>
+      <ul class="sidebar-menu">
+        <li>
+          <a href="dashboard.html"
+            ><i class="fa-solid fa-chart-pie"></i>لوحة البيانات</a
+          >
+        </li>
+        <li>
+          <a href="students.html"
+            ><i class="fa-solid fa-graduation-cap"></i>سجل الطلاب</a
+          >
+        </li>
+        <li>
+          <a href="families.html"
+            ><i class="fa-solid fa-people-roof"></i>سجل العائلات</a
+          >
+        </li>
+        <li class="active">
+          <a href="teachers.html"
+            ><i class="fa-solid fa-chalkboard-user"></i>متابعة المعلمين</a
+          >
+        </li>
+        <li>
+          <a href="financial.html"
+            ><i class="fa-solid fa-wallet"></i>كشف الحسابات</a
+          >
+        </li>
+        <li>
+          <a href="archive.html"
+            ><i class="fa-solid fa-archive"></i>الأرشيف السحابي</a
+          >
+        </li>
+        <li>
+          <a href="settings.html"
+            ><i class="fa-solid fa-sliders"></i>أدوات السيرفر</a
+          >
+        </li>
+        <li>
+          <a href="#" onclick="logout(event)" class="logout-btn"
+            ><i class="fa-solid fa-right-from-bracket"></i>تسجيل الخروج</a
+          >
+        </li>
+      </ul>
     </nav>
 
     <main class="main-content">
-        <header class="header-panel">
-            <div class="welcome-section">
-                <h1>👨‍🏫 نظام فرز ومتابعة طلاب المعلمين</h1>
-                <p>تابع مستويات التزام الطلاب المالي الدراسي، وقم بإضافة معلمين جدد للنظام.</p>
-            </div>
-            <div>
-                <button class="btn-gold" onclick="openAddTeacherModal()">
-                    <i class="fa-solid fa-user-plus"></i> إضافة معلم جديد
-                </button>
-            </div>
-        </header>
+      <header class="header-panel">
+        <div class="welcome-section">
+          <h1>👨‍🏫 نظام فرز ومتابعة طلاب المعلمين</h1>
+          <p>
+            تابع مستويات التزام الطلاب المالي الدراسي، وقم بإضافة معلمين جدد
+            للنظام.
+          </p>
+        </div>
+        <div>
+          <button class="btn-gold" onclick="openAddTeacherModal()">
+            <i class="fa-solid fa-user-plus"></i> إضافة معلم جديد
+          </button>
+        </div>
+      </header>
 
-        <section class="filter-panel">
-            <div class="filter-group">
-                <label><i class="fa-solid fa-user-tie"></i> اختر المعلم</label>
-                <select class="filter-select" id="filter-teacher" onchange="filterTeacherStudents()">
-                    <option value="الكل">كل المعلمين</option>
-                </select>
-            </div>
-            
-            <div class="filter-group">
-                <label><i class="fa-solid fa-money-check-dollar"></i> فلتر حالة الدفع</label>
-                <select class="filter-select" id="filter-payment" onchange="filterTeacherStudents()">
-                    <option value="الكل">كل الطلاب (دفع / لم يدفع)</option>
-                    <option value="تم الدفع">الطلاب الذين دفعوا ✅</option>
-                    <option value="لم يدفع">الطلاب الذين لم يدفعوا ❌</option>
-                    <option value="مؤجل الدفع">الطلاب مؤجلي الدفع ⏳</option>
-                </select>
-            </div>
+      <section class="filter-panel">
+        <div class="filter-group">
+          <label><i class="fa-solid fa-user-tie"></i> اختر المعلم</label>
+          <select
+            class="filter-select"
+            id="filter-teacher"
+            onchange="filterTeacherStudents()"
+          >
+            <option value="الكل">كل المعلمين</option>
+          </select>
+        </div>
 
-            <div class="filter-group">
-                <label><i class="fa-solid fa-toggle-on"></i> فلتر حالة الحصص</label>
-                <select class="filter-select" id="filter-status" onchange="filterTeacherStudents()">
-                    <option value="الكل">كل الحالات (نشط / متوقف)</option>
-                    <option value="نشط">الطلاب النشطين 📝</option>
-                    <option value="موقف">الطلاب المتوقفين 🛑</option>
-                </select>
-            </div>
-            
-            <div class="filter-group">
-                <label style="visibility: hidden;">إرسال</label>
-                <button onclick="sendTodayScheduleToTeacher()" class="btn-gold" style="background-color: var(--success); color: white; border: none; height: 42px; border-radius: 8px; font-family: 'Cairo'; font-weight: 600; padding: 0 16px; cursor: pointer; display: flex; align-items: center; gap: 8px; width: 100%;">
-                    <i class="fa-brands fa-whatsapp"></i> إرسال حصص اليوم للمعلم
-                </button>
-            </div>
-        </section>
+        <div class="filter-group">
+          <label
+            ><i class="fa-solid fa-money-check-dollar"></i> فلتر حالة
+            الدفع</label
+          >
+          <select
+            class="filter-select"
+            id="filter-payment"
+            onchange="filterTeacherStudents()"
+          >
+            <option value="الكل">كل الطلاب (دفع / لم يدفع)</option>
+            <option value="تم الدفع">الطلاب الذين دفعوا ✅</option>
+            <option value="لم يدفع">الطلاب الذين لم يدفعوا ❌</option>
+            <option value="مؤجل الدفع">الطلاب مؤجلي الدفع ⏳</option>
+          </select>
+        </div>
 
-        <section class="card">
-            <h2><i class="fa-solid fa-list-check"></i> نتائج جرد وفحص الطلاب التابعين للمعلم</h2>
-            <div class="table-responsive">
-                <table>
-                    <thead>
-                        <tr>
-                            <th>مواعيد الطالب</th>
-                            <th>اسم الطالب</th>
-                            <th>المعلم</th>
-                            <th>رقم الاشتراك</th>
-                            <th>حالة الدفع</th>
-                            <th>حالة الحصص</th>
-                            <th>رقم الهاتف</th>
-                        </tr>
-                    </thead>
-                    <tbody id="teacher-students-tbody">
-                        <tr><td colspan="7" style="text-align:center; color:gray;">جاري جلب البيانات من السيرفر السحابي...</td></tr>
-                    </tbody>
-                </table>
-            </div>
-        </section>
+        <div class="filter-group">
+          <label><i class="fa-solid fa-toggle-on"></i> فلتر حالة الحصص</label>
+          <select
+            class="filter-select"
+            id="filter-status"
+            onchange="filterTeacherStudents()"
+          >
+            <option value="الكل">كل الحالات (نشط / متوقف)</option>
+            <option value="نشط">الطلاب النشطين 📝</option>
+            <option value="موقف">الطلاب المتوقفين 🛑</option>
+          </select>
+        </div>
+
+        <div class="filter-group">
+          <label style="visibility: hidden">إرسال</label>
+          <button
+            onclick="sendTodayScheduleToTeacher()"
+            class="btn-gold"
+            style="
+              background-color: var(--success);
+              color: white;
+              border: none;
+              height: 42px;
+              border-radius: 8px;
+              font-family: &quot;Cairo&quot;;
+              font-weight: 600;
+              padding: 0 16px;
+              cursor: pointer;
+              display: flex;
+              align-items: center;
+              gap: 8px;
+              width: 100%;
+            "
+          >
+            <i class="fa-brands fa-whatsapp"></i> إرسال حصص اليوم للمعلم
+          </button>
+        </div>
+      </section>
+
+      <section class="card">
+        <h2>
+          <i class="fa-solid fa-list-check"></i> نتائج جرد وفحص الطلاب التابعين
+          للمعلم
+        </h2>
+        <div class="table-responsive">
+          <table>
+            <thead>
+              <tr>
+                <th>مواعيد الطالب</th>
+                <th>اسم الطالب</th>
+                <th>المعلم</th>
+                <th>رقم الاشتراك</th>
+                <th>حالة الدفع</th>
+                <th>حالة الحصص</th>
+                <th>رقم الهاتف</th>
+              </tr>
+            </thead>
+            <tbody id="teacher-students-tbody">
+              <tr>
+                <td colspan="7" style="text-align: center; color: gray">
+                  جاري جلب البيانات من السيرفر السحابي...
+                </td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+      </section>
+
+      <section class="card" style="margin-top: 32px">
+        <h2>
+          <i class="fa-solid fa-chalkboard-user"></i> سجل المعلمين وإدارة
+          بياناتهم
+        </h2>
+        <div class="table-responsive">
+          <table>
+            <thead>
+              <tr>
+                <th>الاسم</th>
+                <th>الجنس</th>
+                <th>البريد الإلكتروني</th>
+                <th>رقم الهاتف</th>
+                <th>سعر الحصة (ج.م)</th>
+                <th>تاريخ التسجيل</th>
+                <th>إجراءات</th>
+              </tr>
+            </thead>
+            <tbody id="teachers-list-tbody">
+              <tr>
+                <td colspan="7" style="text-align: center; color: gray">
+                  جاري جلب بيانات المعلمين...
+                </td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+      </section>
     </main>
 
     <div class="modal-overlay" id="add-teacher-modal">
-        <div class="modal-box" style="max-width: 600px;">
-            <div class="modal-header">
-                <h3><i class="fa-solid fa-user-plus"></i> تسجيل حساب معلّم جديد</h3>
-                <button class="close-modal" onclick="closeAddTeacherModal()">&times;</button>
-            </div>
-            <div class="form-row">
-                <div class="form-group" style="flex: 1;">
-                    <label>اسم المعلم الثنائي أو الثلاثي</label>
-                    <input type="text" id="new-teacher-name" placeholder="مثال: الشيخ محمود" required>
-                </div>
-                <div class="form-group" style="flex: 1;">
-                    <label>رقم الهاتف للاتصال</label>
-                    <input type="text" id="new-teacher-phone" placeholder="مثال: 20100xxxxxxx">
-                </div>
-            </div>
-            <div class="form-row">
-                <div class="form-group" style="flex: 1;">
-                    <label>البريد الإلكتروني للمعلم (لتسجيل الدخول)</label>
-                    <input type="email" id="new-teacher-email" placeholder="مثال: teacher@alqaree.com" required>
-                </div>
-                <div class="form-group" style="flex: 1;">
-                    <label>كلمة مرور الحساب</label>
-                    <input type="password" id="new-teacher-password" placeholder="أدخل كلمة مرور قوية" required>
-                </div>
-            </div>
-            <div class="form-row">
-                <div class="form-group" style="flex: 1;">
-                    <label>سعر الساعة / الحصة (ج.م)</label>
-                    <input type="number" id="new-teacher-hourlyrate" placeholder="مثال: 50" min="0" value="0" required>
-                </div>
-                <div class="form-group" style="flex: 1;">
-                    <label>الجنس (النوع)</label>
-                    <select id="new-teacher-gender" class="filter-select" style="width: 100%; height: 42px;">
-                        <option value="false">ذكر</option>
-                        <option value="true">أنثى</option>
-                    </select>
-                </div>
-            </div>
-            <div class="modal-actions" style="margin-top: 20px;">
-                <button class="btn-cancel" style="background: none; border: 1px solid var(--border-color); color: white;" onclick="closeAddTeacherModal()">إلغاء</button>
-                <button class="btn-gold" onclick="addNewTeacher()">إنشاء وتثبيت الحساب 💾</button>
-            </div>
+      <div class="modal-box" style="max-width: 600px">
+        <div class="modal-header">
+          <h3><i class="fa-solid fa-user-plus"></i> تسجيل حساب معلّم جديد</h3>
+          <button class="close-modal" onclick="closeAddTeacherModal()">
+            &times;
+          </button>
         </div>
+        <div class="form-row">
+          <div class="form-group" style="flex: 1">
+            <label>اسم المعلم الثنائي أو الثلاثي</label>
+            <input
+              type="text"
+              id="new-teacher-name"
+              placeholder="مثال: الشيخ محمود"
+              required
+            />
+          </div>
+          <div class="form-group" style="flex: 1">
+            <label>رقم الهاتف للاتصال</label>
+            <input
+              type="text"
+              id="new-teacher-phone"
+              placeholder="مثال: 20100xxxxxxx"
+            />
+          </div>
+        </div>
+        <div class="form-row">
+          <div class="form-group" style="flex: 1">
+            <label>البريد الإلكتروني للمعلم (لتسجيل الدخول)</label>
+            <input
+              type="email"
+              id="new-teacher-email"
+              placeholder="مثال: teacher@alqaree.com"
+              required
+            />
+          </div>
+          <div class="form-group" style="flex: 1">
+            <label>كلمة مرور الحساب</label>
+            <input
+              type="password"
+              id="new-teacher-password"
+              placeholder="أدخل كلمة مرور قوية"
+              required
+            />
+          </div>
+        </div>
+        <div class="form-row">
+          <div class="form-group" style="flex: 1">
+            <label>سعر الساعة / الحصة (ج.م)</label>
+            <input
+              type="number"
+              id="new-teacher-hourlyrate"
+              placeholder="مثال: 50"
+              min="0"
+              value="0"
+              required
+            />
+          </div>
+          <div class="form-group" style="flex: 1">
+            <label>الجنس (النوع)</label>
+            <select
+              id="new-teacher-gender"
+              class="filter-select"
+              style="width: 100%; height: 42px"
+            >
+              <option value="false">ذكر</option>
+              <option value="true">أنثى</option>
+            </select>
+          </div>
+        </div>
+        <div class="modal-actions" style="margin-top: 20px">
+          <button
+            class="btn-cancel"
+            style="
+              background: none;
+              border: 1px solid var(--border-color);
+              color: white;
+            "
+            onclick="closeAddTeacherModal()"
+          >
+            إلغاء
+          </button>
+          <button class="btn-gold" onclick="addNewTeacher()">
+            إنشاء وتثبيت الحساب 💾
+          </button>
+        </div>
+      </div>
+    </div>
+
+    <div class="modal-overlay" id="edit-teacher-modal">
+      <div class="modal-box" style="max-width: 600px">
+        <div class="modal-header">
+          <h3><i class="fa-solid fa-user-pen"></i> تعديل بيانات المعلم</h3>
+          <button class="close-modal" onclick="closeEditTeacherModal()">
+            &times;
+          </button>
+        </div>
+        <input type="hidden" id="edit-teacher-id" />
+        <div class="form-row">
+          <div class="form-group" style="flex: 1">
+            <label>اسم المعلم</label>
+            <input
+              type="text"
+              id="edit-teacher-name"
+              placeholder="مثال: الشيخ محمود"
+              required
+            />
+          </div>
+          <div class="form-group" style="flex: 1">
+            <label>رقم الهاتف للاتصال</label>
+            <input
+              type="text"
+              id="edit-teacher-phone"
+              placeholder="مثال: 20100xxxxxxx"
+            />
+          </div>
+        </div>
+        <div class="form-row">
+          <div class="form-group" style="flex: 1">
+            <label>سعر الساعة / الحصة (ج.م)</label>
+            <input
+              type="number"
+              id="edit-teacher-hourlyrate"
+              placeholder="مثال: 50"
+              min="0"
+              required
+            />
+          </div>
+          <div class="form-group" style="flex: 1">
+            <label>الجنس (النوع)</label>
+            <select
+              id="edit-teacher-gender"
+              class="filter-select"
+              style="width: 100%; height: 42px"
+            >
+              <option value="false">ذكر</option>
+              <option value="true">أنثى</option>
+            </select>
+          </div>
+        </div>
+        <div class="modal-actions" style="margin-top: 20px">
+          <button
+            class="btn-cancel"
+            style="
+              background: none;
+              border: 1px solid var(--border-color);
+              color: white;
+            "
+            onclick="closeEditTeacherModal()"
+          >
+            إلغاء
+          </button>
+          <button class="btn-gold" onclick="saveEditedTeacher()">
+            حفظ التعديلات 💾
+          </button>
+        </div>
+      </div>
     </div>
 
     <script>
-        if (!firebase.apps.length) firebase.initializeApp(firebaseConfig);
-        var db = firebase.firestore();
+      if (!firebase.apps.length) firebase.initializeApp(firebaseConfig);
+      var db = firebase.firestore();
 
-        var allStudentsData = [];
-        var definedTeachers = []; 
-        var teachersMap = {};
-        var teachersPhoneMap = {};
+      var allStudentsData = [];
+      var definedTeachers = [];
+      var teachersMap = {};
+      var teachersPhoneMap = {};
+      var teachersList = [];
 
-        document.addEventListener("DOMContentLoaded", function() {
-            if (typeof checkPageProtection === "function") {
-                checkPageProtection("كل المشرفين");
-            }
+      document.addEventListener("DOMContentLoaded", function () {
+        if (typeof checkPageProtection === "function") {
+          checkPageProtection("كل المشرفين");
+        }
 
-            startRealtimeSync();
-            listenToTeachers();
+        startRealtimeSync();
+        listenToTeachers();
+      });
+
+      // 🔄 المزامنة الحية مع توحيد الحقول لتفادي "مجهول"
+      function startRealtimeSync() {
+        db.collection("students").onSnapshot(
+          (snapshot) => {
+            allStudentsData = [];
+            snapshot.forEach((doc) => {
+              let rawData = doc.data();
+
+              let student = {
+                ...rawData,
+                id: doc.id,
+                studentName:
+                  rawData.Name ||
+                  rawData.studentName ||
+                  rawData.name ||
+                  "مجهول",
+                membershipId:
+                  rawData.SubscriptionNumber ||
+                  rawData.membershipId ||
+                  rawData.subscriptionNumber ||
+                  "غير حدد",
+                paymentStatus:
+                  rawData.PaymentStatus || rawData.paymentStatus || "لم يدفع",
+                status:
+                  rawData.Status ||
+                  rawData.status ||
+                  rawData.studentStatus ||
+                  "نشط",
+                phone: rawData.PhoneNumber || rawData.phone || "بلا هاتف",
+              };
+
+              allStudentsData.push(student);
+            });
+
+            // ترتيب زمني
+            allStudentsData.sort((a, b) => {
+              let dateA = a.createdAt
+                ? a.createdAt.seconds || new Date(a.createdAt).getTime() / 1000
+                : 0;
+              let dateB = b.createdAt
+                ? b.createdAt.seconds || new Date(b.createdAt).getTime() / 1000
+                : 0;
+              return dateB - dateA;
+            });
+
+            buildTeacherFilterOptions();
+            filterTeacherStudents();
+          },
+          (error) => {
+            console.error("حدث خطأ في جلب الطلاب: ", error);
+            document.getElementById("teacher-students-tbody").innerHTML =
+              `<tr><td colspan="7" style="text-align:center; color:var(--danger); padding:25px;">⚠️ خطأ في الاتصال بالسيرفر السحابي.</td></tr>`;
+          },
+        );
+      }
+
+      function listenToTeachers() {
+        db.collection("teachers").onSnapshot(
+          (snapshot) => {
+            definedTeachers = [];
+            teachersMap = {};
+            teachersPhoneMap = {};
+            teachersList = [];
+            snapshot.forEach((doc) => {
+              let data = doc.data();
+              let name = data.Name || data.name;
+              let phone = data.PhoneNumber || data.phone || "";
+              if (name) {
+                definedTeachers.push(name);
+                teachersMap[doc.id] = name;
+                teachersPhoneMap[name] = phone;
+                if (data.UserId) {
+                  teachersMap[data.UserId] = name;
+                }
+                teachersList.push({
+                  id: doc.id,
+                  name: name,
+                  email: data.Email || data.email || "بلا بريد",
+                  phone: phone,
+                  hourlyRate: data.HourlyRate || data.hourlyRate || 0,
+                  gender: data.Gender || data.gender || false,
+                  createdAt: data.CreatedAt || data.createdAt || null,
+                });
+              }
+            });
+            buildTeacherFilterOptions();
+            filterTeacherStudents();
+            renderTeachersTable();
+          },
+          (error) => {
+            console.error("حدث خطأ في جلب المعلمين: ", error);
+          },
+        );
+      }
+
+      function buildTeacherFilterOptions() {
+        let teacherSelect = document.getElementById("filter-teacher");
+        if (!teacherSelect) return;
+
+        let lastSelected = teacherSelect.value || "الكل";
+        let uniqueTeachers = [...definedTeachers];
+
+        allStudentsData.forEach((student) => {
+          let tName =
+            teachersMap[student.TeacherId] || student.teacherName || "غير معين";
+          if (tName && !uniqueTeachers.includes(tName)) {
+            uniqueTeachers.push(tName);
+          }
         });
 
-        // 🔄 المزامنة الحية مع توحيد الحقول لتفادي "مجهول"
-        function startRealtimeSync() {
-            db.collection("students").onSnapshot((snapshot) => {
-                allStudentsData = [];
-                snapshot.forEach((doc) => {
-                    let rawData = doc.data();
-                    
-                    let student = {
-                        ...rawData,
-                        id: doc.id,
-                        studentName: rawData.Name || rawData.studentName || rawData.name || 'مجهول',
-                        membershipId: rawData.SubscriptionNumber || rawData.membershipId || rawData.subscriptionNumber || 'غير حدد',
-                        paymentStatus: rawData.PaymentStatus || rawData.paymentStatus || 'لم يدفع',
-                        status: rawData.Status || rawData.status || rawData.studentStatus || 'نشط',
-                        phone: rawData.PhoneNumber || rawData.phone || 'بلا هاتف'
-                    };
+        let optionsHTML = '<option value="الكل">كل المعلمين</option>';
+        uniqueTeachers.forEach((teacher) => {
+          optionsHTML += `<option value="${teacher}">${teacher}</option>`;
+        });
 
-                    allStudentsData.push(student);
-                });
+        teacherSelect.innerHTML = optionsHTML;
+        if (uniqueTeachers.includes(lastSelected) || lastSelected === "الكل") {
+          teacherSelect.value = lastSelected;
+        } else {
+          teacherSelect.value = "الكل";
+        }
+      }
 
-                // ترتيب زمني
-                allStudentsData.sort((a, b) => {
-                    let dateA = a.createdAt ? (a.createdAt.seconds || new Date(a.createdAt).getTime() / 1000) : 0;
-                    let dateB = b.createdAt ? (b.createdAt.seconds || new Date(b.createdAt).getTime() / 1000) : 0;
-                    return dateB - dateA;
-                });
+      // 🔍 التصفية بناءً على الحقول الموحدة مع حل اسم المعلم
+      function filterTeacherStudents() {
+        let filterTeacher = document.getElementById("filter-teacher");
+        let filterPayment = document.getElementById("filter-payment");
+        let filterStatus = document.getElementById("filter-status");
 
-                buildTeacherFilterOptions();
-                filterTeacherStudents();
-            }, (error) => {
-                console.error("حدث خطأ في جلب الطلاب: ", error);
-                document.getElementById('teacher-students-tbody').innerHTML = 
-                    `<tr><td colspan="7" style="text-align:center; color:var(--danger); padding:25px;">⚠️ خطأ في الاتصال بالسيرفر السحابي.</td></tr>`;
-            });
+        if (!filterTeacher || !filterPayment || !filterStatus) return;
+
+        let selectedTeacher = filterTeacher.value;
+        let selectedPayment = filterPayment.value;
+        let selectedStatus = filterStatus.value;
+
+        let filteredList = allStudentsData.filter((student) => {
+          if (student.status === "مؤرشف") return false;
+
+          // حل اسم المعلم ديناميكياً
+          student.teacherName =
+            teachersMap[student.TeacherId] || student.teacherName || "غير معين";
+
+          let matchTeacher =
+            selectedTeacher === "الكل" ||
+            student.teacherName === selectedTeacher;
+          let matchPayment =
+            selectedPayment === "الكل" ||
+            student.paymentStatus === selectedPayment;
+          let matchStatus =
+            selectedStatus === "الكل" || student.status === selectedStatus;
+
+          return matchTeacher && matchPayment && matchStatus;
+        });
+
+        renderTableHTML(filteredList);
+      }
+
+      // تنسيق جدول المواعيد
+      function formatSchedule(schedule) {
+        if (!schedule)
+          return '<span style="color:var(--text-secondary);">غير محدد</span>';
+        const dayMappingAr = {
+          Saturday: "سبت",
+          Sunday: "حد",
+          Monday: "اتنين",
+          Tuesday: "تلات",
+          Wednesday: "اربع",
+          Thursday: "خميس",
+          Friday: "جمعة",
+        };
+        const daysOrder = [
+          "Saturday",
+          "Sunday",
+          "Monday",
+          "Tuesday",
+          "Wednesday",
+          "Thursday",
+          "Friday",
+        ];
+        let formattedDays = [];
+        daysOrder.forEach((day) => {
+          let timeVal = schedule[day];
+          if (timeVal && String(timeVal).trim() !== "") {
+            formattedDays.push(`${dayMappingAr[day]} (${timeVal})`);
+          }
+        });
+        return formattedDays.length > 0
+          ? formattedDays.join("، ")
+          : '<span style="color:var(--text-secondary);">غير محدد</span>';
+      }
+
+      // 📊 الطباعة بأسماء الحقول المحدثة وترتيب الأعمدة الجديد
+      function renderTableHTML(students) {
+        let tbody = document.getElementById("teacher-students-tbody");
+        if (!tbody) return;
+
+        tbody.innerHTML = "";
+
+        if (students.length === 0) {
+          tbody.innerHTML = `<tr><td colspan="7" style="text-align:center; color:#94a3b8; padding:30px;">لا توجد نتائج مطابقة للفلاتر الحالية.</td></tr>`;
+          return;
         }
 
-        function listenToTeachers() {
-            db.collection("teachers").onSnapshot((snapshot) => {
-                definedTeachers = [];
-                teachersMap = {};
-                teachersPhoneMap = {};
-                snapshot.forEach(doc => {
-                    let data = doc.data();
-                    let name = data.Name || data.name;
-                    let phone = data.PhoneNumber || data.phone || '';
-                    if(name) {
-                        definedTeachers.push(name);
-                        teachersMap[doc.id] = name;
-                        teachersPhoneMap[name] = phone;
-                        if(data.UserId) {
-                            teachersMap[data.UserId] = name;
-                        }
-                    }
-                });
-                buildTeacherFilterOptions();
-                filterTeacherStudents();
-            }, (error) => {
-                console.error("حدث خطأ في جلب المعلمين: ", error);
-            });
-        }
+        students.forEach((student) => {
+          let paymentClass =
+            student.paymentStatus === "تم الدفع"
+              ? "status-paid"
+              : "status-unpaid";
+          if (student.paymentStatus === "مؤجل الدفع")
+            paymentClass = "status-paused";
 
-        function buildTeacherFilterOptions() {
-            let teacherSelect = document.getElementById('filter-teacher');
-            if (!teacherSelect) return;
-            
-            let lastSelected = teacherSelect.value || "الكل";
-            let uniqueTeachers = [...definedTeachers];
-            
-            allStudentsData.forEach(student => {
-                let tName = teachersMap[student.TeacherId] || student.teacherName || 'غير معين';
-                if(tName && !uniqueTeachers.includes(tName)) {
-                    uniqueTeachers.push(tName);
-                }
-            });
+          let statusClass =
+            student.status === "نشط" ? "status-active" : "status-paused";
+          let scheduleHTML = formatSchedule(
+            student.Schedule || student.schedule,
+          );
 
-            let optionsHTML = '<option value="الكل">كل المعلمين</option>';
-            uniqueTeachers.forEach(teacher => {
-                optionsHTML += `<option value="${teacher}">${teacher}</option>`;
-            });
-            
-            teacherSelect.innerHTML = optionsHTML;
-            if(uniqueTeachers.includes(lastSelected) || lastSelected === "الكل") {
-                teacherSelect.value = lastSelected;
-            } else {
-                teacherSelect.value = "الكل";
-            }
-        }
-
-        // 🔍 التصفية بناءً على الحقول الموحدة مع حل اسم المعلم
-        function filterTeacherStudents() {
-            let filterTeacher = document.getElementById('filter-teacher');
-            let filterPayment = document.getElementById('filter-payment');
-            let filterStatus = document.getElementById('filter-status');
-            
-            if(!filterTeacher || !filterPayment || !filterStatus) return;
-
-            let selectedTeacher = filterTeacher.value;
-            let selectedPayment = filterPayment.value;
-            let selectedStatus = filterStatus.value;
-
-            let filteredList = allStudentsData.filter(student => {
-                if(student.status === "مؤرشف") return false;
-
-                // حل اسم المعلم ديناميكياً
-                student.teacherName = teachersMap[student.TeacherId] || student.teacherName || 'غير معين';
-
-                let matchTeacher = (selectedTeacher === "الكل") || (student.teacherName === selectedTeacher);
-                let matchPayment = (selectedPayment === "الكل") || (student.paymentStatus === selectedPayment);
-                let matchStatus  = (selectedStatus === "الكل")  || (student.status === selectedStatus);
-
-                return matchTeacher && matchPayment && matchStatus;
-            });
-
-            renderTableHTML(filteredList);
-        }
-
-        // تنسيق جدول المواعيد
-        function formatSchedule(schedule) {
-            if (!schedule) return '<span style="color:var(--text-secondary);">غير محدد</span>';
-            const dayMappingAr = {
-                Saturday: 'سبت',
-                Sunday: 'حد',
-                Monday: 'اتنين',
-                Tuesday: 'تلات',
-                Wednesday: 'اربع',
-                Thursday: 'خميس',
-                Friday: 'جمعة'
-            };
-            const daysOrder = ['Saturday', 'Sunday', 'Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday'];
-            let formattedDays = [];
-            daysOrder.forEach(day => {
-                let timeVal = schedule[day];
-                if (timeVal && String(timeVal).trim() !== "") {
-                    formattedDays.push(`${dayMappingAr[day]} (${timeVal})`);
-                }
-            });
-            return formattedDays.length > 0 ? formattedDays.join('، ') : '<span style="color:var(--text-secondary);">غير محدد</span>';
-        }
-
-        // 📊 الطباعة بأسماء الحقول المحدثة وترتيب الأعمدة الجديد
-        function renderTableHTML(students) {
-            let tbody = document.getElementById('teacher-students-tbody');
-            if(!tbody) return;
-            
-            tbody.innerHTML = "";
-
-            if(students.length === 0) {
-                tbody.innerHTML = `<tr><td colspan="7" style="text-align:center; color:#94a3b8; padding:30px;">لا توجد نتائج مطابقة للفلاتر الحالية.</td></tr>`;
-                return;
-            }
-
-            students.forEach(student => {
-                let paymentClass = student.paymentStatus === "تم الدفع" ? "status-paid" : "status-unpaid";
-                if(student.paymentStatus === "مؤجل الدفع") paymentClass = "status-paused"; 
-                
-                let statusClass = student.status === "نشط" ? "status-active" : "status-paused";
-                let scheduleHTML = formatSchedule(student.Schedule || student.schedule);
-
-                let row = document.createElement('tr');
-                row.innerHTML = `
+          let row = document.createElement("tr");
+          row.innerHTML = `
                     <td><span style="font-weight:700; color:var(--gold-primary);">${scheduleHTML}</span></td>
                     <td style="font-weight:bold;">${student.studentName}</td>
-                    <td>👨‍🏫 ${student.teacherName || 'غير معين'}</td>
+                    <td>👨‍🏫 ${student.teacherName || "غير معين"}</td>
                     <td><span style="font-weight:700; color:var(--text-secondary);">#${student.membershipId}</span></td>
-                    <td><span class="status-badge ${paymentClass}">${student.paymentStatus || 'لم يدفع'}</span></td>
-                    <td><span class="status-badge ${statusClass}">${student.status || 'غير محدد'}</span></td>
+                    <td><span class="status-badge ${paymentClass}">${student.paymentStatus || "لم يدفع"}</span></td>
+                    <td><span class="status-badge ${statusClass}">${student.status || "غير محدد"}</span></td>
                     <td dir="ltr">
-                        <a href="tel:${student.phone || ''}" style="color:var(--info); font-weight:600; text-decoration:none;">
-                            <i class="fa-solid fa-phone"></i> ${student.phone || 'بلا هاتف'}
+                        <a href="tel:${student.phone || ""}" style="color:var(--info); font-weight:600; text-decoration:none;">
+                            <i class="fa-solid fa-phone"></i> ${student.phone || "بلا هاتف"}
                         </a>
                     </td>
                 `;
-                tbody.appendChild(row);
-            });
+          tbody.appendChild(row);
+        });
+      }
+
+      function openAddTeacherModal() {
+        document.getElementById("add-teacher-modal").classList.add("active");
+      }
+      function closeAddTeacherModal() {
+        document.getElementById("add-teacher-modal").classList.remove("active");
+      }
+
+      function addNewTeacher() {
+        let nameInput = document.getElementById("new-teacher-name");
+        let emailInput = document.getElementById("new-teacher-email");
+        let passwordInput = document.getElementById("new-teacher-password");
+        let phoneInput = document.getElementById("new-teacher-phone");
+        let hourlyrateInput = document.getElementById("new-teacher-hourlyrate");
+        let genderInput = document.getElementById("new-teacher-gender");
+
+        let name = nameInput ? nameInput.value.trim() : "";
+        let email = emailInput ? emailInput.value.trim() : "";
+        let password = passwordInput ? passwordInput.value : "";
+        let phone = phoneInput ? phoneInput.value.trim() : "";
+        let hourlyRate = hourlyrateInput ? parseInt(hourlyrateInput.value) : 0;
+        let genderVal = genderInput ? genderInput.value === "true" : false;
+
+        if (!name || !email || !password) {
+          Swal.fire(
+            "بيانات ناقصة",
+            "يرجى إدخال اسم المعلم والبريد الإلكتروني وكلمة المرور!",
+            "warning",
+          );
+          return;
+        }
+        if (password.length < 6) {
+          Swal.fire("تنبيه", "يجب أن لا تقل كلمة المرور عن 6 أحرف!", "warning");
+          return;
         }
 
-        function openAddTeacherModal() { document.getElementById('add-teacher-modal').classList.add('active'); }
-        function closeAddTeacherModal() { document.getElementById('add-teacher-modal').classList.remove('active'); }
+        Swal.fire({
+          title: "جارِ تسجيل المعلم وتأسيس الحساب...",
+          didOpen: () => {
+            Swal.showLoading();
+          },
+        });
 
-        function addNewTeacher() {
-            let nameInput = document.getElementById('new-teacher-name');
-            let emailInput = document.getElementById('new-teacher-email');
-            let passwordInput = document.getElementById('new-teacher-password');
-            let phoneInput = document.getElementById('new-teacher-phone');
-            let hourlyrateInput = document.getElementById('new-teacher-hourlyrate');
-            let genderInput = document.getElementById('new-teacher-gender');
-            
-            let name = nameInput ? nameInput.value.trim() : '';
-            let email = emailInput ? emailInput.value.trim() : '';
-            let password = passwordInput ? passwordInput.value : '';
-            let phone = phoneInput ? phoneInput.value.trim() : '';
-            let hourlyRate = hourlyrateInput ? parseInt(hourlyrateInput.value) : 0;
-            let genderVal = genderInput ? (genderInput.value === "true") : false;
+        let secondaryApp;
+        try {
+          secondaryApp = firebase.initializeApp(
+            firebaseConfig,
+            "SecondaryTeacherApp",
+          );
+        } catch (e) {
+          secondaryApp = firebase.app("SecondaryTeacherApp");
+        }
 
-            if(!name || !email || !password) { 
-                Swal.fire('بيانات ناقصة', 'يرجى إدخال اسم المعلم والبريد الإلكتروني وكلمة المرور!', 'warning'); 
-                return; 
-            }
-            if(password.length < 6) {
-                Swal.fire('تنبيه', 'يجب أن لا تقل كلمة المرور عن 6 أحرف!', 'warning');
-                return;
-            }
+        secondaryApp
+          .auth()
+          .createUserWithEmailAndPassword(email, password)
+          .then((userCredential) => {
+            const uid = userCredential.user.uid;
 
-            Swal.fire({ title: 'جارِ تسجيل المعلم وتأسيس الحساب...', didOpen: () => { Swal.showLoading(); } });
+            let batch = db.batch();
 
-            let secondaryApp;
-            try {
-                secondaryApp = firebase.initializeApp(firebaseConfig, "SecondaryTeacherApp");
-            } catch(e) {
-                secondaryApp = firebase.app("SecondaryTeacherApp");
-            }
+            // 1. مستند المستخدم العام (users)
+            let userRef = db.collection("users").doc(uid);
+            batch.set(userRef, {
+              Email: email,
+              Name: name,
+              Role: "teacher",
+            });
 
-            secondaryApp.auth().createUserWithEmailAndPassword(email, password)
-            .then((userCredential) => {
-                const uid = userCredential.user.uid;
-                
-                let batch = db.batch();
+            // 2. مستند تفاصيل المعلم (teachers)
+            let teacherRef = db.collection("teachers").doc(uid);
+            batch.set(teacherRef, {
+              UserId: uid,
+              Name: name,
+              Email: email,
+              PhoneNumber: phone,
+              HourlyRate: hourlyRate,
+              Gender: genderVal,
+              CreatedAt: firebase.firestore.FieldValue.serverTimestamp(),
+            });
 
-                // 1. مستند المستخدم العام (users)
-                let userRef = db.collection("users").doc(uid);
-                batch.set(userRef, {
-                    Email: email,
-                    Name: name,
-                    Role: "teacher"
+            return batch.commit().then(() => {
+              return secondaryApp
+                .auth()
+                .signOut()
+                .then(() => {
+                  return secondaryApp.delete().then(() => uid);
                 });
+            });
+          })
+          .then((uid) => {
+            Swal.fire({
+              icon: "success",
+              title: "تم تسجيل المعلم وتأسيس الحساب بنجاح!",
+              timer: 1800,
+              showConfirmButton: false,
+            });
 
-                // 2. مستند تفاصيل المعلم (teachers)
-                let teacherRef = db.collection("teachers").doc(uid);
-                batch.set(teacherRef, {
-                    UserId: uid,
-                    Name: name,
-                    Email: email,
-                    PhoneNumber: phone,
-                    HourlyRate: hourlyRate,
-                    Gender: genderVal,
-                    CreatedAt: firebase.firestore.FieldValue.serverTimestamp()
+            if (nameInput) nameInput.value = "";
+            if (emailInput) emailInput.value = "";
+            if (passwordInput) passwordInput.value = "";
+            if (phoneInput) phoneInput.value = "";
+            if (hourlyrateInput) hourlyrateInput.value = "0";
+            if (genderInput) genderInput.value = "false";
+
+            closeAddTeacherModal();
+          })
+          .catch((error) => {
+            console.error("Error creating teacher account: ", error);
+            if (secondaryApp) {
+              secondaryApp.delete().catch(() => {});
+            }
+            Swal.fire("خطأ في التسجيل", error.message, "error");
+          });
+      }
+
+      function sendTodayScheduleToTeacher() {
+        const teacherName = document.getElementById("filter-teacher").value;
+        if (!teacherName || teacherName === "الكل") {
+          Swal.fire(
+            "تنبيه",
+            "يرجى اختيار معلم معين من القائمة أولاً لتجميع حصص اليوم الخاصة به وإرسالها عبر الواتساب.",
+            "warning",
+          );
+          return;
+        }
+
+        const daysAr = [
+          "الأحد",
+          "الإثنين",
+          "الثلاثاء",
+          "الأربعاء",
+          "الخميس",
+          "الجمعة",
+          "السبت",
+        ];
+        const daysEng = [
+          "Sunday",
+          "Monday",
+          "Tuesday",
+          "Wednesday",
+          "Thursday",
+          "Friday",
+          "Saturday",
+        ];
+        const todayIdx = new Date().getDay();
+        const todayNameAr = daysAr[todayIdx];
+        const todayNameEng = daysEng[todayIdx];
+
+        let todayLessons = allStudentsData.filter((s) => {
+          let tName = teachersMap[s.TeacherId] || s.teacherName || "غير معين";
+          return (
+            tName === teacherName &&
+            s.Schedule &&
+            s.Schedule[todayNameEng] &&
+            s.Schedule[todayNameEng].trim() !== ""
+          );
+        });
+
+        if (todayLessons.length === 0) {
+          Swal.fire(
+            "لا توجد حصص",
+            `المعلم/ة ${teacherName} ليس لديه حصص لليوم (${todayNameAr}).`,
+            "info",
+          );
+          return;
+        }
+
+        let messageText = `السلام عليكم ورحمة الله وبركاته، أ/ *${teacherName}* \n`;
+        messageText += `إليك جدول حصص اليوم (*${todayNameAr}*) الخاص بك في أكاديمية القارئ:\n\n`;
+
+        todayLessons.forEach((lesson, index) => {
+          let studentDisplayName =
+            lesson.Name || lesson.studentName || "غير متوفر";
+          messageText += `${index + 1}. الطالب: *${studentDisplayName}* - الموعد: *${lesson.Schedule[todayNameEng]}*\n`;
+        });
+
+        messageText += `\nتمنياتنا لكم بالتوفيق والسداد `;
+
+        const encodedMessage = encodeURIComponent(messageText);
+
+        // جلب هاتف المعلم وتطهيره
+        let teacherPhone = teachersPhoneMap[teacherName] || "";
+        let formattedPhone = teacherPhone.replace(/[\s+\-()]/g, "");
+        if (formattedPhone.startsWith("00")) {
+          formattedPhone = formattedPhone.substring(2);
+        }
+
+        const whatsappUrl = formattedPhone
+          ? `https://wa.me/${formattedPhone}?text=${encodedMessage}`
+          : `https://wa.me/?text=${encodedMessage}`;
+
+        window.open(whatsappUrl, "_blank");
+      }
+
+      function renderTeachersTable() {
+        let tbody = document.getElementById("teachers-list-tbody");
+        if (!tbody) return;
+
+        tbody.innerHTML = "";
+
+        if (teachersList.length === 0) {
+          tbody.innerHTML = `<tr><td colspan="7" style="text-align:center; color:#94a3b8; padding:30px;">لا توجد معلمين مسجلين حالياً.</td></tr>`;
+          return;
+        }
+
+        teachersList.forEach((teacher) => {
+          let genderText = teacher.gender ? "أنثى" : "ذكر";
+          let dateText = "غير متوفر";
+          if (teacher.createdAt) {
+            let dateObj = teacher.createdAt.toDate
+              ? teacher.createdAt.toDate()
+              : new Date(teacher.createdAt.seconds * 1000);
+            dateText = dateObj.toLocaleDateString("ar-EG", {
+              year: "numeric",
+              month: "long",
+              day: "numeric",
+            });
+          }
+
+          let row = document.createElement("tr");
+          row.innerHTML = `
+                    <td style="font-weight:bold;">${teacher.name}</td>
+                    <td><span class="status-badge" style="background: rgba(168, 85, 247, 0.1); color: #a855f7;">${genderText}</span></td>
+                    <td>${teacher.email}</td>
+                    <td dir="ltr">${teacher.phone || "بلا هاتف"}</td>
+                    <td><span style="font-weight:700; color:var(--gold-primary);">${teacher.hourlyRate} ج.م</span></td>
+                    <td>${dateText}</td>
+                    <td>
+                        <div style="display: flex; gap: 8px;">
+                            <button class="btn-gold" style="padding: 6px 12px; font-size: 12px; background-color: var(--info);" onclick="openEditTeacherModal('${teacher.id}', '${teacher.name}', '${teacher.phone}', ${teacher.hourlyRate}, ${teacher.gender})">
+                                <i class="fa-solid fa-user-pen"></i> تعديل
+                            </button>
+                            <button class="btn-gold" style="padding: 6px 12px; font-size: 12px; background-color: var(--danger);" onclick="deleteTeacher('${teacher.id}', '${teacher.name}')">
+                                <i class="fa-solid fa-trash-can"></i> حذف
+                            </button>
+                        </div>
+                    </td>
+                `;
+          tbody.appendChild(row);
+        });
+      }
+
+      function openEditTeacherModal(id, name, phone, hourlyRate, gender) {
+        document.getElementById("edit-teacher-id").value = id;
+        document.getElementById("edit-teacher-name").value = name;
+        document.getElementById("edit-teacher-phone").value = phone;
+        document.getElementById("edit-teacher-hourlyrate").value = hourlyRate;
+        document.getElementById("edit-teacher-gender").value = String(gender);
+        document.getElementById("edit-teacher-modal").classList.add("active");
+      }
+
+      function closeEditTeacherModal() {
+        document
+          .getElementById("edit-teacher-modal")
+          .classList.remove("active");
+      }
+
+      function saveEditedTeacher() {
+        let id = document.getElementById("edit-teacher-id").value;
+        let nameInput = document.getElementById("edit-teacher-name");
+        let phoneInput = document.getElementById("edit-teacher-phone");
+        let hourlyrateInput = document.getElementById(
+          "edit-teacher-hourlyrate",
+        );
+        let genderInput = document.getElementById("edit-teacher-gender");
+
+        let name = nameInput ? nameInput.value.trim() : "";
+        let phone = phoneInput ? phoneInput.value.trim() : "";
+        let hourlyRate = hourlyrateInput ? parseInt(hourlyrateInput.value) : 0;
+        let genderVal = genderInput ? genderInput.value === "true" : false;
+
+        if (!name) {
+          Swal.fire("بيانات ناقصة", "يرجى إدخال اسم المعلم!", "warning");
+          return;
+        }
+
+        Swal.fire({
+          title: "جارٍ حفظ التعديلات سحابياً...",
+          didOpen: () => {
+            Swal.showLoading();
+          },
+        });
+
+        let batch = db.batch();
+
+        // 1. تحديث مستند المستخدم (users)
+        let userRef = db.collection("users").doc(id);
+        batch.update(userRef, {
+          Name: name,
+        });
+
+        // 2. تحديث مستند المعلم (teachers)
+        let teacherRef = db.collection("teachers").doc(id);
+        batch.update(teacherRef, {
+          Name: name,
+          PhoneNumber: phone,
+          HourlyRate: hourlyRate,
+          Gender: genderVal,
+        });
+
+        batch
+          .commit()
+          .then(() => {
+            Swal.fire({
+              icon: "success",
+              title: "تم تعديل بيانات المعلم بنجاح!",
+              timer: 1500,
+              showConfirmButton: false,
+            });
+            closeEditTeacherModal();
+          })
+          .catch((error) => {
+            console.error("Error updating teacher: ", error);
+            Swal.fire("خطأ في التعديل", error.message, "error");
+          });
+      }
+
+      function deleteTeacher(teacherId, teacherName) {
+        Swal.fire({
+          title: `هل أنت متأكد من حذف المعلم: ${teacherName}؟`,
+          text: "سيؤدي هذا إلى حذف مستنداته من قاعدة البيانات وتجريده من صلاحيات الدخول، ولن تتمكن من التراجع عن هذه الخطوة!",
+          icon: "warning",
+          showCancelButton: true,
+          confirmButtonColor: "#ef4444",
+          cancelButtonColor: "#3085d6",
+          confirmButtonText: "نعم، احذف المعلم نهائياً 🗑️",
+          cancelButtonText: "إلغاء",
+        }).then((result) => {
+          if (result.isConfirmed) {
+            Swal.fire({
+              title: "جارٍ حذف المعلم...",
+              didOpen: () => {
+                Swal.showLoading();
+              },
+            });
+
+            let batch = db.batch();
+            batch.delete(db.collection("teachers").doc(teacherId));
+            batch.delete(db.collection("users").doc(teacherId));
+
+            batch
+              .commit()
+              .then(() => {
+                Swal.fire({
+                  icon: "success",
+                  title: "تم حذف المعلم بنجاح!",
+                  timer: 1500,
+                  showConfirmButton: false,
                 });
+              })
+              .catch((error) => {
+                console.error("Error deleting teacher: ", error);
+                Swal.fire("خطأ في الحذف", error.message, "error");
+              });
+          }
+        });
+      }
 
-                return batch.commit().then(() => {
-                    return secondaryApp.auth().signOut().then(() => {
-                        return secondaryApp.delete().then(() => uid);
-                    });
-                });
-            })
-            .then((uid) => {
-                Swal.fire({ icon: 'success', title: 'تم تسجيل المعلم وتأسيس الحساب بنجاح!', timer: 1800, showConfirmButton: false });
-                
-                if(nameInput) nameInput.value = '';
-                if(emailInput) emailInput.value = '';
-                if(passwordInput) passwordInput.value = '';
-                if(phoneInput) phoneInput.value = '';
-                if(hourlyrateInput) hourlyrateInput.value = '0';
-                if(genderInput) genderInput.value = 'false';
-                
-                closeAddTeacherModal();
-            })
-            .catch(error => {
-                console.error("Error creating teacher account: ", error);
-                if (secondaryApp) {
-                    secondaryApp.delete().catch(() => {});
-                }
-                Swal.fire('خطأ في التسجيل', error.message, 'error');
-            });
-        }
-
-        function sendTodayScheduleToTeacher() {
-            const teacherName = document.getElementById('filter-teacher').value;
-            if (!teacherName || teacherName === "الكل") {
-                Swal.fire('تنبيه', 'يرجى اختيار معلم معين من القائمة أولاً لتجميع حصص اليوم الخاصة به وإرسالها عبر الواتساب.', 'warning');
-                return;
-            }
-
-            const daysAr = ['الأحد', 'الإثنين', 'الثلاثاء', 'الأربعاء', 'الخميس', 'الجمعة', 'السبت'];
-            const daysEng = ['Sunday', 'Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday'];
-            const todayIdx = new Date().getDay();
-            const todayNameAr = daysAr[todayIdx];
-            const todayNameEng = daysEng[todayIdx];
-            
-            let todayLessons = allStudentsData.filter(s => {
-                let tName = teachersMap[s.TeacherId] || s.teacherName || 'غير معين';
-                return tName === teacherName && s.Schedule && s.Schedule[todayNameEng] && s.Schedule[todayNameEng].trim() !== "";
-            });
-            
-            if (todayLessons.length === 0) {
-                Swal.fire('لا توجد حصص', `المعلم/ة ${teacherName} ليس لديه حصص لليوم (${todayNameAr}).`, 'info');
-                return;
-            }
-
-            let messageText = `السلام عليكم ورحمة الله وبركاته، أ/ *${teacherName}* 🌹\n`;
-            messageText += `إليك جدول حصص اليوم (*${todayNameAr}*) الخاص بك في أكاديمية القارئ:\n\n`;
-            
-            todayLessons.forEach((lesson, index) => {
-                let studentDisplayName = lesson.Name || lesson.studentName || 'غير متوفر';
-                messageText += `${index + 1}. الطالب: *${studentDisplayName}* 📖 - الموعد: *${lesson.Schedule[todayNameEng]}*\n`;
-            });
-            
-            messageText += `\nتمنياتنا لكم بالتوفيق والسداد ✨`;
-            
-            const encodedMessage = encodeURIComponent(messageText);
-
-            // جلب هاتف المعلم وتطهيره
-            let teacherPhone = teachersPhoneMap[teacherName] || '';
-            let formattedPhone = teacherPhone.replace(/[\s+\-()]/g, '');
-            if (formattedPhone.startsWith('00')) {
-                formattedPhone = formattedPhone.substring(2);
-            }
-
-            const whatsappUrl = formattedPhone 
-                ? `https://wa.me/${formattedPhone}?text=${encodedMessage}` 
-                : `https://wa.me/?text=${encodedMessage}`;
-                
-            window.open(whatsappUrl, '_blank');
-        }
-
-        function logout(event) {
-            if(event) event.preventDefault();
-            localStorage.removeItem("currentSupervisor");
-            window.location.href = "index.html";
-        }
+      function logout(event) {
+        if (event) event.preventDefault();
+        localStorage.removeItem("currentSupervisor");
+        window.location.href = "index.html";
+      }
     </script>
-</body>
+  </body>
 </html>
