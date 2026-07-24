@@ -13,7 +13,9 @@
     <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
     
     <script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-app-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-auth-compat.js"></script>
     <script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore-compat.js"></script>
+    <script src="Scripts/auth-router.js"></script>
 
     <link rel="stylesheet" href="css/style.css">
 </head>
@@ -40,7 +42,7 @@
         <header class="header-panel">
             <div class="welcome-section">
                 <h1>👨‍🏫 نظام فرز ومتابعة طلاب المعلمين</h1>
-                <p>تابع مستويات التزام الطلاب المالي والدراسي، وقم بإضافة معلمين جدد للنظام.</p>
+                <p>تابع مستويات التزام الطلاب المالي الدراسي، وقم بإضافة معلمين جدد للنظام.</p>
             </div>
             <div>
                 <button class="btn-gold" onclick="openAddTeacherModal()">
@@ -83,16 +85,17 @@
                 <table>
                     <thead>
                         <tr>
-                            <th>رقم الاشتراك</th>
+                            <th>مواعيد الطالب</th>
                             <th>اسم الطالب</th>
                             <th>المعلم</th>
+                            <th>رقم الاشتراك</th>
                             <th>حالة الدفع</th>
                             <th>حالة الحصص</th>
                             <th>رقم الهاتف</th>
                         </tr>
                     </thead>
                     <tbody id="teacher-students-tbody">
-                        <tr><td colspan="6" style="text-align:center; color:gray;">جاري جلب البيانات من السيرفر السحابي...</td></tr>
+                        <tr><td colspan="7" style="text-align:center; color:gray;">جاري جلب البيانات من السيرفر السحابي...</td></tr>
                     </tbody>
                 </table>
             </div>
@@ -100,54 +103,62 @@
     </main>
 
     <div class="modal-overlay" id="add-teacher-modal">
-        <div class="modal-box">
+        <div class="modal-box" style="max-width: 600px;">
             <div class="modal-header">
-                <h3><i class="fa-solid fa-user-plus"></i> تسجيل معلم جديد</h3>
+                <h3><i class="fa-solid fa-user-plus"></i> تسجيل حساب معلّم جديد</h3>
                 <button class="close-modal" onclick="closeAddTeacherModal()">&times;</button>
             </div>
-            <div class="form-group">
-                <label>اسم المعلم الثنائي أو الثلاثي</label>
-                <input type="text" id="new-teacher-name" placeholder="مثال: الشيخ محمود">
+            <div class="form-row">
+                <div class="form-group" style="flex: 1;">
+                    <label>اسم المعلم الثنائي أو الثلاثي</label>
+                    <input type="text" id="new-teacher-name" placeholder="مثال: الشيخ محمود" required>
+                </div>
+                <div class="form-group" style="flex: 1;">
+                    <label>رقم الهاتف للاتصال</label>
+                    <input type="text" id="new-teacher-phone" placeholder="مثال: 20100xxxxxxx">
+                </div>
             </div>
-            <div class="form-group">
-                <label>البريد الإلكتروني للمعلم</label>
-                <input type="email" id="new-teacher-email" placeholder="مثال: teacher@alqaree.com">
+            <div class="form-row">
+                <div class="form-group" style="flex: 1;">
+                    <label>البريد الإلكتروني للمعلم (لتسجيل الدخول)</label>
+                    <input type="email" id="new-teacher-email" placeholder="مثال: teacher@alqaree.com" required>
+                </div>
+                <div class="form-group" style="flex: 1;">
+                    <label>كلمة مرور الحساب</label>
+                    <input type="password" id="new-teacher-password" placeholder="أدخل كلمة مرور قوية" required>
+                </div>
             </div>
-            <div class="form-group">
-                <label>رقم الهاتف للاتصال</label>
-                <input type="text" id="new-teacher-phone" placeholder="مثال: 20100xxxxxxx">
+            <div class="form-row">
+                <div class="form-group" style="flex: 1;">
+                    <label>سعر الساعة / الحصة (ج.م)</label>
+                    <input type="number" id="new-teacher-hourlyrate" placeholder="مثال: 50" min="0" value="0" required>
+                </div>
+                <div class="form-group" style="flex: 1;">
+                    <label>الجنس (النوع)</label>
+                    <select id="new-teacher-gender" class="filter-select" style="width: 100%; height: 42px;">
+                        <option value="false">ذكر</option>
+                        <option value="true">أنثى</option>
+                    </select>
+                </div>
             </div>
-            <div class="form-group">
-                <label>معرّف المستخدم المربوط (UserId)</label>
-                <input type="text" id="new-teacher-userid" placeholder="مثال: p3EnfVJadsex4NjN6g4zCiAnPF22">
-            </div>
-            <div class="modal-actions">
-                <button class="btn-cancel" onclick="closeAddTeacherModal()">إلغاء</button>
-                <button class="btn-gold" onclick="addNewTeacher()">حفظ المعلم 💾</button>
+            <div class="modal-actions" style="margin-top: 20px;">
+                <button class="btn-cancel" style="background: none; border: 1px solid var(--border-color); color: white;" onclick="closeAddTeacherModal()">إلغاء</button>
+                <button class="btn-gold" onclick="addNewTeacher()">إنشاء وتثبيت الحساب 💾</button>
             </div>
         </div>
     </div>
 
     <script>
-   
         if (!firebase.apps.length) firebase.initializeApp(firebaseConfig);
         var db = firebase.firestore();
 
         var allStudentsData = [];
         var definedTeachers = []; 
+        var teachersMap = {};
 
         document.addEventListener("DOMContentLoaded", function() {
-            if (!localStorage.getItem("currentSupervisor")) {
-                Swal.fire({
-                    icon: 'warning',
-                    title: 'تنبيه أمان',
-                    text: 'يجب تسجيل الدخول أولاً للوصول إلى لوحة المتابعة.',
-                    confirmButtonText: 'توجه لصفحة الدخول',
-                    confirmButtonColor: '#d4af37'
-                }).then(() => {
-                    window.location.href = "index.html";
-                });
-                return;
+            if (typeof checkPageProtection === "function") {
+                checkPageProtection("كل المشرفين");
             }
 
             startRealtimeSync();
@@ -161,13 +172,14 @@
                 snapshot.forEach((doc) => {
                     let rawData = doc.data();
                     
-                    // توحيد الحقول لتتطابق مع صفحة سجل الطلاب الأساسية
                     let student = {
                         ...rawData,
                         id: doc.id,
-                        studentName: rawData.studentName || rawData.name || 'مجهول',
-                        membershipId: rawData.membershipId || rawData.subscriptionNumber || 'غير محدد',
-                        status: rawData.status || rawData.studentStatus || 'نشط'
+                        studentName: rawData.Name || rawData.studentName || rawData.name || 'مجهول',
+                        membershipId: rawData.SubscriptionNumber || rawData.membershipId || rawData.subscriptionNumber || 'غير حدد',
+                        paymentStatus: rawData.PaymentStatus || rawData.paymentStatus || 'لم يدفع',
+                        status: rawData.Status || rawData.status || rawData.studentStatus || 'نشط',
+                        phone: rawData.PhoneNumber || rawData.phone || 'بلا هاتف'
                     };
 
                     allStudentsData.push(student);
@@ -185,18 +197,23 @@
             }, (error) => {
                 console.error("حدث خطأ في جلب الطلاب: ", error);
                 document.getElementById('teacher-students-tbody').innerHTML = 
-                    `<tr><td colspan="6" style="text-align:center; color:var(--danger); padding:25px;">⚠️ خطأ في الاتصال بالسيرفر السحابي.</td></tr>`;
+                    `<tr><td colspan="7" style="text-align:center; color:var(--danger); padding:25px;">⚠️ خطأ في الاتصال بالسيرفر السحابي.</td></tr>`;
             });
         }
 
         function listenToTeachers() {
             db.collection("teachers").onSnapshot((snapshot) => {
                 definedTeachers = [];
+                teachersMap = {};
                 snapshot.forEach(doc => {
                     let data = doc.data();
                     let name = data.Name || data.name;
                     if(name) {
                         definedTeachers.push(name);
+                        teachersMap[doc.id] = name;
+                        if(data.UserId) {
+                            teachersMap[data.UserId] = name;
+                        }
                     }
                 });
                 buildTeacherFilterOptions();
@@ -214,8 +231,9 @@
             let uniqueTeachers = [...definedTeachers];
             
             allStudentsData.forEach(student => {
-                if(student.teacherName && !uniqueTeachers.includes(student.teacherName)) {
-                    uniqueTeachers.push(student.teacherName);
+                let tName = teachersMap[student.TeacherId] || student.teacherName || 'غير معين';
+                if(tName && !uniqueTeachers.includes(tName)) {
+                    uniqueTeachers.push(tName);
                 }
             });
 
@@ -232,7 +250,7 @@
             }
         }
 
-        // 🔍 التصفية بناءً على الحقول الموحدة
+        // 🔍 التصفية بناءً على الحقول الموحدة مع حل اسم المعلم
         function filterTeacherStudents() {
             let filterTeacher = document.getElementById('filter-teacher');
             let filterPayment = document.getElementById('filter-payment');
@@ -247,6 +265,9 @@
             let filteredList = allStudentsData.filter(student => {
                 if(student.status === "مؤرشف") return false;
 
+                // حل اسم المعلم ديناميكياً
+                student.teacherName = teachersMap[student.TeacherId] || student.teacherName || 'غير معين';
+
                 let matchTeacher = (selectedTeacher === "الكل") || (student.teacherName === selectedTeacher);
                 let matchPayment = (selectedPayment === "الكل") || (student.paymentStatus === selectedPayment);
                 let matchStatus  = (selectedStatus === "الكل")  || (student.status === selectedStatus);
@@ -257,7 +278,30 @@
             renderTableHTML(filteredList);
         }
 
-        // 📊 الطباعة بأسماء الحقول المحدثة
+        // تنسيق جدول المواعيد
+        function formatSchedule(schedule) {
+            if (!schedule) return '<span style="color:var(--text-secondary);">غير محدد</span>';
+            const dayMappingAr = {
+                Saturday: 'سبت',
+                Sunday: 'حد',
+                Monday: 'اتنين',
+                Tuesday: 'تلات',
+                Wednesday: 'اربع',
+                Thursday: 'خميس',
+                Friday: 'جمعة'
+            };
+            const daysOrder = ['Saturday', 'Sunday', 'Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday'];
+            let formattedDays = [];
+            daysOrder.forEach(day => {
+                let timeVal = schedule[day];
+                if (timeVal && String(timeVal).trim() !== "") {
+                    formattedDays.push(`${dayMappingAr[day]} (${timeVal})`);
+                }
+            });
+            return formattedDays.length > 0 ? formattedDays.join('، ') : '<span style="color:var(--text-secondary);">غير محدد</span>';
+        }
+
+        // 📊 الطباعة بأسماء الحقول المحدثة وترتيب الأعمدة الجديد
         function renderTableHTML(students) {
             let tbody = document.getElementById('teacher-students-tbody');
             if(!tbody) return;
@@ -265,21 +309,23 @@
             tbody.innerHTML = "";
 
             if(students.length === 0) {
-                tbody.innerHTML = `<tr><td colspan="6" style="text-align:center; color:#94a3b8; padding:30px;">لا توجد نتائج مطابقة للفلاتر الحالية.</td></tr>`;
+                tbody.innerHTML = `<tr><td colspan="7" style="text-align:center; color:#94a3b8; padding:30px;">لا توجد نتائج مطابقة للفلاتر الحالية.</td></tr>`;
                 return;
             }
 
             students.forEach(student => {
                 let paymentClass = student.paymentStatus === "تم الدفع" ? "status-paid" : "status-unpaid";
-                if(student.paymentStatus === "مؤجل الدفع") paymentClass = "status-paused"; // لون تحذيري للمؤجل
+                if(student.paymentStatus === "مؤجل الدفع") paymentClass = "status-paused"; 
                 
                 let statusClass = student.status === "نشط" ? "status-active" : "status-paused";
+                let scheduleHTML = formatSchedule(student.Schedule || student.schedule);
 
                 let row = document.createElement('tr');
                 row.innerHTML = `
-                    <td><span style="font-weight:700; color:var(--gold-primary);">#${student.membershipId}</span></td>
+                    <td><span style="font-weight:700; color:var(--gold-primary);">${scheduleHTML}</span></td>
                     <td style="font-weight:bold;">${student.studentName}</td>
                     <td>👨‍🏫 ${student.teacherName || 'غير معين'}</td>
+                    <td><span style="font-weight:700; color:var(--text-secondary);">#${student.membershipId}</span></td>
                     <td><span class="status-badge ${paymentClass}">${student.paymentStatus || 'لم يدفع'}</span></td>
                     <td><span class="status-badge ${statusClass}">${student.status || 'غير محدد'}</span></td>
                     <td dir="ltr">
@@ -298,32 +344,87 @@
         function addNewTeacher() {
             let nameInput = document.getElementById('new-teacher-name');
             let emailInput = document.getElementById('new-teacher-email');
+            let passwordInput = document.getElementById('new-teacher-password');
             let phoneInput = document.getElementById('new-teacher-phone');
-            let useridInput = document.getElementById('new-teacher-userid');
+            let hourlyrateInput = document.getElementById('new-teacher-hourlyrate');
+            let genderInput = document.getElementById('new-teacher-gender');
             
             let name = nameInput ? nameInput.value.trim() : '';
             let email = emailInput ? emailInput.value.trim() : '';
+            let password = passwordInput ? passwordInput.value : '';
             let phone = phoneInput ? phoneInput.value.trim() : '';
-            let userid = useridInput ? useridInput.value.trim() : '';
+            let hourlyRate = hourlyrateInput ? parseInt(hourlyrateInput.value) : 0;
+            let genderVal = genderInput ? (genderInput.value === "true") : false;
 
-            if(!name || !email) { Swal.fire('تنبيه', 'يرجى إدخال اسم المعلم والبريد الإلكتروني!', 'warning'); return; }
+            if(!name || !email || !password) { 
+                Swal.fire('بيانات ناقصة', 'يرجى إدخال اسم المعلم والبريد الإلكتروني وكلمة المرور!', 'warning'); 
+                return; 
+            }
+            if(password.length < 6) {
+                Swal.fire('تنبيه', 'يجب أن لا تقل كلمة المرور عن 6 أحرف!', 'warning');
+                return;
+            }
 
-            Swal.fire({ title: 'جارِ تسجيل المعلم سحابياً...', didOpen: () => { Swal.showLoading(); } });
+            Swal.fire({ title: 'جارِ تسجيل المعلم وتأسيس الحساب...', didOpen: () => { Swal.showLoading(); } });
 
-            db.collection("teachers").add({
-                Name: name,
-                Email: email,
-                PhoneNumber: phone,
-                UserId: userid,
-                CreatedAt: firebase.firestore.FieldValue.serverTimestamp()
-            }).then(() => {
-                Swal.fire({ icon: 'success', title: 'تم تسجيل المعلم بنجاح!', timer: 1500, showConfirmButton: false });
+            let secondaryApp;
+            try {
+                secondaryApp = firebase.initializeApp(firebaseConfig, "SecondaryTeacherApp");
+            } catch(e) {
+                secondaryApp = firebase.app("SecondaryTeacherApp");
+            }
+
+            secondaryApp.auth().createUserWithEmailAndPassword(email, password)
+            .then((userCredential) => {
+                const uid = userCredential.user.uid;
+                
+                let batch = db.batch();
+
+                // 1. مستند المستخدم العام (users)
+                let userRef = db.collection("users").doc(uid);
+                batch.set(userRef, {
+                    Email: email,
+                    Name: name,
+                    Role: "teacher"
+                });
+
+                // 2. مستند تفاصيل المعلم (teachers)
+                let teacherRef = db.collection("teachers").doc(uid);
+                batch.set(teacherRef, {
+                    UserId: uid,
+                    Name: name,
+                    Email: email,
+                    PhoneNumber: phone,
+                    HourlyRate: hourlyRate,
+                    Gender: genderVal,
+                    CreatedAt: firebase.firestore.FieldValue.serverTimestamp()
+                });
+
+                return batch.commit().then(() => {
+                    return secondaryApp.auth().signOut().then(() => {
+                        return secondaryApp.delete().then(() => uid);
+                    });
+                });
+            })
+            .then((uid) => {
+                Swal.fire({ icon: 'success', title: 'تم تسجيل المعلم وتأسيس الحساب بنجاح!', timer: 1800, showConfirmButton: false });
+                
                 if(nameInput) nameInput.value = '';
                 if(emailInput) emailInput.value = '';
+                if(passwordInput) passwordInput.value = '';
                 if(phoneInput) phoneInput.value = '';
-                if(useridInput) useridInput.value = '';
+                if(hourlyrateInput) hourlyrateInput.value = '0';
+                if(genderInput) genderInput.value = 'false';
+                
                 closeAddTeacherModal();
-            }).catch(error => Swal.fire('خطأ', error.message, 'error'));
+            })
+            .catch(error => {
+                console.error("Error creating teacher account: ", error);
+                if (secondaryApp) {
+                    secondaryApp.delete().catch(() => {});
+                }
+                Swal.fire('خطأ في التسجيل', error.message, 'error');
+            });
         }
 
         function logout(event) {
